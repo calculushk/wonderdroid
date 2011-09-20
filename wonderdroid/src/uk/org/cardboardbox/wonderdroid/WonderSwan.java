@@ -22,7 +22,7 @@ public class WonderSwan {
 	static public final int SCREEN_HEIGHT = 144;
 	static public ShortBuffer framebuffer = ByteBuffer.allocateDirect((SCREEN_WIDTH * SCREEN_HEIGHT) * 2).asShortBuffer();
 	static public int samples;
-	static final int audiobufferlen = 750;
+	static final int audiobufferlen = 4000;
 	static public short[] audiobuffer = new short[audiobufferlen];
 
 	public static boolean mButtonStart = false;
