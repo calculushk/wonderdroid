@@ -2,7 +2,7 @@
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
 <group android:id="@+id/group_emucntrl">
-	<item android:id="@+id/select_exitmi" android:title="Exit"></item>
-	<item android:id="@+id/select_prefsmi" android:title="Preferences"></item>
+	<item android:id="@+id/select_exitmi" android:title="@string/exit"></item>
+	<item android:id="@+id/select_prefsmi" android:title="@string/preferences"></item>
 </group>
 </menu>

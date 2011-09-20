@@ -104,7 +104,6 @@ public class EmuThread extends Thread {
 				if (c != null) {
 					mSurfaceHolder.unlockCanvasAndPost(c);
 				}
-
 			}
 		}
 		WonderSwan.execute_vblank();

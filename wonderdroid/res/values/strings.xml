@@ -9,4 +9,11 @@
     <string name="mono">Mono compatible - </string>
     <string name="vertical">Vertical</string>
     <string name="horizontal">Horizontal</string>
+    
+    <string name="selectgame">Select Game</string>
+    <string name="exit">Exit</string>
+    <string name="preferences">Preferences</string>
+    <string name="togglescreencontrols">Toggle Screen Controls</string>
+    <string name="pause">Pause</string>
+    <string name="reset">Reset</string>
 </resources>
