@@ -4,37 +4,37 @@
   
    <PreferenceCategory android:title="Control Settings"
    		>
-   		<uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+   		<uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolY1"
                 android:title="Y1" />
-        <uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolY2"
                 android:title="Y2" /> 
-        <uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolY3"
                 android:title="Y3" /> 
-        <uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolY4"
                 android:title="Y4" /> 
-   		<uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+   		<uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolX1"
                 android:title="X1 (Up)" />
-        <uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolX2"
                 android:title="X2 (Right)" />
-        <uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolX3"
                 android:title="X3 (Down)" /> 
-        <uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolX4"
                 android:title="X4 (Left)" />
-         <uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+         <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolA"
                 android:title="A" /> 
-          <uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+          <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolB"
                 android:title="B" />
-          <uk.org.cardboardbox.wonderdroid.HardwareButtonPreference  
+          <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
                 android:key="hwcontrolStart"
                 android:title="Start" /> 
         
