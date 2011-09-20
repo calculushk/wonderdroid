@@ -1,7 +1,6 @@
 
 package uk.org.cardboardbox.wonderdroid.utils;
 
-import uk.org.cardboardbox.synthtools.WaveDrawer;
 import uk.org.cardboardbox.wonderdroid.WonderSwan;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,7 +20,6 @@ public class EmuThread extends Thread {
 	private static final float TARGETFRAMETIME = 1000 / 60;
 	private boolean mIsRunning = false;
 	private boolean isPaused = false;
-	private static boolean drawSound = false;
 
 	private final Bitmap framebuffer;
 	private final Paint paint = new Paint();
@@ -100,22 +98,7 @@ public class EmuThread extends Thread {
 			try {
 				c = mSurfaceHolder.lockCanvas();
 				synchronized (mSurfaceHolder) {
-
-					//if (drawSound) {
-					//	c.drawARGB(0xFF, 0, 0, 0);
-					//}
-
 					c.drawBitmap(framebuffer, scale, paint);
-
-					//if (drawSound) {
-					//
-					//	float ch1base = (c.getHeight() / 4) * 1;
-					//	float ch2base = (c.getHeight() / 4) * 3;
-
-					//	WaveView.drawStereo(c, ch1base, ch2base, WonderSwan.audiobuffer, WonderSwan.samples);
-
-					//}
-
 				}
 			} finally {
 				if (c != null) {
