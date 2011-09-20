@@ -31,7 +31,7 @@ import android.widget.Toast;
 
 public class Select extends Activity {
 
-	static final String TAG = "Select";
+	private static final String TAG = Select.class.getSimpleName();
 	private Bitmap backgroundOne = null;
 	private Runnable bgSwitcher = new Runnable() {
 
@@ -152,7 +152,7 @@ public class Select extends Activity {
 		super.onResume();
 
 		if (Environment.getExternalStorageState().compareTo(Environment.MEDIA_MOUNTED) != 0) {
-			Toast.makeText(this, "SD Card isn't present or isn't ready.", 2000).show();
+			Toast.makeText(this, R.string.nosdcard, 2000).show();
 			return;
 		}
 
@@ -185,15 +185,15 @@ public class Select extends Activity {
 					WonderSwan.Header header = new WonderSwan.Header((File)mRAdapter.getItem(arg2));
 					String newtext;
 					if (header.isColor) {
-						newtext = "Color only - ";
+						newtext = getString(R.string.colour);
 					} else {
-						newtext = "Mono compatible - ";
+						newtext = getString(R.string.mono);
 					}
 
 					if (header.isVertical) {
-						newtext += "vertical";
+						newtext += getString(R.string.vertical);
 					} else {
-						newtext += "horizontal";
+						newtext += getString(R.string.horizontal);
 					}
 
 					mScreenFormat.setText(newtext);
