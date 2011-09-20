@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+  
+  	<ImageView
+  		android:id="@+id/select_bg1"
+  		android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:scaleType="centerCrop"
+    	android:tint="#BB111111"/>
+    	
+    <ImageView
+  		android:id="@+id/select_bg2"
+  		android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:scaleType="centerCrop"
+    	android:visibility="gone"
+    	android:tint="#BB111111"/>
+    	
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentBottom="true"
+    	android:text="wonderdroid 1.7BETA"
+    	android:textSize="28sp"
+    	android:textStyle="bold"
+    	android:shadowColor="#000"
+  		android:shadowDx="1"
+  		android:shadowDy="1"
+  		android:shadowRadius="2"
+    	android:textColor="#55008800" />
+  
+ 	<Gallery
+    	android:id="@+id/select_gallery"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:layout_centerInParent="true"
+    	android:gravity="center"/>
+
+	<TextView
+		android:id="@+id/select_noroms"
+		android:layout_centerInParent="true"
+		android:layout_height="wrap_content"
+		android:layout_width="250dp"
+		android:text="No roms found - Please exit, add roms to wonderdroid/ on your SD card, and try again. Zipped roms are *NOT* supported."
+		/>
+
+   	<TextView
+   		android:id="@+id/select_screenformat"
+   		android:layout_alignParentBottom="true"
+   		android:layout_alignParentRight="true"
+   		android:textColor="#fff"
+   		android:textStyle="bold"
+   		android:shadowColor="#000"
+  		android:shadowDx="1"
+  		android:shadowDy="1"
+  		android:shadowRadius="2"
+  		android:padding="5dp"
+   		android:layout_width="wrap_content"
+   		android:layout_height="wrap_content"
+   		android:visibility="invisible" />
+</RelativeLayout>
