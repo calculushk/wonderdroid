@@ -4,7 +4,6 @@ package uk.org.cardboardbox.wonderdroid.utils;
 import uk.org.cardboardbox.wonderdroid.WonderSwan;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.DrawFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.media.AudioTrack;
@@ -18,22 +17,23 @@ public class EmuThread extends Thread {
 	private static final String TAG = EmuThread.class.getSimpleName();
 	private static final int TARGETFRAMETIME = 1000 / 71;
 	private static final int mustSkipFrames = 5;
+
 	private boolean mIsRunning = false;
 	private boolean isPaused = false;
-
 	private boolean showFps = false;
 
 	private final Bitmap framebuffer;
 	private final Paint paint = new Paint();
 	private final Paint textPaint = new Paint();
 	private SurfaceHolder mSurfaceHolder;
-	private Matrix scale;
+	private final Matrix scale;
 	private Canvas c;
 
 	private short framecounter = 1; // dont skip the first frame
 	private long thisFrame;
 	private long lastFrame;
 	private int averageFrameTime = TARGETFRAMETIME;
+	private int worstFrameTime = TARGETFRAMETIME;
 
 	public EmuThread () {
 		framebuffer = Bitmap.createBitmap(WonderSwan.SCREEN_WIDTH, WonderSwan.SCREEN_HEIGHT, Bitmap.Config.RGB_565);
@@ -41,6 +41,7 @@ public class EmuThread extends Thread {
 		textPaint.setTextSize(35);
 		textPaint.setShadowLayer(3, 1, 1, 0x99000000);
 		textPaint.setAntiAlias(true);
+		scale = new Matrix();
 	}
 
 	public void setSurfaceHolder (SurfaceHolder sh) {
@@ -67,27 +68,19 @@ public class EmuThread extends Thread {
 		}
 
 		// benchmark
-		long start = System.currentTimeMillis();
-		for (int frame = 0; frame < 60; frame++) {
-
-			c = null;
-			try {
-				c = mSurfaceHolder.lockCanvas();
-				synchronized (mSurfaceHolder) {
-					c.drawARGB(0x00, frame, frame, frame);
-				}
-			} finally {
-				if (c != null) {
-					mSurfaceHolder.unlockCanvasAndPost(c);
-				}
-			}
-
-		}
-		float fps = (float)(1f / (((System.currentTimeMillis() - start) / 1000f) / 60f));
-		Log.d(TAG, String.format("%f fps", fps));
-		//
+		/*
+		 * long start = System.currentTimeMillis(); for (int frame = 0; frame < 60; frame++) {
+		 * 
+		 * c = null; try { c = mSurfaceHolder.lockCanvas(); synchronized (mSurfaceHolder) { c.drawARGB(0x00, frame, frame, frame); }
+		 * } finally { if (c != null) { mSurfaceHolder.unlockCanvasAndPost(c); } }
+		 * 
+		 * } float fps = (float)(1f / (((System.currentTimeMillis() - start) / 1000f) / 60f)); Log.d(TAG, String.format("%f fps",
+		 * fps)); //
+		 */
 
 		WonderSwan.audio.play();
+
+		lastFrame = SystemClock.uptimeMillis();
 
 		while (mIsRunning) {
 
@@ -98,12 +91,19 @@ public class EmuThread extends Thread {
 			} else {
 
 				thisFrame = SystemClock.uptimeMillis();
-				boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
+				//boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
 
+				boolean skip = false;
 				render(skip);
 
-				averageFrameTime = (int)(averageFrameTime + (thisFrame - lastFrame)) / 2;
+				int frametime = (int)(averageFrameTime + (thisFrame - lastFrame));
+
+				averageFrameTime = frametime / 2;
 				lastFrame = thisFrame;
+
+				if (frametime > worstFrameTime) {
+					worstFrameTime = frametime;
+				}
 
 				if (averageFrameTime < TARGETFRAMETIME) {
 					SystemClock.sleep((int)(TARGETFRAMETIME - averageFrameTime));
@@ -158,14 +158,10 @@ public class EmuThread extends Thread {
 		mIsRunning = false;
 	}
 
-	public void setScale (Matrix scale) {
-		this.scale = scale;
-	}
-
 	private String fpsString = new String();
 
 	private void updateFPSString () {
-		fpsString = String.format("%03d fps", Math.round(getFps()));
+		fpsString = String.format("%d: %03d fps", worstFrameTime, Math.round(getFps()));
 	}
 
 	public float getFps () {
@@ -174,6 +170,10 @@ public class EmuThread extends Thread {
 
 	public Paint getPaint () {
 		return paint;
+	}
+
+	public Matrix getMatrix () {
+		return scale;
 	}
 
 	public void showFps (boolean show) {

@@ -53,6 +53,8 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	public EmuView (Context context, AttributeSet attrs) {
 		super(context, attrs);
 
+		setZOrderOnTop(true); // FIXME any advantage to this?
+
 		SurfaceHolder holder = this.getHolder();
 		holder.addCallback(this);
 
@@ -69,11 +71,12 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 		}
 
+		Matrix scale = mThread.getMatrix();
+		
 		scale.reset();
 		scale.postScale(postscale, postscale);
 		scale.postTranslate((width - (WonderSwan.SCREEN_WIDTH * postscale)) / 2, 0);
 
-		mThread.setScale(scale);
 	}
 
 	@Override
