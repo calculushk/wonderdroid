@@ -94,7 +94,7 @@ public class EmuThread extends Thread {
 				//boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
 
 				boolean skip = false;
-				render(skip);
+				render(c, mSurfaceHolder, framebuffer, scale, paint, textPaint, skip, showFps, fpsString);
 
 				int frametime = (int)(averageFrameTime + (thisFrame - lastFrame));
 
@@ -124,15 +124,15 @@ public class EmuThread extends Thread {
 
 	}
 
-	private void render (boolean frameskip) {
+	private static void render (Canvas c, SurfaceHolder sh, Bitmap framebuffer, Matrix scale, Paint paint, Paint textPaint, boolean frameskip, boolean showFps, String fpsString) {
 		WonderSwan.execute_frame(frameskip);
 		if (!frameskip) {
 			framebuffer.copyPixelsFromBuffer(WonderSwan.framebuffer);
 
 			c = null;
 			try {
-				c = mSurfaceHolder.lockCanvas();
-				synchronized (mSurfaceHolder) {
+				c = sh.lockCanvas();
+				synchronized (sh) {
 					c.drawBitmap(framebuffer, scale, paint);
 					if (showFps) {
 						c.drawText(fpsString, 30, 50, textPaint);
@@ -140,7 +140,7 @@ public class EmuThread extends Thread {
 				}
 			} finally {
 				if (c != null) {
-					mSurfaceHolder.unlockCanvasAndPost(c);
+					sh.unlockCanvasAndPost(c);
 				}
 			}
 		}

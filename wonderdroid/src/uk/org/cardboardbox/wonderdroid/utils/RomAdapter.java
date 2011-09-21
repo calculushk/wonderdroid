@@ -1,3 +1,4 @@
+
 package uk.org.cardboardbox.wonderdroid.utils;
 
 import java.io.File;
@@ -19,14 +20,13 @@ import android.widget.BaseAdapter;
 public class RomAdapter extends BaseAdapter {
 
 	private static final String TAG = RomAdapter.class.getSimpleName();
-	
+
 	private HashMap<Integer, WonderSwan.Header> mHeaderCache = new HashMap<Integer, WonderSwan.Header>();
+	private HashMap<String, SoftReference<Bitmap>> mSplashCache = new HashMap<String, SoftReference<Bitmap>>();
 
 	private AssetManager mAssetManager;
 	private File mRomDir;
 	private File[] mRoms;
-
-	private HashMap<String, SoftReference<Bitmap>> mSplashCache = new HashMap<String, SoftReference<Bitmap>>();
 
 	public RomAdapter (String romdir, AssetManager assetManager) {
 		mAssetManager = assetManager;

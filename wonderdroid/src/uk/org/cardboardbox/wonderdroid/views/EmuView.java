@@ -44,7 +44,6 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	};
 
 	private EmuThread mThread;
-	private final Matrix scale = new Matrix();
 
 	public EmuView (Context context) {
 		this(context, null);
@@ -72,7 +71,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 
 		Matrix scale = mThread.getMatrix();
-		
+
 		scale.reset();
 		scale.postScale(postscale, postscale);
 		scale.postTranslate((width - (WonderSwan.SCREEN_WIDTH * postscale)) / 2, 0);
