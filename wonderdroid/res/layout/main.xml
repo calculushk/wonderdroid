@@ -52,10 +52,5 @@
 		android:layout_height="wrap_content" android:layout_width="wrap_content"
 		android:layout_centerInParent="true" />
 
-	<TextView android:id="@+id/fpscounter" android:layout_height="wrap_content"
-		android:layout_width="wrap_content" android:textColor="#fff"
-		android:textSize="18sp" android:textStyle="bold" android:shadowColor="#555"
-		android:shadowDx="1" android:shadowDy="1" android:shadowRadius="1"
-		android:text="0" android:layout_alignParentRight="true" />
 
 </RelativeLayout>

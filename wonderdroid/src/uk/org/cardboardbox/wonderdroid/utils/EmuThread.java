@@ -12,23 +12,35 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
-@SuppressWarnings("unused")
 public class EmuThread extends Thread {
 
 	private static final boolean debug = false;
 	private static final String TAG = EmuThread.class.getSimpleName();
-	private static final float TARGETFRAMETIME = 1000 / 71;
-	private int mustSkipFrames = 5;
+	private static final int TARGETFRAMETIME = 1000 / 71;
+	private static final int mustSkipFrames = 5;
 	private boolean mIsRunning = false;
 	private boolean isPaused = false;
 
+	private boolean showFps = false;
+
 	private final Bitmap framebuffer;
 	private final Paint paint = new Paint();
+	private final Paint textPaint = new Paint();
 	private SurfaceHolder mSurfaceHolder;
 	private Matrix scale;
+	private Canvas c;
+
+	private short framecounter = 1; // dont skip the first frame
+	private long thisFrame;
+	private long lastFrame;
+	private int averageFrameTime = TARGETFRAMETIME;
 
 	public EmuThread () {
 		framebuffer = Bitmap.createBitmap(WonderSwan.SCREEN_WIDTH, WonderSwan.SCREEN_HEIGHT, Bitmap.Config.RGB_565);
+		textPaint.setColor(0xFFFFFFFF);
+		textPaint.setTextSize(35);
+		textPaint.setShadowLayer(3, 1, 1, 0x99000000);
+		textPaint.setAntiAlias(true);
 	}
 
 	public void setSurfaceHolder (SurfaceHolder sh) {
@@ -46,13 +58,6 @@ public class EmuThread extends Thread {
 			WonderSwan.audio.play();
 		}
 	}
-
-	private Canvas c;
-
-	private int framecounter;
-	private long thisFrame;
-	private long lastFrame;
-	private long averageFrameTime = 1;
 
 	@Override
 	public void run () {
@@ -92,18 +97,23 @@ public class EmuThread extends Thread {
 
 			} else {
 
-				render(framecounter % mustSkipFrames == 0 || averageFrameTime > TARGETFRAMETIME);
 				thisFrame = SystemClock.uptimeMillis();
-				averageFrameTime = (averageFrameTime + (thisFrame - lastFrame)) / 2;
+				boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
+
+				render(skip);
+
+				averageFrameTime = (int)(averageFrameTime + (thisFrame - lastFrame)) / 2;
 				lastFrame = thisFrame;
 
 				if (averageFrameTime < TARGETFRAMETIME) {
 					SystemClock.sleep((int)(TARGETFRAMETIME - averageFrameTime));
+					updateFPSString();
 				}
+
+				framecounter++;
 
 			}
 
-			framecounter++;
 		}
 
 		WonderSwan.audio.stop();
@@ -124,6 +134,9 @@ public class EmuThread extends Thread {
 				c = mSurfaceHolder.lockCanvas();
 				synchronized (mSurfaceHolder) {
 					c.drawBitmap(framebuffer, scale, paint);
+					if (showFps) {
+						c.drawText(fpsString, 30, 50, textPaint);
+					}
 				}
 			} finally {
 				if (c != null) {
@@ -131,7 +144,6 @@ public class EmuThread extends Thread {
 				}
 			}
 		}
-		//WonderSwan.execute_vblank();
 	}
 
 	public boolean isRunning () {
@@ -150,11 +162,21 @@ public class EmuThread extends Thread {
 		this.scale = scale;
 	}
 
+	private String fpsString = new String();
+
+	private void updateFPSString () {
+		fpsString = String.format("%03d fps", Math.round(getFps()));
+	}
+
 	public float getFps () {
 		return 1000 / averageFrameTime;
 	}
 
 	public Paint getPaint () {
 		return paint;
+	}
+
+	public void showFps (boolean show) {
+		showFps = show;
 	}
 }

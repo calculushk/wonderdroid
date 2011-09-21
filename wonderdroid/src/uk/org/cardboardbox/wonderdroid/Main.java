@@ -13,7 +13,6 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -30,8 +29,6 @@ public class Main extends Activity {
 
 	public static final String ROMPATH = "rompath";
 
-	private TextView fpscounter;
-	private Handler handler;
 
 	private static int[] buttonIds = {R.id.button_y1, R.id.button_y2, R.id.button_y3, R.id.button_y4, R.id.button_x1,
 		R.id.button_x2, R.id.button_x3, R.id.button_x4, R.id.button_a, R.id.button_b, R.id.button_start};
@@ -61,8 +58,9 @@ public class Main extends Activity {
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		handler = new Handler();
+		
+		view = new EmuView(this);
+		setContentView(view);
 
 		mRomPath = this.getIntent().getExtras().getString(ROMPATH);
 
@@ -76,10 +74,8 @@ public class Main extends Activity {
 			throw new RuntimeException();
 		}
 
-		setContentView(R.layout.main);
-
-		fpscounter = (TextView)findViewById(R.id.fpscounter);
-
+		
+		/*
 		for (int button : buttonIds) {
 
 			((Button)this.findViewById(button)).setOnTouchListener(new OnTouchListener() {
@@ -99,13 +95,13 @@ public class Main extends Activity {
 
 			});
 
-		}
+		}*/
 
-		view = (EmuView)this.findViewById(R.id.gameview);
+		
 
 		parseKeys();
-		mControlsVisible = true;
-		toggleControls();
+		//mControlsVisible = true;
+		//toggleControls();
 
 		mPB = (ProgressBar)this.findViewById(R.id.romloadprogressbar);
 
@@ -204,7 +200,7 @@ public class Main extends Activity {
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-		fpscounter.setVisibility(prefs.getBoolean("emufpscounter", false) ? View.VISIBLE : View.GONE);
+		view.getThread().showFps(prefs.getBoolean("emufpscounter", false));
 	}
 
 	private void parseKeys () {
@@ -325,24 +321,14 @@ public class Main extends Activity {
 	public void onPause () {
 		super.onPause();
 		view.stop();
-		handler.removeCallbacks(fpsUpdater);
 		WonderSwan.storebackupdata(mCartMem.getAbsolutePath());
 	}
-
-	Runnable fpsUpdater = new Runnable() {
-		@Override
-		public void run () {
-			fpscounter.setText(Float.toString(view.getFps()));
-			handler.postDelayed(this, 500);
-		}
-	};
 
 	@Override
 	protected void onResume () {
 		super.onResume();
 		parseEmuOptions();
 		parseKeys();
-		fpsUpdater.run();
 	}
 
 }

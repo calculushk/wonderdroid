@@ -30,22 +30,21 @@ public final class R {
         public static final int button_y2=0x7f080003;
         public static final int button_y3=0x7f080004;
         public static final int button_y4=0x7f080002;
-        public static final int fpscounter=0x7f08000d;
         public static final int gameview=0x7f080000;
-        public static final int group_emucntrl=0x7f080013;
-        public static final int main_exitmi=0x7f080016;
-        public static final int main_pausemi=0x7f080014;
-        public static final int main_prefsmi=0x7f080017;
-        public static final int main_resetmi=0x7f080015;
-        public static final int main_togcntrlmi=0x7f080018;
+        public static final int group_emucntrl=0x7f080012;
+        public static final int main_exitmi=0x7f080015;
+        public static final int main_pausemi=0x7f080013;
+        public static final int main_prefsmi=0x7f080016;
+        public static final int main_resetmi=0x7f080014;
+        public static final int main_togcntrlmi=0x7f080017;
         public static final int romloadprogressbar=0x7f08000c;
-        public static final int select_bg1=0x7f08000e;
-        public static final int select_bg2=0x7f08000f;
-        public static final int select_exitmi=0x7f080019;
-        public static final int select_gallery=0x7f080010;
-        public static final int select_noroms=0x7f080011;
-        public static final int select_prefsmi=0x7f08001a;
-        public static final int select_screenformat=0x7f080012;
+        public static final int select_bg1=0x7f08000d;
+        public static final int select_bg2=0x7f08000e;
+        public static final int select_exitmi=0x7f080018;
+        public static final int select_gallery=0x7f08000f;
+        public static final int select_noroms=0x7f080010;
+        public static final int select_prefsmi=0x7f080019;
+        public static final int select_screenformat=0x7f080011;
     }
     public static final class layout {
         public static final int main=0x7f030000;

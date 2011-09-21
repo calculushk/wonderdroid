@@ -17,6 +17,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	private final static String TAG = EmuView.class.getSimpleName();
 	@SuppressWarnings("unused")
 	private final static boolean debug = true;
+	private boolean mPaused = false;
 
 	public static enum Buttons {
 		START(R.id.button_start), A(R.id.button_a), B(R.id.button_b), X1(R.id.button_x1), X2(R.id.button_x2), X3(R.id.button_x3), X4(
@@ -44,6 +45,10 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 	private EmuThread mThread;
 	private final Matrix scale = new Matrix();
+
+	public EmuView (Context context) {
+		this(context, null);
+	}
 
 	public EmuView (Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -85,10 +90,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		Log.d(TAG, "emulation started");
 		mThread.setRunning();
 		mThread.start();
-
 	}
-
-	private boolean mPaused = false;
 
 	public void togglepause () {
 		if (mPaused) {
@@ -122,10 +124,6 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 
 		}
-	}
-
-	public float getFps () {
-		return mThread.getFps();
 	}
 
 	public static void changeButton (Buttons which, boolean newstate) {
@@ -164,19 +162,22 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			WonderSwan.mButtonY4 = newstate;
 			break;
 		}
-		
+
 		WonderSwan.buttonsDirty = true;
-		
+
 	}
 
 	public void setButton (Buttons which) {
-
 		changeButton(which, true);
-
 	}
 
 	public void clearButton (Buttons which) {
 		changeButton(which, false);
 
 	}
+
+	public EmuThread getThread () {
+		return mThread;
+	}
+
 }
