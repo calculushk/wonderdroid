@@ -73,6 +73,7 @@ public final class R {
         public static final int vertical=0x7f050005;
     }
     public static final class style {
+        public static final int Theme_NoBackground=0x7f060001;
         public static final int button=0x7f060000;
     }
 }

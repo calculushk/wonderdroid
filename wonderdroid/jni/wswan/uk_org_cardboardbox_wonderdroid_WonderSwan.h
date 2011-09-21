@@ -12,7 +12,7 @@ extern "C" {
 #undef uk_org_cardboardbox_wonderdroid_WonderSwan_SCREEN_HEIGHT
 #define uk_org_cardboardbox_wonderdroid_WonderSwan_SCREEN_HEIGHT 144L
 #undef uk_org_cardboardbox_wonderdroid_WonderSwan_audiobufferlen
-#define uk_org_cardboardbox_wonderdroid_WonderSwan_audiobufferlen 750L
+#define uk_org_cardboardbox_wonderdroid_WonderSwan_audiobufferlen 4000L
 #undef uk_org_cardboardbox_wonderdroid_WonderSwan_channelconf
 #define uk_org_cardboardbox_wonderdroid_WonderSwan_channelconf 3L
 #undef uk_org_cardboardbox_wonderdroid_WonderSwan_encoding
@@ -42,14 +42,6 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_reset
  */
 JNIEXPORT jint JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan__1execute_1frame
   (JNIEnv *, jclass, jboolean, jobject, jshortArray);
-
-/*
- * Class:     uk_org_cardboardbox_wonderdroid_WonderSwan
- * Method:    execute_vblank
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_execute_1vblank
-  (JNIEnv *, jclass);
 
 /*
  * Class:     uk_org_cardboardbox_wonderdroid_WonderSwan

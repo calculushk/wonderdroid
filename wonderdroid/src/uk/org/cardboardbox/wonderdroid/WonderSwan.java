@@ -69,8 +69,6 @@ public class WonderSwan {
 
 	static private native int _execute_frame (boolean skipframe, ShortBuffer framebuffer, short[] audiobuffer);
 
-	static public native void execute_vblank ();
-
 	static public native void updatebuttons (boolean y1, boolean y2, boolean y3, boolean y4, boolean x1, boolean x2, boolean x3,
 		boolean x4, boolean a, boolean b, boolean start);
 

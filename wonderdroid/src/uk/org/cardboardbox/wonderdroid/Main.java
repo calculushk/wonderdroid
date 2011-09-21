@@ -207,7 +207,7 @@ public class Main extends Activity {
 		fpscounter.setVisibility(prefs.getBoolean("emufpscounter", false) ? View.VISIBLE : View.GONE);
 	}
 
-	void parseKeys () {
+	private void parseKeys () {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		mButtonStartCode = prefs.getInt("hwcontrolStart", 0);
@@ -341,6 +341,7 @@ public class Main extends Activity {
 	protected void onResume () {
 		super.onResume();
 		parseEmuOptions();
+		parseKeys();
 		fpsUpdater.run();
 	}
 

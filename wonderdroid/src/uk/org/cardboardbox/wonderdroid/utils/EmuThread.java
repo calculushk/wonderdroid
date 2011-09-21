@@ -93,16 +93,13 @@ public class EmuThread extends Thread {
 			} else {
 
 				render(framecounter % mustSkipFrames == 0 || averageFrameTime > TARGETFRAMETIME);
-				
-				if (averageFrameTime < TARGETFRAMETIME) {
-					SystemClock.sleep((int)(TARGETFRAMETIME - averageFrameTime));
-				}
-				
 				thisFrame = SystemClock.uptimeMillis();
 				averageFrameTime = (averageFrameTime + (thisFrame - lastFrame)) / 2;
 				lastFrame = thisFrame;
 
-				
+				if (averageFrameTime < TARGETFRAMETIME) {
+					SystemClock.sleep((int)(TARGETFRAMETIME - averageFrameTime));
+				}
 
 			}
 
