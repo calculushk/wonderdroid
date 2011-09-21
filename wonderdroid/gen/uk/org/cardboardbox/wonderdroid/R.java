@@ -14,37 +14,38 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int icon=0x7f020000;
-        public static final int unknownrom=0x7f020001;
+        public static final int button=0x7f020000;
+        public static final int icon=0x7f020001;
+        public static final int unknownrom=0x7f020002;
     }
     public static final class id {
-        public static final int button_a=0x7f07000a;
-        public static final int button_b=0x7f07000b;
-        public static final int button_start=0x7f070009;
-        public static final int button_x1=0x7f070008;
-        public static final int button_x2=0x7f070007;
-        public static final int button_x3=0x7f070005;
-        public static final int button_x4=0x7f070006;
-        public static final int button_y1=0x7f070001;
-        public static final int button_y2=0x7f070003;
-        public static final int button_y3=0x7f070004;
-        public static final int button_y4=0x7f070002;
-        public static final int fpscounter=0x7f07000d;
-        public static final int gameview=0x7f070000;
-        public static final int group_emucntrl=0x7f070013;
-        public static final int main_exitmi=0x7f070016;
-        public static final int main_pausemi=0x7f070014;
-        public static final int main_prefsmi=0x7f070017;
-        public static final int main_resetmi=0x7f070015;
-        public static final int main_togcntrlmi=0x7f070018;
-        public static final int romloadprogressbar=0x7f07000c;
-        public static final int select_bg1=0x7f07000e;
-        public static final int select_bg2=0x7f07000f;
-        public static final int select_exitmi=0x7f070019;
-        public static final int select_gallery=0x7f070010;
-        public static final int select_noroms=0x7f070011;
-        public static final int select_prefsmi=0x7f07001a;
-        public static final int select_screenformat=0x7f070012;
+        public static final int button_a=0x7f08000a;
+        public static final int button_b=0x7f08000b;
+        public static final int button_start=0x7f080009;
+        public static final int button_x1=0x7f080008;
+        public static final int button_x2=0x7f080007;
+        public static final int button_x3=0x7f080005;
+        public static final int button_x4=0x7f080006;
+        public static final int button_y1=0x7f080001;
+        public static final int button_y2=0x7f080003;
+        public static final int button_y3=0x7f080004;
+        public static final int button_y4=0x7f080002;
+        public static final int fpscounter=0x7f08000d;
+        public static final int gameview=0x7f080000;
+        public static final int group_emucntrl=0x7f080013;
+        public static final int main_exitmi=0x7f080016;
+        public static final int main_pausemi=0x7f080014;
+        public static final int main_prefsmi=0x7f080017;
+        public static final int main_resetmi=0x7f080015;
+        public static final int main_togcntrlmi=0x7f080018;
+        public static final int romloadprogressbar=0x7f08000c;
+        public static final int select_bg1=0x7f08000e;
+        public static final int select_bg2=0x7f08000f;
+        public static final int select_exitmi=0x7f080019;
+        public static final int select_gallery=0x7f080010;
+        public static final int select_noroms=0x7f080011;
+        public static final int select_prefsmi=0x7f08001a;
+        public static final int select_screenformat=0x7f080012;
     }
     public static final class layout {
         public static final int main=0x7f030000;
@@ -53,8 +54,8 @@ public final class R {
         public static final int select=0x7f030003;
     }
     public static final class menu {
-        public static final int menu_main=0x7f060000;
-        public static final int menu_select=0x7f060001;
+        public static final int menu_main=0x7f070000;
+        public static final int menu_select=0x7f070001;
     }
     public static final class string {
         public static final int app_name=0x7f050000;
@@ -70,5 +71,8 @@ public final class R {
         public static final int selectgame=0x7f050007;
         public static final int togglescreencontrols=0x7f05000a;
         public static final int vertical=0x7f050005;
+    }
+    public static final class style {
+        public static final int button=0x7f060000;
     }
 }

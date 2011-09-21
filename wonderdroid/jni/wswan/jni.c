@@ -175,6 +175,9 @@ JNIEXPORT jint JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan__1execute
 	while(wsExecuteLine(fb, skip) < 144){};
 	jint samples = (jint) wswan_soundflush(ab);
 	(*env)->ReleaseShortArrayElements(env, audiobuffer, ab, 0);
+
+	while(wsExecuteLine(NULL, FALSE) != 0){}
+
 	return samples;
 	//
 }
@@ -248,7 +251,7 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_updatebut
 
 JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_execute_1vblank
   (JNIEnv *env, jclass obj){
-	while(wsExecuteLine(NULL, FALSE) != 0){}
+	//while(wsExecuteLine(NULL, FALSE) != 0){}
 }
 
 JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_loadbackupdata

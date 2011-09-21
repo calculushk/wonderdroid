@@ -17,7 +17,8 @@ public class EmuThread extends Thread {
 
 	private static final boolean debug = false;
 	private static final String TAG = EmuThread.class.getSimpleName();
-	private static final float TARGETFRAMETIME = 1000 / 60;
+	private static final float TARGETFRAMETIME = 1000 / 71;
+	private int mustSkipFrames = 5;
 	private boolean mIsRunning = false;
 	private boolean isPaused = false;
 
@@ -48,6 +49,7 @@ public class EmuThread extends Thread {
 
 	private Canvas c;
 
+	private int framecounter;
 	private long thisFrame;
 	private long lastFrame;
 	private long averageFrameTime = 1;
@@ -59,6 +61,27 @@ public class EmuThread extends Thread {
 			SystemClock.sleep(20);
 		}
 
+		// benchmark
+		long start = System.currentTimeMillis();
+		for (int frame = 0; frame < 60; frame++) {
+
+			c = null;
+			try {
+				c = mSurfaceHolder.lockCanvas();
+				synchronized (mSurfaceHolder) {
+					c.drawARGB(0x00, frame, frame, frame);
+				}
+			} finally {
+				if (c != null) {
+					mSurfaceHolder.unlockCanvasAndPost(c);
+				}
+			}
+
+		}
+		float fps = (float)(1f / (((System.currentTimeMillis() - start) / 1000f) / 60f));
+		Log.d(TAG, String.format("%f fps", fps));
+		//
+
 		WonderSwan.audio.play();
 
 		while (mIsRunning) {
@@ -69,16 +92,21 @@ public class EmuThread extends Thread {
 
 			} else {
 
-				render(!(averageFrameTime <= TARGETFRAMETIME));
+				render(framecounter % mustSkipFrames == 0 || averageFrameTime > TARGETFRAMETIME);
+				
+				if (averageFrameTime < TARGETFRAMETIME) {
+					SystemClock.sleep((int)(TARGETFRAMETIME - averageFrameTime));
+				}
+				
 				thisFrame = SystemClock.uptimeMillis();
 				averageFrameTime = (averageFrameTime + (thisFrame - lastFrame)) / 2;
 				lastFrame = thisFrame;
 
-				if (averageFrameTime < TARGETFRAMETIME) {
-					SystemClock.sleep((int)(TARGETFRAMETIME - averageFrameTime) / 2);
-				}
+				
 
 			}
+
+			framecounter++;
 		}
 
 		WonderSwan.audio.stop();
@@ -106,7 +134,7 @@ public class EmuThread extends Thread {
 				}
 			}
 		}
-		WonderSwan.execute_vblank();
+		//WonderSwan.execute_vblank();
 	}
 
 	public boolean isRunning () {
