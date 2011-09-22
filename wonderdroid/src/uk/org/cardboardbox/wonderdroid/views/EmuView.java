@@ -7,12 +7,11 @@ import uk.org.cardboardbox.wonderdroid.WonderSwan.Buttons;
 import uk.org.cardboardbox.wonderdroid.utils.EmuThread;
 import android.content.Context;
 import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
 
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -111,6 +110,8 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 		}
 
+		mThread.onResize(width, height);
+		
 		Matrix scale = mThread.getMatrix();
 
 		scale.reset();
@@ -223,4 +224,51 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		return mThread;
 	}
 
+	GradientDrawable primaryButton;
+	GradientDrawable secondaryButton;
+
+	@Override
+	public boolean onTouchEvent (MotionEvent event) {
+
+		int action = event.getAction();
+		float x = event.getX();
+		float y = event.getY();
+
+		if (event.getPointerCount() != 1) {
+			return true;
+		}
+
+		switch (action) {
+		case MotionEvent.ACTION_DOWN:
+			if ((primaryButton = checkButtons(event.getX(), event.getY())) != null) {
+				Log.d(TAG, "down");
+			}
+			break;
+		case MotionEvent.ACTION_UP:
+			primaryButton = null;
+			Log.d(TAG, "up");
+			break;
+		}
+		// else if(action == MotionEvent.ACTION_MOVE){
+		// if(primaryButton != null){
+		// if(!primaryButton.getBounds().contains((int) x, (int)y)){
+		// primaryButton = null;
+		// Log.d(TAG, "out");
+		// //
+		// }
+		// }
+		// }
+
+		return true;
+	}
+
+	private GradientDrawable checkButtons (float x, float y) {
+		for (GradientDrawable button : buttons) {
+			if (button.getBounds().contains((int)x, (int)y)) {
+				return button;
+			}
+		}
+
+		return null;
+	}
 }
