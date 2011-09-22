@@ -28,7 +28,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	private boolean mPaused = false;
 
 	private EmuThread mThread;
-	private String[] buttonStrings = new String[] {"Y1", "Y4", "Y2", "Y3", "X1", "X4", "X2", "X3", "A", "B", "START"};
+	private String[] buttonStrings = new String[] {"Y1", "Y4", "Y2", "Y3", "X3", "X4", "X2", "X1", "A", "B", "START"};
 	private GradientDrawable[] buttons;
 
 	public EmuView (Context context) {
@@ -282,7 +282,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		if (buttons != null) {
 			Paint textPaint = new Paint();
 			textPaint.setColor(0xFFFFFFFF);
-			textPaint.setTextSize(height/30);
+			textPaint.setTextSize(height / 30);
 			textPaint.setShadowLayer(3, 1, 1, 0x99000000);
 			textPaint.setAntiAlias(true);
 			Bitmap controls = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -294,7 +294,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 				buttons[i].draw(canvas);
 				canvas.drawText(strings[i], (rect.left + rect.width() / 2) - textLen,
-					(rect.top + rect.height() / 2) + (textPaint.getTextSize() /2 ), textPaint);
+					(rect.top + rect.height() / 2) + (textPaint.getTextSize() / 2), textPaint);
 			}
 			return controls;
 		}
