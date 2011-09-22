@@ -6,7 +6,12 @@ import uk.org.cardboardbox.wonderdroid.WonderSwan;
 import uk.org.cardboardbox.wonderdroid.WonderSwan.Buttons;
 import uk.org.cardboardbox.wonderdroid.utils.EmuThread;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 
 import android.util.AttributeSet;
@@ -23,7 +28,8 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	private boolean mPaused = false;
 
 	private EmuThread mThread;
-	GradientDrawable[] buttons;
+	private String[] buttonStrings = new String[] {"Y1", "Y4", "Y2", "Y3", "X1", "X4", "X2", "X3", "A", "B", "START"};
+	private GradientDrawable[] buttons;
 
 	public EmuView (Context context) {
 		this(context, null);
@@ -44,7 +50,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		holder.addCallback(this);
 
 		mThread = new EmuThread();
-		mThread.setOverlays(buttons);
+
 	}
 
 	@Override
@@ -110,8 +116,8 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 		}
 
-		mThread.onResize(width, height);
-		
+		mThread.setOverlay(renderControlsLayer(width, height, buttons, buttonStrings));
+
 		Matrix scale = mThread.getMatrix();
 
 		scale.reset();
@@ -267,6 +273,30 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			if (button.getBounds().contains((int)x, (int)y)) {
 				return button;
 			}
+		}
+
+		return null;
+	}
+
+	private static Bitmap renderControlsLayer (int width, int height, Drawable[] buttons, String[] strings) {
+		if (buttons != null) {
+			Paint textPaint = new Paint();
+			textPaint.setColor(0xFFFFFFFF);
+			textPaint.setTextSize(20);
+			textPaint.setShadowLayer(3, 1, 1, 0x99000000);
+			textPaint.setAntiAlias(true);
+			Bitmap controls = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+			Canvas canvas = new Canvas(controls);
+
+			for (int i = 0; i < buttons.length; i++) {
+				Rect rect = buttons[i].getBounds();
+				float textLen = (textPaint.measureText(strings[i])) / 2;
+
+				buttons[i].draw(canvas);
+				canvas.drawText(strings[i], (rect.left + rect.width() / 2) - textLen,
+					(rect.bottom + rect.height() / 2) - (textPaint.getTextSize() / 2), textPaint);
+			}
+			return controls;
 		}
 
 		return null;
