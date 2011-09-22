@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -128,6 +129,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceCreated (SurfaceHolder holder) {
+		holder.setFormat(PixelFormat.RGB_565);
 		mThread.setSurfaceHolder(holder);
 	}
 
@@ -254,6 +256,14 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			primaryButton = null;
 			Log.d(TAG, "up");
 			break;
+		case MotionEvent.ACTION_POINTER_DOWN:
+			Log.d(TAG, "sdown");
+			break;
+
+		case MotionEvent.ACTION_POINTER_UP:
+			Log.d(TAG, "sup");
+			break;
+
 		}
 		// else if(action == MotionEvent.ACTION_MOVE){
 		// if(primaryButton != null){

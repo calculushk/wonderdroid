@@ -70,6 +70,19 @@ public class EmuThread extends Thread {
 			SystemClock.sleep(20);
 		}
 
+		c = null;
+		try {
+			c = mSurfaceHolder.lockCanvas();
+			synchronized (mSurfaceHolder) {
+
+				c.drawARGB(0xff, 0, 0, 0);
+			}
+		} finally {
+			if (c != null) {
+				mSurfaceHolder.unlockCanvasAndPost(c);
+			}
+		}
+
 		// benchmark
 		/*
 		 * long start = System.currentTimeMillis(); for (int frame = 0; frame < 60; frame++) {
@@ -94,9 +107,9 @@ public class EmuThread extends Thread {
 			} else {
 
 				thisFrame = SystemClock.uptimeMillis();
-				// boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
+				boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
 
-				boolean skip = false;
+				//boolean skip = false;
 				render(c, mSurfaceHolder, framebuffer, overlay, scale, paint, textPaint, skip, showFps, fpsString);
 
 				int frametime = (int)(averageFrameTime + (thisFrame - lastFrame));
@@ -108,7 +121,7 @@ public class EmuThread extends Thread {
 					worstFrameTime = frametime;
 				}
 
-				if (averageFrameTime < TARGETFRAMETIME) {
+				if (frametime < TARGETFRAMETIME) {
 					SystemClock.sleep((int)(TARGETFRAMETIME - averageFrameTime));
 					updateFPSString();
 				}
@@ -120,7 +133,7 @@ public class EmuThread extends Thread {
 		}
 
 		WonderSwan.audio.stop();
-
+		framebuffer.recycle();
 		synchronized (this) {
 			notifyAll();
 		}
@@ -137,6 +150,7 @@ public class EmuThread extends Thread {
 			try {
 				c = sh.lockCanvas();
 				synchronized (sh) {
+
 					c.drawBitmap(framebuffer, scale, paint);
 
 					if (overlay != null) {
