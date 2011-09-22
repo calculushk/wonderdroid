@@ -25,6 +25,10 @@ public class WonderSwan {
 	static final int audiobufferlen = 4000;
 	static public short[] audiobuffer = new short[audiobufferlen];
 
+	public static enum Buttons {
+		START, A, B, X1, X2, X3, X4, Y1, Y2, Y3, Y4;
+	};
+	
 	public static boolean mButtonStart = false;
 	public static boolean mButtonA = false;
 	public static boolean mButtonB = false;
@@ -64,7 +68,7 @@ public class WonderSwan {
 		}
 
 		samples = _execute_frame(skipframe, framebuffer, audiobuffer);
-		audio.write(audiobuffer, 0, samples * 2);
+		//audio.write(audiobuffer, 0, samples * 2);
 	}
 
 	static private native int _execute_frame (boolean skipframe, ShortBuffer framebuffer, short[] audiobuffer);

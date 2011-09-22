@@ -3,9 +3,13 @@ package uk.org.cardboardbox.wonderdroid.views;
 
 import uk.org.cardboardbox.wonderdroid.R;
 import uk.org.cardboardbox.wonderdroid.WonderSwan;
+import uk.org.cardboardbox.wonderdroid.WonderSwan.Buttons;
 import uk.org.cardboardbox.wonderdroid.utils.EmuThread;
 import android.content.Context;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 
 import android.util.AttributeSet;
 import android.util.Log;
@@ -19,31 +23,8 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	private final static boolean debug = true;
 	private boolean mPaused = false;
 
-	public static enum Buttons {
-		START(R.id.button_start), A(R.id.button_a), B(R.id.button_b), X1(R.id.button_x1), X2(R.id.button_x2), X3(R.id.button_x3), X4(
-			R.id.button_x4), Y1(R.id.button_y1), Y2(R.id.button_y2), Y3(R.id.button_y3), Y4(R.id.button_y4);
-
-		private final int id;
-
-		Buttons (int id) {
-			this.id = id;
-		}
-
-		public int getId () {
-			return id;
-		}
-
-		public static Buttons findForId (int id) {
-			for (Buttons button : Buttons.values()) {
-				if (button.getId() == id) {
-					return button;
-				}
-			}
-			return null;
-		}
-	};
-
 	private EmuThread mThread;
+	GradientDrawable[] buttons;
 
 	public EmuView (Context context) {
 		this(context, null);
@@ -52,16 +33,76 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	public EmuView (Context context, AttributeSet attrs) {
 		super(context, attrs);
 
+		buttons = new GradientDrawable[11];
+
+		for (int i = 0; i < buttons.length; i++) {
+			buttons[i] = (GradientDrawable)getResources().getDrawable(R.drawable.button);
+		}
+
 		setZOrderOnTop(true); // FIXME any advantage to this?
 
 		SurfaceHolder holder = this.getHolder();
 		holder.addCallback(this);
 
 		mThread = new EmuThread();
+		mThread.setOverlays(buttons);
 	}
 
 	@Override
 	public void surfaceChanged (SurfaceHolder holder, int format, int width, int height) {
+		int spacing = height / 50;
+		int buttonsize = (int)(height / 6.7);
+		for (int i = 0; i < buttons.length; i++) {
+			buttons[i].setSize(buttonsize, buttonsize);
+
+			int updownleft = buttonsize / 2 + (spacing / 2);
+			int updownright = buttonsize + (buttonsize / 2) + (spacing / 2);
+			int bottomrowtop = height - buttonsize;
+
+			switch (i) {
+			// Y
+			case 0:
+				buttons[i].setBounds(updownleft, 0, updownright, buttonsize);
+				break;
+			case 1:
+				buttons[i].setBounds(0, buttonsize + spacing, buttonsize, (buttonsize * 2) + spacing);
+				break;
+			case 2:
+				buttons[i].setBounds(buttonsize + spacing, buttonsize + spacing, (buttonsize * 2) + spacing, (buttonsize * 2)
+					+ spacing);
+				break;
+			case 3:
+				buttons[i].setBounds(updownleft, (buttonsize * 2) + (spacing * 2), updownright, (buttonsize * 3) + (spacing * 2));
+				break;
+			// X
+			case 4:
+				buttons[i].setBounds(updownleft, height - buttonsize, updownright, height);
+				break;
+			case 5:
+				buttons[i].setBounds(0, height - (buttonsize * 2) - spacing, buttonsize, height - buttonsize - spacing);
+				break;
+			case 6:
+				buttons[i].setBounds(buttonsize + spacing, height - (buttonsize * 2) - spacing, (buttonsize * 2) + spacing, height
+					- buttonsize - spacing);
+				break;
+			case 7:
+				buttons[i].setBounds(updownleft, (height - (buttonsize * 3)) - (2 * spacing), updownright,
+					(height - (buttonsize * 2)) - (2 * spacing));
+				break;
+			// A,B
+			case 8:
+				buttons[i].setBounds(width - (buttonsize * 2) - spacing, bottomrowtop, (width - buttonsize) - spacing, height);
+				break;
+			case 9:
+				buttons[i].setBounds(width - buttonsize, bottomrowtop, width, height);
+				break;
+			// Start
+			case 10:
+				buttons[i].setSize(buttonsize * 2, buttonsize);
+				buttons[i].setBounds((width / 2) - buttonsize, bottomrowtop, (width / 2) + buttonsize, height);
+				break;
+			}
+		}
 
 		float postscale = (float)width / (float)WonderSwan.SCREEN_WIDTH;
 

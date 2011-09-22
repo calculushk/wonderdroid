@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.media.AudioTrack;
 import android.os.SystemClock;
 import android.util.Log;
@@ -28,6 +29,8 @@ public class EmuThread extends Thread {
 	private SurfaceHolder mSurfaceHolder;
 	private final Matrix scale;
 	private Canvas c;
+
+	private Drawable[] overlays;
 
 	private short framecounter = 1; // dont skip the first frame
 	private long thisFrame;
@@ -91,10 +94,10 @@ public class EmuThread extends Thread {
 			} else {
 
 				thisFrame = SystemClock.uptimeMillis();
-				//boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
+				// boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
 
 				boolean skip = false;
-				render(c, mSurfaceHolder, framebuffer, scale, paint, textPaint, skip, showFps, fpsString);
+				render(c, mSurfaceHolder, framebuffer, scale, paint, textPaint, skip, showFps, fpsString, overlays);
 
 				int frametime = (int)(averageFrameTime + (thisFrame - lastFrame));
 
@@ -124,7 +127,8 @@ public class EmuThread extends Thread {
 
 	}
 
-	private static void render (Canvas c, SurfaceHolder sh, Bitmap framebuffer, Matrix scale, Paint paint, Paint textPaint, boolean frameskip, boolean showFps, String fpsString) {
+	private static void render (Canvas c, SurfaceHolder sh, Bitmap framebuffer, Matrix scale, Paint paint, Paint textPaint,
+		boolean frameskip, boolean showFps, String fpsString, Drawable[] overlays) {
 		WonderSwan.execute_frame(frameskip);
 		if (!frameskip) {
 			framebuffer.copyPixelsFromBuffer(WonderSwan.framebuffer);
@@ -134,6 +138,13 @@ public class EmuThread extends Thread {
 				c = sh.lockCanvas();
 				synchronized (sh) {
 					c.drawBitmap(framebuffer, scale, paint);
+
+					if (overlays != null) {
+						for (Drawable overlay : overlays) {
+							overlay.draw(c);
+						}
+					}
+
 					if (showFps) {
 						c.drawText(fpsString, 30, 50, textPaint);
 					}
@@ -178,5 +189,9 @@ public class EmuThread extends Thread {
 
 	public void showFps (boolean show) {
 		showFps = show;
+	}
+
+	public void setOverlays (Drawable overlays[]) {
+		this.overlays = overlays;
 	}
 }

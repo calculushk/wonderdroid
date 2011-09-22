@@ -4,8 +4,8 @@ package uk.org.cardboardbox.wonderdroid;
 import java.io.File;
 import java.io.IOException;
 
+import uk.org.cardboardbox.wonderdroid.WonderSwan.Buttons;
 import uk.org.cardboardbox.wonderdroid.views.EmuView;
-import uk.org.cardboardbox.wonderdroid.views.EmuView.Buttons;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,10 +28,6 @@ import android.widget.TextView;
 public class Main extends Activity {
 
 	public static final String ROMPATH = "rompath";
-
-
-	private static int[] buttonIds = {R.id.button_y1, R.id.button_y2, R.id.button_y3, R.id.button_y4, R.id.button_x1,
-		R.id.button_x2, R.id.button_x3, R.id.button_x4, R.id.button_a, R.id.button_b, R.id.button_start};
 
 	private ProgressBar mPB;
 	private EmuView view;
@@ -178,21 +174,7 @@ public class Main extends Activity {
 	}
 
 	private void toggleControls () {
-		if (mControlsVisible) {
 
-			for (int button : buttonIds) {
-				this.findViewById(button).setVisibility(View.GONE);
-			}
-
-		}
-
-		else {
-
-			for (int button : buttonIds) {
-				this.findViewById(button).setVisibility(View.VISIBLE);
-			}
-
-		}
 		mControlsVisible = !mControlsVisible;
 	}
 
