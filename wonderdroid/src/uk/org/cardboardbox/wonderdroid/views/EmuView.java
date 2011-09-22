@@ -282,7 +282,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		if (buttons != null) {
 			Paint textPaint = new Paint();
 			textPaint.setColor(0xFFFFFFFF);
-			textPaint.setTextSize(20);
+			textPaint.setTextSize(height/30);
 			textPaint.setShadowLayer(3, 1, 1, 0x99000000);
 			textPaint.setAntiAlias(true);
 			Bitmap controls = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -294,7 +294,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 				buttons[i].draw(canvas);
 				canvas.drawText(strings[i], (rect.left + rect.width() / 2) - textLen,
-					(rect.bottom + rect.height() / 2) - (textPaint.getTextSize() / 2), textPaint);
+					(rect.top + rect.height() / 2) + (textPaint.getTextSize() /2 ), textPaint);
 			}
 			return controls;
 		}
