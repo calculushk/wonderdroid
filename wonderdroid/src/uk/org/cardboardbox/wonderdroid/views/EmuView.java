@@ -1,9 +1,11 @@
 
 package uk.org.cardboardbox.wonderdroid.views;
 
+import uk.org.cardboardbox.wonderdroid.Button;
 import uk.org.cardboardbox.wonderdroid.R;
 import uk.org.cardboardbox.wonderdroid.WonderSwan;
 import uk.org.cardboardbox.wonderdroid.WonderSwan.Buttons;
+import uk.org.cardboardbox.wonderdroid.WonderSwanRenderer;
 import uk.org.cardboardbox.wonderdroid.utils.EmuThread;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -29,6 +31,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	private boolean mPaused = false;
 
 	private EmuThread mThread;
+	private WonderSwanRenderer renderer;
 	private String[] buttonStrings = new String[] {"Y1", "Y4", "Y2", "Y3", "X3", "X4", "X2", "X1", "A", "B", "START"};
 	private GradientDrawable[] buttons;
 
@@ -50,8 +53,10 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		SurfaceHolder holder = this.getHolder();
 		holder.addCallback(this);
 
-		mThread = new EmuThread();
+		renderer = new WonderSwanRenderer();
+		mThread = new EmuThread(renderer);
 
+		
 	}
 
 	@Override
@@ -110,16 +115,27 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 
+		if (buttons != null) {
+			Paint textPaint = new Paint();
+			textPaint.setColor(0xFFFFFFFF);
+			textPaint.setTextSize(height / 30);
+			textPaint.setShadowLayer(3, 1, 1, 0x99000000);
+			textPaint.setAntiAlias(true);
+
+			for (int i = 0; i < buttons.length; i++) {
+				new Button(buttons[i], textPaint, buttonStrings[i]); 
+			}
+		}
+
 		float postscale = (float)width / (float)WonderSwan.SCREEN_WIDTH;
 
-		if (height * postscale > height) {
+		if (WonderSwan.SCREEN_HEIGHT * postscale > height) {
 			postscale = (float)height / (float)WonderSwan.SCREEN_HEIGHT;
 
 		}
 
-		mThread.setOverlay(renderControlsLayer(width, height, buttons, buttonStrings));
 
-		Matrix scale = mThread.getMatrix();
+		Matrix scale = renderer.getMatrix();
 
 		scale.reset();
 		scale.postScale(postscale, postscale);
@@ -155,7 +171,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	public void onResume () {
-		mThread = new EmuThread();
+		mThread = new EmuThread(renderer);
 		start();
 	}
 
@@ -288,27 +304,4 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		return null;
 	}
 
-	private static Bitmap renderControlsLayer (int width, int height, Drawable[] buttons, String[] strings) {
-		if (buttons != null) {
-			Paint textPaint = new Paint();
-			textPaint.setColor(0xFFFFFFFF);
-			textPaint.setTextSize(height / 30);
-			textPaint.setShadowLayer(3, 1, 1, 0x99000000);
-			textPaint.setAntiAlias(true);
-			Bitmap controls = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-			Canvas canvas = new Canvas(controls);
-
-			for (int i = 0; i < buttons.length; i++) {
-				Rect rect = buttons[i].getBounds();
-				float textLen = (textPaint.measureText(strings[i])) / 2;
-
-				buttons[i].draw(canvas);
-				canvas.drawText(strings[i], (rect.left + rect.width() / 2) - textLen,
-					(rect.top + rect.height() / 2) + (textPaint.getTextSize() / 2), textPaint);
-			}
-			return controls;
-		}
-
-		return null;
-	}
 }

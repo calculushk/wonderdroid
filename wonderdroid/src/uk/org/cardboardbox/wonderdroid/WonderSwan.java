@@ -68,7 +68,7 @@ public class WonderSwan {
 		}
 
 		samples = _execute_frame(skipframe, framebuffer, audiobuffer);
-		audio.write(audiobuffer, 0, samples * 2);
+		//audio.write(audiobuffer, 0, samples * 2);
 	}
 
 	static private native int _execute_frame (boolean skipframe, ShortBuffer framebuffer, short[] audiobuffer);

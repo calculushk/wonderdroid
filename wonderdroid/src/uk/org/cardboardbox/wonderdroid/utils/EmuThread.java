@@ -15,36 +15,37 @@ import android.view.SurfaceHolder;
 
 public class EmuThread extends Thread {
 
+	public static interface Renderer {
+		public void update(boolean skip);
+		public void render (Canvas c, boolean frameskip, boolean showFps, String fpsString);
+	}
+
+	private Renderer renderer;
+
 	private static final boolean debug = false;
 	private static final String TAG = EmuThread.class.getSimpleName();
-	private static final int TARGETFRAMETIME = 1000 / 71;
-	private static final int mustSkipFrames = 5;
+	private static final int TARGETFRAMETIME = 1000 / 37;
 
 	private boolean mIsRunning = false;
 	private boolean isPaused = false;
 	private boolean showFps = false;
 
-	private final Bitmap framebuffer;
-	private Bitmap overlay;
-	private final Paint paint = new Paint();
-	private final Paint textPaint = new Paint();
+	
+
 	private SurfaceHolder mSurfaceHolder;
-	private final Matrix scale;
+
 	private Canvas c;
 
-	private short framecounter = 1; // dont skip the first frame
-	private long thisFrame;
-	private long lastFrame;
-	private int averageFrameTime = TARGETFRAMETIME;
-	private int worstFrameTime = TARGETFRAMETIME;
+	private long frameStart;
+	private long frameEnd;
+	private long frametime;
+	private long holdtime;
+	private long averageFrameTime = TARGETFRAMETIME;
 
-	public EmuThread () {
-		framebuffer = Bitmap.createBitmap(WonderSwan.SCREEN_WIDTH, WonderSwan.SCREEN_HEIGHT, Bitmap.Config.RGB_565);
-		textPaint.setColor(0xFFFFFFFF);
-		textPaint.setTextSize(35);
-		textPaint.setShadowLayer(3, 1, 1, 0x99000000);
-		textPaint.setAntiAlias(true);
-		scale = new Matrix();
+	public EmuThread (Renderer renderer) {
+		
+		this.renderer = renderer;
+
 	}
 
 	public void setSurfaceHolder (SurfaceHolder sh) {
@@ -70,19 +71,6 @@ public class EmuThread extends Thread {
 			SystemClock.sleep(20);
 		}
 
-		c = null;
-		try {
-			c = mSurfaceHolder.lockCanvas();
-			synchronized (mSurfaceHolder) {
-
-				c.drawARGB(0xff, 0, 0, 0);
-			}
-		} finally {
-			if (c != null) {
-				mSurfaceHolder.unlockCanvasAndPost(c);
-			}
-		}
-
 		// benchmark
 		/*
 		 * long start = System.currentTimeMillis(); for (int frame = 0; frame < 60; frame++) {
@@ -94,79 +82,54 @@ public class EmuThread extends Thread {
 		 * fps)); //
 		 */
 
-		WonderSwan.audio.play();
-
-		lastFrame = SystemClock.uptimeMillis();
+		// WonderSwan.audio.play();
 
 		while (mIsRunning) {
 
 			if (isPaused) {
-
-				SystemClock.sleep(200);
+				SystemClock.sleep(TARGETFRAMETIME);
 
 			} else {
 
-				thisFrame = SystemClock.uptimeMillis();
-				boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
+				frameStart = System.currentTimeMillis();
+				// boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
 
-				//boolean skip = false;
-				render(c, mSurfaceHolder, framebuffer, overlay, scale, paint, textPaint, skip, showFps, fpsString);
+				boolean skip = false;
 
-				int frametime = (int)(averageFrameTime + (thisFrame - lastFrame));
+				renderer.update(skip);
+				
+				c = null;
+				try {
+					c = mSurfaceHolder.lockCanvas();
+					synchronized (mSurfaceHolder) {
+						renderer.render(c, skip, showFps, fpsString);
 
-				averageFrameTime = frametime / 2;
-				lastFrame = thisFrame;
-
-				if (frametime > worstFrameTime) {
-					worstFrameTime = frametime;
+					}
+				} finally {
+					if (c != null) {
+						mSurfaceHolder.unlockCanvasAndPost(c);
+					}
 				}
+
+				frameEnd = System.currentTimeMillis();
+				frametime = frameEnd - frameStart;
+				averageFrameTime = (averageFrameTime + frametime) / 2;
+				updateFPSString();
 
 				if (frametime < TARGETFRAMETIME) {
-					SystemClock.sleep((int)(TARGETFRAMETIME - averageFrameTime));
-					updateFPSString();
+					SystemClock.sleep(TARGETFRAMETIME - frametime);
 				}
-
-				framecounter++;
 
 			}
 
 		}
 
-		WonderSwan.audio.stop();
-		framebuffer.recycle();
+		// WonderSwan.audio.stop();
+		
 		synchronized (this) {
 			notifyAll();
 		}
 
-	}
-
-	private static void render (Canvas c, SurfaceHolder sh, Bitmap framebuffer, Bitmap overlay, Matrix scale, Paint paint,
-		Paint textPaint, boolean frameskip, boolean showFps, String fpsString) {
-		WonderSwan.execute_frame(frameskip);
-		if (!frameskip) {
-			framebuffer.copyPixelsFromBuffer(WonderSwan.framebuffer);
-
-			c = null;
-			try {
-				c = sh.lockCanvas();
-				synchronized (sh) {
-
-					c.drawBitmap(framebuffer, scale, paint);
-
-					if (overlay != null) {
-						c.drawBitmap(overlay, 0, 0, null);
-					}
-
-					if (showFps) {
-						c.drawText(fpsString, 30, 50, textPaint);
-					}
-				}
-			} finally {
-				if (c != null) {
-					sh.unlockCanvasAndPost(c);
-				}
-			}
-		}
 	}
 
 	public boolean isRunning () {
@@ -184,27 +147,11 @@ public class EmuThread extends Thread {
 	private String fpsString = new String();
 
 	private void updateFPSString () {
-		fpsString = String.format("%d: %03d fps", worstFrameTime, Math.round(getFps()));
-	}
-
-	public float getFps () {
-		return 1000 / averageFrameTime;
-	}
-
-	public Paint getPaint () {
-		return paint;
-	}
-
-	public Matrix getMatrix () {
-		return scale;
+		fpsString = String.format("%d frametime", averageFrameTime);
 	}
 
 	public void showFps (boolean show) {
 		showFps = show;
-	}
-
-	public void setOverlay (Bitmap overlay) {
-		this.overlay = overlay;
 	}
 
 }
