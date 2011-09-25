@@ -343,8 +343,8 @@ uint8 WSwan_SoundRead(uint32 A)
 }
 
 
-extern "C" void wswan_soundflush(int16 *buffer){
-	WSwan_SoundFlush(buffer);
+extern "C" int16 wswan_soundflush(int16 *buffer){
+	return WSwan_SoundFlush(buffer);
 }
 
 

@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_load
   const jbyte *str;
   str = (*env)->GetStringUTFChars(env, filename, NULL);
        if (str == NULL) {
-           return NULL; /* OutOfMemoryError already thrown */
+           //return NULL; /* OutOfMemoryError already thrown */
            //break;
        }
 

@@ -9,21 +9,7 @@
 #include <assert.h>
 #include <inttypes.h>
 
-#if HAVE_MKDIR
- #if MKDIR_TAKES_ONE_ARG
-  #define MDFN_mkdir(a, b) mkdir(a)
- #else
-  #define MDFN_mkdir(a, b) mkdir(a, b)
- #endif
-#else
- #if HAVE__MKDIR
-  /* Plain Win32 */
-  #define MDFN_mkdir(a, b) _mkdir(a)
- #else
-	#define MDFN_mkdir(a, b) _mkdir(a) // dgp hack
-  //#error "Don't know how to create a directory on this system."
- #endif
-#endif
+
 
 typedef int8_t int8;
 typedef int16_t int16;
@@ -56,41 +42,41 @@ typedef uint32_t uint32;
 #endif
 
 
-typedef struct
-{
- union
- {
-  struct
-  {
-   #ifdef MSB_FIRST
-   uint8   High;
-   uint8   Low;
-   #else
-   uint8   Low;
-   uint8   High;
-   #endif
-  } Union8;
-  uint16 Val16;
- };
-} Uuint16;
-
-typedef struct
-{
- union
- {
-  struct
-  {
-   #ifdef MSB_FIRST
-   Uuint16   High;
-   Uuint16   Low;
-   #else
-   Uuint16   Low;
-   Uuint16   High;
-   #endif
-  } Union16;
-  uint32  Val32;
- };
-} Uuint32;
+//typedef struct
+//{
+// union
+// {
+ // struct
+ // {
+ //  #ifdef MSB_FIRST
+ //  uint8   High;
+ //  uint8   Low;
+//   #else
+ //  uint8   Low;
+ //  uint8   High;
+ //  #endif
+ // } Union8;
+ /// uint16 Val16;
+// };
+//} Uuint16;
+//
+//typedef struct
+//{
+// union
+ //{
+ // struct
+ // {
+//   #ifdef MSB_FIRST
+ //  Uuint16   High;
+ //  Uuint16   Low;
+ //  #else
+ //  Uuint16   Low;
+ //  Uuint16   High;
+ //  #endif
+ // } Union16;
+ /// uint32  Val32;
+// };
+//} Uuint32;
 
 
 #if PSS_STYLE==2
