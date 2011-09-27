@@ -56,7 +56,6 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		renderer = new WonderSwanRenderer();
 		mThread = new EmuThread(renderer);
 
-		
 	}
 
 	@Override
@@ -123,7 +122,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			textPaint.setAntiAlias(true);
 
 			for (int i = 0; i < buttons.length; i++) {
-				new Button(buttons[i], textPaint, buttonStrings[i]); 
+				new Button(buttons[i], textPaint, buttonStrings[i]);
 			}
 		}
 
@@ -133,7 +132,6 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			postscale = (float)height / (float)WonderSwan.SCREEN_HEIGHT;
 
 		}
-
 
 		Matrix scale = renderer.getMatrix();
 

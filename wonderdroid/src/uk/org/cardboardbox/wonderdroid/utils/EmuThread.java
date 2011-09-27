@@ -1,22 +1,16 @@
 
 package uk.org.cardboardbox.wonderdroid.utils;
 
-import uk.org.cardboardbox.wonderdroid.WonderSwan;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.media.AudioTrack;
+import android.os.Process;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class EmuThread extends Thread {
 
 	public static interface Renderer {
-		public void update(boolean skip);
+		public void start();
+		public void update (boolean skip);
 		public void render (Canvas c, boolean frameskip, boolean showFps, String fpsString);
 	}
 
@@ -24,13 +18,11 @@ public class EmuThread extends Thread {
 
 	private static final boolean debug = false;
 	private static final String TAG = EmuThread.class.getSimpleName();
-	private static final int TARGETFRAMETIME = 1000 / 37;
+	private static final int TARGETFRAMETIME = 1000 / 72;
 
 	private boolean mIsRunning = false;
 	private boolean isPaused = false;
 	private boolean showFps = false;
-
-	
 
 	private SurfaceHolder mSurfaceHolder;
 
@@ -43,7 +35,7 @@ public class EmuThread extends Thread {
 	private long averageFrameTime = TARGETFRAMETIME;
 
 	public EmuThread (Renderer renderer) {
-		
+
 		this.renderer = renderer;
 
 	}
@@ -54,14 +46,13 @@ public class EmuThread extends Thread {
 
 	public void pause () {
 		isPaused = true;
-		WonderSwan.audio.pause();
 	}
 
 	public void unpause () {
 		isPaused = false;
-		if (WonderSwan.audio.getState() == AudioTrack.PLAYSTATE_PAUSED) {
-			WonderSwan.audio.play();
-		}
+		// if (WonderSwan.audio.getState() == AudioTrack.PLAYSTATE_PAUSED) {
+		// WonderSwan.audio.play();
+		// }
 	}
 
 	@Override
@@ -71,6 +62,7 @@ public class EmuThread extends Thread {
 			SystemClock.sleep(20);
 		}
 
+		Process.setThreadPriority(Process.THREAD_PRIORITY_LESS_FAVORABLE);
 		// benchmark
 		/*
 		 * long start = System.currentTimeMillis(); for (int frame = 0; frame < 60; frame++) {
@@ -82,7 +74,7 @@ public class EmuThread extends Thread {
 		 * fps)); //
 		 */
 
-		// WonderSwan.audio.play();
+		boolean skip = false;
 
 		while (mIsRunning) {
 
@@ -94,27 +86,28 @@ public class EmuThread extends Thread {
 				frameStart = System.currentTimeMillis();
 				// boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
 
-				boolean skip = false;
+				skip = true;
 
 				renderer.update(skip);
-				
-				c = null;
-				try {
-					c = mSurfaceHolder.lockCanvas();
-					synchronized (mSurfaceHolder) {
-						renderer.render(c, skip, showFps, fpsString);
 
-					}
-				} finally {
-					if (c != null) {
-						mSurfaceHolder.unlockCanvasAndPost(c);
+				if (!skip) {
+					c = null;
+					try {
+						c = mSurfaceHolder.lockCanvas();
+						synchronized (mSurfaceHolder) {
+							renderer.render(c, skip, showFps, fpsString);
+
+						}
+					} finally {
+						if (c != null) {
+							mSurfaceHolder.unlockCanvasAndPost(c);
+						}
 					}
 				}
-
 				frameEnd = System.currentTimeMillis();
 				frametime = frameEnd - frameStart;
 				averageFrameTime = (averageFrameTime + frametime) / 2;
-				updateFPSString();
+				// updateFPSString();
 
 				if (frametime < TARGETFRAMETIME) {
 					SystemClock.sleep(TARGETFRAMETIME - frametime);
@@ -124,8 +117,6 @@ public class EmuThread extends Thread {
 
 		}
 
-		// WonderSwan.audio.stop();
-		
 		synchronized (this) {
 			notifyAll();
 		}
@@ -138,6 +129,7 @@ public class EmuThread extends Thread {
 
 	public void setRunning () {
 		mIsRunning = true;
+		renderer.start();
 	}
 
 	public void clearRunning () {

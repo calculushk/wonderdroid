@@ -20,9 +20,9 @@ public class WonderSwan {
 
 	static public final int SCREEN_WIDTH = 224;
 	static public final int SCREEN_HEIGHT = 144;
-	static public ShortBuffer framebuffer = ByteBuffer.allocateDirect((SCREEN_WIDTH * SCREEN_HEIGHT) * 2).asShortBuffer();
+	static public final int FRAMEBUFFERSIZE = (SCREEN_WIDTH * SCREEN_HEIGHT) * 2;
 	static public int samples;
-	static final int audiobufferlen = 4000;
+	static final int audiobufferlen = 2000;
 	static public short[] audiobuffer = new short[audiobufferlen];
 
 	public static enum Buttons {
@@ -42,11 +42,10 @@ public class WonderSwan {
 	public static boolean mButtonY4 = false;
 	public static boolean buttonsDirty = false;
 
-	private static final int channelconf = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
-	private static final int encoding = AudioFormat.ENCODING_PCM_16BIT;
-	private static final int audiofreq = 22050;
-	public static AudioTrack audio = new AudioTrack(AudioManager.STREAM_MUSIC, audiofreq, channelconf, encoding,
-		AudioTrack.getMinBufferSize(audiofreq, channelconf, encoding) * 4, AudioTrack.MODE_STREAM);
+	public static final int channelconf = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
+	public static final int encoding = AudioFormat.ENCODING_PCM_16BIT;
+	public static final int audiofreq = 22050;
+	
 
 	public WonderSwan () {
 		throw new UnsupportedOperationException();
@@ -60,7 +59,7 @@ public class WonderSwan {
 
 	static public native void reset ();
 
-	static public void execute_frame (boolean skipframe) {
+	static public void execute_frame (ShortBuffer framebuffer, boolean skipframe) {
 		if (buttonsDirty) {
 			WonderSwan.updatebuttons(mButtonY1, mButtonY2, mButtonY3, mButtonY4, mButtonX1, mButtonX2, mButtonX3, mButtonX4,
 				mButtonA, mButtonB, mButtonStart);
@@ -68,7 +67,9 @@ public class WonderSwan {
 		}
 
 		samples = _execute_frame(skipframe, framebuffer, audiobuffer);
-		//audio.write(audiobuffer, 0, samples * 2);
+		synchronized(audiobuffer){
+			audiobuffer.notify();
+		}
 	}
 
 	static private native int _execute_frame (boolean skipframe, ShortBuffer framebuffer, short[] audiobuffer);

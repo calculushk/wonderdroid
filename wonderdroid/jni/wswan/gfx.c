@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "log.h"
 #include "wswan.h"
 #include "gfx.h"
 #include "memory.h"
@@ -61,12 +62,8 @@ static uint16 VBTimerPeriod;
 static uint16 HBCounter, VBCounter;
 static uint8 VideoMode;
 
-#include "log.h"
 
 void WSwan_GfxInit(void) {
-#ifdef WANT_DEBUGGER
-	MDFNDBG_AddRegGroup(&WSwanGfxRegsGroup);
-#endif
 }
 
 void WSwan_GfxWSCPaletteRAMWrite(uint32 ws_offset, uint8 data) {
@@ -396,8 +393,8 @@ void WSwan_SetPixelFormat() {
 void wsScanline(uint16 *target) {
 	uint32 start_tile_n, map_a, startindex, adrbuf, b1, b2, j, t, l;
 	char ys2;
-	uint8 b_bg[256];
-	uint8 b_bg_pal[256];
+	static uint8 b_bg[256];
+	static uint8 b_bg_pal[256];
 
 	if (!wsVMode)
 		memset(b_bg, wsColors[BGColor & 0xF] & 0xF, 256);
@@ -449,9 +446,9 @@ void wsScanline(uint16 *target) {
 	if ((DispControl & 0x02) && (LayerEnabled & 0x02))/*FG layer*/
 	{
 		uint8 windowtype = DispControl & 0x30;
-		bool in_window[256 + 8 * 2];
+		static bool in_window[256 + 8 * 2];
 
-if(		windowtype)
+		if(windowtype)
 		{
 			memset(in_window, 0, sizeof(in_window));
 
@@ -522,7 +519,7 @@ if(		windowtype)
 		int xs, ts, as, ys, ysx, h;
 		bool in_window[256 + 8 * 2];
 
-if(		DispControl & 0x08)
+	if(DispControl & 0x08)
 		{
 			memset(in_window, 0, sizeof(in_window));
 			if((wsLine >= SPRy0) && (wsLine < SPRy1))

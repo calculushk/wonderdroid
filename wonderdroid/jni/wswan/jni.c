@@ -40,6 +40,9 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_reset
 	LOGD("WSwan_EEPROMReset()");
 	WSwan_EEPROMReset();
 
+	wsMakeTiles();
+
+
 	int		u0;
 	for(u0=0;u0<0xc9;u0++)
 		 WSwan_writeport(u0,startio[u0]);

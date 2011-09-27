@@ -15,7 +15,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <string.h>
 
 extern "C" {
@@ -329,7 +329,9 @@ uint8 WSwan_SoundRead(uint32 A)
   return(volume[A - 0x88]);
  else switch(A)
  {
-  default:  printf("SoundRead: %04x\n", A); return(0);
+  default:
+	  /*printf("SoundRead: %04x\n", A); */
+	  return(0);
   case 0x8C: return(sweep_value);
   case 0x8D: return(sweep_step);
   case 0x8E: return(noise_control);
