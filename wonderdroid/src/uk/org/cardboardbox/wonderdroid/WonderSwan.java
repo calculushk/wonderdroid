@@ -52,7 +52,7 @@ public class WonderSwan {
 	}
 
 	static {
-		System.loadLibrary("wonderswan-neon");
+		System.loadLibrary("wonderswan");
 	}
 
 	static public native void load (String rompath, boolean wsc);

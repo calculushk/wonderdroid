@@ -20,11 +20,12 @@
 
 #include "wswan.h"
 #include <time.h>
+#include <stdint.h>
 
-static uint64 CurrentTime;
-static uint32 ClockCycleCounter;
-static uint8 wsCA15;
-static uint8 Command, Data;
+static uint64_t CurrentTime;
+static uint32_t ClockCycleCounter;
+static uint8_t wsCA15;
+static uint8_t Command, Data;
 
 void WSwan_RTCWrite(uint32 A, uint8 V)
 {
@@ -41,7 +42,7 @@ void WSwan_RTCWrite(uint32 A, uint8 V)
 }
 
 
-uint8 WSwan_RTCRead(uint32 A)
+uint8_t WSwan_RTCRead(uint32 A)
 {
  switch(A)
  {

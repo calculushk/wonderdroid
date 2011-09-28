@@ -305,15 +305,10 @@ int wsExecuteLine(uint16 *pXBuf, bool skip) {
 	}
 
 	if (wsLine == 144) {
-		//LOGD("WSwan_Interrupt(WSINT_VBLANK)");
 		WSwan_Interrupt(WSINT_VBLANK);
 		//printf("VBlank: %d\n", wsLine);
 	}
 
-	// LOGD(".g.");
-	// char temp[256];
-	// sprintf(temp, "HBCOUNTER %d", HBCounter);
-	// LOGD(temp);
 	if (HBCounter && (BTimerControl & 0x01)) {
 		HBCounter--;
 		if (!HBCounter) {
@@ -326,9 +321,8 @@ int wsExecuteLine(uint16 *pXBuf, bool skip) {
 		}
 	}
 
-	//LOGD("v30mz_execute(224)");
+
 	v30mz_execute(224);
-	//LOGD(".");
 	wsLine = (wsLine + 1) % 159;
 	if (wsLine == LineCompare) {
 		WSwan_Interrupt(WSINT_LINE_HIT);
@@ -390,6 +384,8 @@ void WSwan_SetPixelFormat() {
 	}
 }
 
+static bool in_window[256 + 8 * 2];
+
 void wsScanline(uint16 *target) {
 	uint32 start_tile_n, map_a, startindex, adrbuf, b1, b2, j, t, l;
 	char ys2;
@@ -446,7 +442,7 @@ void wsScanline(uint16 *target) {
 	if ((DispControl & 0x02) && (LayerEnabled & 0x02))/*FG layer*/
 	{
 		uint8 windowtype = DispControl & 0x30;
-		static bool in_window[256 + 8 * 2];
+		//static bool in_window[256 + 8 * 2];
 
 		if(windowtype)
 		{
@@ -517,7 +513,7 @@ void wsScanline(uint16 *target) {
 	if ((DispControl & 0x04) && SpriteCountCache && (LayerEnabled & 0x04))/*Sprites*/
 	{
 		int xs, ts, as, ys, ysx, h;
-		bool in_window[256 + 8 * 2];
+		//bool in_window[256 + 8 * 2];
 
 	if(DispControl & 0x08)
 		{

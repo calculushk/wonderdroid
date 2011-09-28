@@ -70,23 +70,7 @@ public class Main extends Activity {
 			throw new RuntimeException();
 		}
 
-		/*
-		 * for (int button : buttonIds) {
-		 * 
-		 * ((Button)this.findViewById(button)).setOnTouchListener(new OnTouchListener() {
-		 * 
-		 * @Override public boolean onTouch (View v, MotionEvent event) {
-		 * 
-		 * if (event.getAction() == MotionEvent.ACTION_DOWN) { view.setButton(Buttons.findForId(v.getId()));
-		 * 
-		 * } else if (event.getAction() == MotionEvent.ACTION_UP) { view.clearButton(Buttons.findForId(v.getId())); }
-		 * 
-		 * return false; }
-		 * 
-		 * });
-		 * 
-		 * }
-		 */
+
 
 		parseKeys();
 		// mControlsVisible = true;
@@ -279,10 +263,6 @@ public class Main extends Activity {
 		return super.onKeyUp(keyCode, event);
 	}
 
-	@Override
-	public void onConfigurationChanged (Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-	}
 
 	@Override
 	public void onRestart () {

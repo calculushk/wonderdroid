@@ -57,7 +57,7 @@ static uint8 CommControl, CommData;
 
 extern uint16 WSButtonStatus;
 
-void WSwan_writemem20(uint32 A, uint8 V)
+inline void WSwan_writemem20(uint32 A, uint8 V)
 {
  uint32 offset, bank;
 
@@ -85,7 +85,7 @@ void WSwan_writemem20(uint32 A, uint8 V)
 
 
 
-uint8 WSwan_readmem20(uint32 A)
+inline uint8 WSwan_readmem20(uint32 A)
 {
 
 

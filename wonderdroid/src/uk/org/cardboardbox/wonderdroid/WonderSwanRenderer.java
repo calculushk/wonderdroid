@@ -19,6 +19,7 @@ public class WonderSwanRenderer implements EmuThread.Renderer {
 		WonderSwan.encoding, AudioTrack.getMinBufferSize(WonderSwan.audiofreq, WonderSwan.channelconf, WonderSwan.encoding) * 4,
 		AudioTrack.MODE_STREAM);
 
+	private Button[] buttons;
 	private final ShortBuffer frameone;
 	private final Bitmap framebuffer;
 
@@ -41,8 +42,14 @@ public class WonderSwanRenderer implements EmuThread.Renderer {
 	public void render (Canvas c) {
 
 		// c.drawARGB(0xff, 0, 0, 0);
-	//	c.drawBitmap(framebuffer, scale, paint);
-		 c.drawBitmap(framebuffer, 0, 0, null);
+		c.drawBitmap(framebuffer, scale, paint);
+		// c.drawBitmap(framebuffer, 0, 0, null);
+		
+		if(buttons != null){
+			for(Button button : buttons){
+				c.drawBitmap(button.normal, button.drawrect, button.rect, null);
+			}
+		}
 
 	}
 
@@ -68,6 +75,11 @@ public class WonderSwanRenderer implements EmuThread.Renderer {
 			framebuffer.copyPixelsFromBuffer(frameone);
 		}
 
+	}
+
+	@Override
+	public void setButtons (Button[] buttons) {
+		this.buttons = buttons;
 	}
 
 }

@@ -1,6 +1,7 @@
 
 package uk.org.cardboardbox.wonderdroid.utils;
 
+import uk.org.cardboardbox.wonderdroid.Button;
 import android.graphics.Canvas;
 import android.os.SystemClock;
 import android.util.Log;
@@ -11,6 +12,7 @@ public class EmuThread extends Thread {
 	public static interface Renderer {
 		public void start ();
 
+		public void setButtons(Button[] buttons);
 		public void update (boolean skip);
 
 		public void render (Canvas c);
@@ -20,11 +22,10 @@ public class EmuThread extends Thread {
 
 	private static final boolean debug = false;
 	private static final String TAG = EmuThread.class.getSimpleName();
-	private static final int TARGETFRAMETIME = (int) Math.round(1000 / 75.47);
+	private static final int TARGETFRAMETIME = (int)Math.round(1000 / 75.47);
 
 	private boolean mIsRunning = false;
 	private boolean isPaused = false;
-	private boolean showFps = false;
 
 	private SurfaceHolder mSurfaceHolder;
 
@@ -68,17 +69,6 @@ public class EmuThread extends Thread {
 			SystemClock.sleep(20);
 		}
 
-		// benchmark
-		/*
-		 * long start = System.currentTimeMillis(); for (int frame = 0; frame < 60; frame++) {
-		 * 
-		 * c = null; try { c = mSurfaceHolder.lockCanvas(); synchronized (mSurfaceHolder) { c.drawARGB(0x00, frame, frame, frame); }
-		 * } finally { if (c != null) { mSurfaceHolder.unlockCanvasAndPost(c); } }
-		 * 
-		 * } float fps = (float)(1f / (((System.currentTimeMillis() - start) / 1000f) / 60f)); Log.d(TAG, String.format("%f fps",
-		 * fps)); //
-		 */
-
 		while (mIsRunning) {
 
 			if (isPaused) {
@@ -112,7 +102,7 @@ public class EmuThread extends Thread {
 				if (realRuntime <= emulatedRuntime) {
 					behind = false;
 				} else {
-					behind = true;
+					//behind = true;
 				}
 
 				frame++;

@@ -33,12 +33,12 @@ extern "C" {
 
 #include "../blip/Blip_Buffer.h"
 
-static Blip_Synth<blip_good_quality, 256> WaveSynth;
-static Blip_Synth<blip_med_quality, 256> NoiseSynth;
-static Blip_Synth<blip_good_quality, 256 * 15> VoiceSynth;
+static Blip_Synth<blip_med_quality, 256> WaveSynth;
+static Blip_Synth<blip_low_quality, 256> NoiseSynth;
+static Blip_Synth<blip_med_quality, 256 * 15> VoiceSynth;
 
 static Blip_Buffer sbuf[2];
-static int16 WaveIL[8000];
+//static int16 WaveIL[8000];
 
 static uint16 period[4];
 static uint8 volume[4]; // left volume in upper 4 bits, right in lower 4 bits
@@ -108,9 +108,6 @@ static uint32 last_ts;
 void WSwan_SoundUpdate(void)
 {
 
-	//return;
-
-	//LOGD("WSwan_SoundUpdate");
 
  int32 run_time;
 

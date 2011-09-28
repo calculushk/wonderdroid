@@ -19,7 +19,6 @@
 #include "v30mz.h"
 #include "rtc.h"
 #include "eeprom.h"
-#include "debug.h"
 
 #include "log.h"
 
@@ -41,7 +40,7 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_reset
 	WSwan_EEPROMReset();
 
 	wsMakeTiles();
-
+	wsSetVideo(wsVMode,TRUE);
 
 	int		u0;
 	for(u0=0;u0<0xc9;u0++)
@@ -53,8 +52,6 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_reset
 
 
 uint32		rom_size;
-char tempstring[256];
-
 int 		wsc = 0;			/*color/mono*/
 uint16 WSButtonStatus;
 
@@ -68,10 +65,12 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_load
 		LOGD("Emulating a WonderSwan Color");
 		wsc = 1;
 		wsVMode = 0x7;
+
 	}
 	else {
 		wsVMode = 0x0;
 	}
+
 
  // char convertedfilename[] = filename;
   char temp[512];
@@ -97,18 +96,9 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_load
 
   //rom_size = uppow2(fp->size);
  // rom_size = 4 * 1024 * 1024;
-  sprintf(tempstring, "size of rom: %d", rom_size);
-  LOGD(tempstring);
+  //sprintf(tempstring, "size of rom: %d", rom_size);
+ // LOGD(tempstring);
   wsCartROM = (uint8 *)calloc(1, rom_size);
-
- // int i = 0;
- // char byte = 0;
- // for (i = 0; i < rom_size; i++ ){
-//	  byte = getc(file);
-///	//  sprintf(tempstring, "loaded byte %d - %x", i, byte);
-	 // LOGD(tempstring);
-//	  *(wsCartROM + i) = byte;
- // }
 
   fread(wsCartROM, sizeof(uint8), rom_size, file);
 
@@ -132,31 +122,31 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_load
      case 0x50: eeprom_size = 1024; break;
     }
 
-    sprintf(tempstring, "SRAM size is 0x%x", sram_size);
-    LOGD(tempstring);
+   // sprintf(tempstring, "SRAM size is 0x%x", sram_size);
+   // LOGD(tempstring);
 
-    sprintf(tempstring, "EEPROM size is 0x%x", eeprom_size);
-    LOGD(tempstring);
+   // sprintf(tempstring, "EEPROM size is 0x%x", eeprom_size);
+  //  LOGD(tempstring);
 
     if(header[6] & 0x1){
-    	LOGD("Game orientation is vertical");
+    	//LOGD("Game orientation is vertical");
     }
     else {
-    	LOGD("Game orientation is horizontal");
+    	//LOGD("Game orientation is horizontal");
     }
 
     v30mz_init(WSwan_readmem20, WSwan_writemem20, WSwan_readport, WSwan_writeport);
-    sprintf(tempstring, "WSwan_MemoryInit(%d, %d)", wsc, sram_size);
-    LOGD(tempstring);
+   // sprintf(tempstring, "WSwan_MemoryInit(%d, %d)", wsc, sram_size);
+   // LOGD(tempstring);
     WSwan_MemoryInit(wsc, sram_size); // EEPROM and SRAM are loaded in this func.
 
-    LOGD("WSwan_GfxInit()");
+   // LOGD("WSwan_GfxInit()");
     WSwan_GfxInit();
 
-    LOGD("WSwan_SoundInit()");
+   // LOGD("WSwan_SoundInit()");
     wswan_soundinit();
 
-    LOGD("wsMakeTiles()");
+   // LOGD("wsMakeTiles()");
     wsMakeTiles();
 
     //LOGD("reset()");

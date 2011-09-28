@@ -38,7 +38,6 @@
 
 #include "v30mz.h"
 #include "v30mz-private.h"
-#include "debug.h"
 
 
 
@@ -93,13 +92,13 @@ static char seg_prefix;		/* prefix segment indicator */
 
 static uint8 parity_table[256];
 
-static ALWAYS_INLINE void i_real_pushf(void)
+static inline void i_real_pushf(void)
 {
  PUSH( CompressFlags() ); 
  CLK(2);
 }
 
-static ALWAYS_INLINE void i_real_popf(void)
+static inline void i_real_popf(void)
 {
  uint32 tmp; 
  POP(tmp); 
@@ -255,14 +254,14 @@ static bool CheckInHLT(void)
 /*                             OPCODES                                      */
 /****************************************************************************/
 
-static ALWAYS_INLINE void i_real_insb(void)
+static inline void i_real_insb(void)
 {
  PutMemB(DS1,I.regs.w[IY], read_port(I.regs.w[DW])); 
  I.regs.w[IY]+= -2 * I.DF + 1; 
  CLK(6); 
 }
 
-static ALWAYS_INLINE void i_real_insw(void)
+static inline void i_real_insw(void)
 { 
  PutMemB(DS1,I.regs.w[IY],read_port(I.regs.w[DW])); 
  PutMemB(DS1,(I.regs.w[IY]+1)&0xffff,read_port((I.regs.w[DW]+1)&0xffff)); 
@@ -270,14 +269,14 @@ static ALWAYS_INLINE void i_real_insw(void)
  CLK(6); 
 }
 
-static ALWAYS_INLINE void i_real_outsb(void)
+static inline void i_real_outsb(void)
 { 
  write_port(I.regs.w[DW],GetMemB(DS0,I.regs.w[IX])); 
  I.regs.w[IX]+= -2 * I.DF + 1; 
  CLK(7); 
 } 
 
-static ALWAYS_INLINE void i_real_outsw(void)
+static inline void i_real_outsw(void)
 {
  write_port(I.regs.w[DW],GetMemB(DS0,I.regs.w[IX])); 
  write_port((I.regs.w[DW]+1)&0xffff,GetMemB(DS0,(I.regs.w[IX]+1)&0xffff)); 
@@ -285,7 +284,7 @@ static ALWAYS_INLINE void i_real_outsw(void)
  CLK(7); 
 }
 
-static ALWAYS_INLINE void i_real_movsb(void) 
+static inline void i_real_movsb(void)
 { 
  uint32 tmp = GetMemB(DS0,I.regs.w[IX]); 
  PutMemB(DS1,I.regs.w[IY], tmp); 
@@ -294,30 +293,30 @@ static ALWAYS_INLINE void i_real_movsb(void)
  CLK(5); 
 }
 
-static ALWAYS_INLINE void i_real_movsw(void) 
+static inline void i_real_movsw(void)
 {
  uint32 tmp = GetMemW(DS0,I.regs.w[IX]); PutMemW(DS1,I.regs.w[IY], tmp); I.regs.w[IY] += -4 * I.DF + 2; 
 I.regs.w[IX] += -4 * I.DF + 2; CLK(5); 
 }
 
-static ALWAYS_INLINE void i_real_cmpsb(void) 
+static inline void i_real_cmpsb(void)
 {
  uint32 src = GetMemB(DS1, I.regs.w[IY]); uint32 dst = GetMemB(DS0, I.regs.w[IX]); SUBB; I.regs.w[IY] += -2 * I.DF + 1; 
 I.regs.w[IX] += -2 * I.DF + 1; CLK(6); 
 }
 
-static ALWAYS_INLINE void i_real_cmpsw(void) 
+static inline void i_real_cmpsw(void)
 {
  uint32 src = GetMemW(DS1, I.regs.w[IY]); uint32 dst = GetMemW(DS0, I.regs.w[IX]); SUBW; I.regs.w[IY] += -4 * I.DF + 2; 
 I.regs.w[IX] += -4 * I.DF + 2; CLK(6); 
 }
 
-static ALWAYS_INLINE void i_real_stosb(void) 
+static inline void i_real_stosb(void)
 {
  PutMemB(DS1,I.regs.w[IY],I.regs.b[AL]);       I.regs.w[IY] += -2 * I.DF + 1; CLK(3);  
 }
 
-static ALWAYS_INLINE void i_real_stosw(void) 
+static inline void i_real_stosw(void)
 {
 // char temp[256];
 // sprintf(temp,"DS1: %x, IY: %x, AW: %x, DF: %X", DS1, I.regs.w[IY],I.regs.w[AW], I.DF);
@@ -326,23 +325,23 @@ static ALWAYS_INLINE void i_real_stosw(void)
  I.regs.w[IY] += -4 * I.DF + 2; CLK(3);
 }
 
-static ALWAYS_INLINE void i_real_lodsb(void) 
+static inline void i_real_lodsb(void)
 {
  I.regs.b[AL] = GetMemB(DS0,I.regs.w[IX]); I.regs.w[IX] += -2 * I.DF + 1; CLK(3); 
 }
 
-static ALWAYS_INLINE void i_real_lodsw(void) 
+static inline void i_real_lodsw(void)
 {
  I.regs.w[AW] = GetMemW(DS0,I.regs.w[IX]); I.regs.w[IX] += -4 * I.DF + 2; CLK(3); 
 }
 
-static ALWAYS_INLINE void i_real_scasb(void) 
+static inline void i_real_scasb(void)
 { 
  uint32 src = GetMemB(DS1, I.regs.w[IY]);      uint32 dst = I.regs.b[AL]; SUBB;
  I.regs.w[IY] += -2 * I.DF + 1; CLK(4); 
 }
 
-static ALWAYS_INLINE void i_real_scasw(void) 
+static inline void i_real_scasw(void)
 { 
  uint32 src = GetMemW(DS1, I.regs.w[IY]);      uint32 dst = I.regs.w[AW]; SUBW; 
  I.regs.w[IY] += -4 * I.DF + 2; CLK(4); 
@@ -1062,45 +1061,24 @@ static uint8 test_cpu_readport(uint32 A)
 void v30mz_execute(int cycles)
 {
 	v30mz_ICount += cycles;
+	if(InHLT){
+		WSwan_InterruptCheck();
+		if(InHLT)
+		//if(0 == 0)
+		{
+			int32 tmp = v30mz_ICount;
+			if(tmp > 0){
+				CLK(tmp);
+			}
+			return;
+		}
+	}
 
-	//char tmpxx[256];
-		//sprintf(tmpxx, "cycles - %d", v30mz_ICount);
-		//LOGD(tmpxx);
-
-	//LOGD(".a.");
- if(InHLT){
-	// LOGD(".b.");
-	// LOGD("WSwan_InterruptCheck()");
-
-	 WSwan_InterruptCheck();
-
-	// LOGD(".");
-	 if(InHLT)
-  //if(0 == 0)
-  {
-	  int32 tmp = v30mz_ICount;
-	  if(tmp > 0){
-		 // LOGD("CLK()");
-		  CLK(tmp);
-		 // LOGD(".");
-	  }
-   return;
-  }
- }
-
-	//LOGD(".Q.");
-
-		//sprintf(tmpxx, "cycles - %d", v30mz_ICount);
-		//LOGD(tmpxx);
- while(v30mz_ICount > 0) 
- {
-//  LOGD("WSwan_InterruptCheck()");
-  WSwan_InterruptCheck();
- // LOGD(".");
-//  LOGD("DoOP()");
-  DoOP(FETCHOP);
- // LOGD(".");
- }
+	while(v30mz_ICount > 0)
+	{
+		WSwan_InterruptCheck();
+		DoOP(FETCHOP);
+	}
 
 }
 

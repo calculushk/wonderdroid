@@ -114,6 +114,8 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 
+		Button[] buts =  new Button[buttons.length];
+		
 		if (buttons != null) {
 			Paint textPaint = new Paint();
 			textPaint.setColor(0xFFFFFFFF);
@@ -122,7 +124,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			textPaint.setAntiAlias(true);
 
 			for (int i = 0; i < buttons.length; i++) {
-				new Button(buttons[i], textPaint, buttonStrings[i]);
+				buts[i] = new Button(buttons[i], textPaint, buttonStrings[i]);
 			}
 		}
 
@@ -133,8 +135,12 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 		}
 
+		
+		
 		Matrix scale = renderer.getMatrix();
 
+		renderer.setButtons(buts);
+		
 		scale.reset();
 		scale.postScale(postscale, postscale);
 		scale.postTranslate((width - (WonderSwan.SCREEN_WIDTH * postscale)) / 2, 0);
