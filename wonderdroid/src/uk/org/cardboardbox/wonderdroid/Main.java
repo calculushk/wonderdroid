@@ -245,7 +245,7 @@ public class Main extends Activity {
 
 		Buttons pressed = decodeKey(keyCode);
 		if (pressed != null) {
-			view.setButton(pressed);
+			view.changeButton(pressed, true);
 			return true;
 		}
 
@@ -256,7 +256,7 @@ public class Main extends Activity {
 
 		Buttons pressed = decodeKey(keyCode);
 		if (pressed != null) {
-			view.clearButton(pressed);
+			view.changeButton(pressed, false);
 			return true;
 		}
 

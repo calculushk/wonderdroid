@@ -25,10 +25,22 @@ public class WonderSwan {
 	static final int audiobufferlen = 2000;
 	static public short[] audiobuffer = new short[audiobufferlen];
 
+	public static class HardwareButton {
+		public final Buttons button;
+		public final String label;
+
+		public HardwareButton (Buttons button, String label) {
+			this.button = button;
+			this.label = label;
+		}
+	}
+
 	public static enum Buttons {
 		START, A, B, X1, X2, X3, X4, Y1, Y2, Y3, Y4;
 	};
-	
+
+	public static HardwareButton[] buttons;
+
 	public static boolean mButtonStart = false;
 	public static boolean mButtonA = false;
 	public static boolean mButtonB = false;
@@ -45,13 +57,31 @@ public class WonderSwan {
 	public static final int channelconf = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
 	public static final int encoding = AudioFormat.ENCODING_PCM_16BIT;
 	public static final int audiofreq = 22050;
-	
 
 	public WonderSwan () {
 		throw new UnsupportedOperationException();
+
 	}
 
 	static {
+		String[] buttonStrings = new String[] {"Y1", "Y4", "Y2", "Y3", "X3", "X4", "X2", "X1", "A", "B", "START"};
+
+		buttons = new HardwareButton[buttonStrings.length];
+
+		buttons[0] = new HardwareButton(Buttons.Y1, buttonStrings[0]);
+		buttons[1] = new HardwareButton(Buttons.Y4, buttonStrings[1]);
+		buttons[2] = new HardwareButton(Buttons.Y2, buttonStrings[2]);
+		buttons[3] = new HardwareButton(Buttons.Y3, buttonStrings[3]);
+		
+		buttons[4] = new HardwareButton(Buttons.X3, buttonStrings[4]);
+		buttons[5] = new HardwareButton(Buttons.X4, buttonStrings[5]);
+		buttons[6] = new HardwareButton(Buttons.X2, buttonStrings[6]);
+		buttons[7] = new HardwareButton(Buttons.X1, buttonStrings[7]);
+	
+		buttons[8] = new HardwareButton(Buttons.A, buttonStrings[8]);
+		buttons[9] = new HardwareButton(Buttons.B, buttonStrings[9]);
+		buttons[10] = new HardwareButton(Buttons.START, buttonStrings[10]);
+		
 		System.loadLibrary("wonderswan");
 	}
 
@@ -67,7 +97,7 @@ public class WonderSwan {
 		}
 
 		samples = _execute_frame(skipframe, framebuffer, audiobuffer);
-		synchronized(audiobuffer){
+		synchronized (audiobuffer) {
 			audiobuffer.notify();
 		}
 	}

@@ -8,13 +8,9 @@ import uk.org.cardboardbox.wonderdroid.WonderSwan.Buttons;
 import uk.org.cardboardbox.wonderdroid.WonderSwanRenderer;
 import uk.org.cardboardbox.wonderdroid.utils.EmuThread;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 
 import android.util.AttributeSet;
@@ -32,7 +28,6 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 	private EmuThread mThread;
 	private WonderSwanRenderer renderer;
-	private String[] buttonStrings = new String[] {"Y1", "Y4", "Y2", "Y3", "X3", "X4", "X2", "X1", "A", "B", "START"};
 	private GradientDrawable[] buttons;
 
 	public EmuView (Context context) {
@@ -42,7 +37,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	public EmuView (Context context, AttributeSet attrs) {
 		super(context, attrs);
 
-		buttons = new GradientDrawable[11];
+		buttons = new GradientDrawable[WonderSwan.buttons.length];
 
 		for (int i = 0; i < buttons.length; i++) {
 			buttons[i] = (GradientDrawable)getResources().getDrawable(R.drawable.button);
@@ -114,8 +109,8 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 
-		Button[] buts =  new Button[buttons.length];
-		
+		Button[] buts = new Button[buttons.length];
+
 		if (buttons != null) {
 			Paint textPaint = new Paint();
 			textPaint.setColor(0xFFFFFFFF);
@@ -124,7 +119,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			textPaint.setAntiAlias(true);
 
 			for (int i = 0; i < buttons.length; i++) {
-				buts[i] = new Button(buttons[i], textPaint, buttonStrings[i]);
+				buts[i] = new Button(buttons[i], textPaint, WonderSwan.buttons[i].label);
 			}
 		}
 
@@ -135,12 +130,10 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 		}
 
-		
-		
 		Matrix scale = renderer.getMatrix();
 
 		renderer.setButtons(buts);
-		
+
 		scale.reset();
 		scale.postScale(postscale, postscale);
 		scale.postTranslate((width - (WonderSwan.SCREEN_WIDTH * postscale)) / 2, 0);
@@ -239,14 +232,14 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 	}
 
-	public void setButton (Buttons which) {
-		changeButton(which, true);
-	}
+// public void setButton (Buttons which) {
+// changeButton(which, true);
+// }
 
-	public void clearButton (Buttons which) {
-		changeButton(which, false);
+// public void clearButton (Buttons which) {
+// changeButton(which, false);
 
-	}
+// }
 
 	public EmuThread getThread () {
 		return mThread;
@@ -262,27 +255,13 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		float x = event.getX();
 		float y = event.getY();
 
-		if (event.getPointerCount() != 1) {
-			return true;
-		}
-
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
-			if ((primaryButton = checkButtons(event.getX(), event.getY())) != null) {
-				Log.d(TAG, "down");
-			}
-			break;
+			checkButtons(x, y, true);
+			return true;
 		case MotionEvent.ACTION_UP:
-			primaryButton = null;
-			Log.d(TAG, "up");
-			break;
-		case MotionEvent.ACTION_POINTER_DOWN:
-			Log.d(TAG, "sdown");
-			break;
-
-		case MotionEvent.ACTION_POINTER_UP:
-			Log.d(TAG, "sup");
-			break;
+			checkButtons(x, y, false);
+			return true;
 
 		}
 		// else if(action == MotionEvent.ACTION_MOVE){
@@ -295,17 +274,17 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		// }
 		// }
 
-		return true;
+		return false;
 	}
 
-	private GradientDrawable checkButtons (float x, float y) {
-		for (GradientDrawable button : buttons) {
-			if (button.getBounds().contains((int)x, (int)y)) {
-				return button;
+	private void checkButtons (float x, float y, boolean pressed) {
+		for (int i = 0; i < buttons.length; i++) {
+			if (buttons[i].getBounds().contains((int)x, (int)y)) {
+				changeButton(WonderSwan.buttons[i].button, pressed);
+				break;
+
 			}
 		}
-
-		return null;
 	}
 
 }
