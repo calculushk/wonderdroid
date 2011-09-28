@@ -54,7 +54,7 @@ public class Main extends Activity {
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		view = new EmuView(this);
 		setContentView(view);
 
@@ -70,34 +70,27 @@ public class Main extends Activity {
 			throw new RuntimeException();
 		}
 
-		
 		/*
-		for (int button : buttonIds) {
-
-			((Button)this.findViewById(button)).setOnTouchListener(new OnTouchListener() {
-
-				@Override
-				public boolean onTouch (View v, MotionEvent event) {
-
-					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						view.setButton(Buttons.findForId(v.getId()));
-
-					} else if (event.getAction() == MotionEvent.ACTION_UP) {
-						view.clearButton(Buttons.findForId(v.getId()));
-					}
-
-					return false;
-				}
-
-			});
-
-		}*/
-
-		
+		 * for (int button : buttonIds) {
+		 * 
+		 * ((Button)this.findViewById(button)).setOnTouchListener(new OnTouchListener() {
+		 * 
+		 * @Override public boolean onTouch (View v, MotionEvent event) {
+		 * 
+		 * if (event.getAction() == MotionEvent.ACTION_DOWN) { view.setButton(Buttons.findForId(v.getId()));
+		 * 
+		 * } else if (event.getAction() == MotionEvent.ACTION_UP) { view.clearButton(Buttons.findForId(v.getId())); }
+		 * 
+		 * return false; }
+		 * 
+		 * });
+		 * 
+		 * }
+		 */
 
 		parseKeys();
-		//mControlsVisible = true;
-		//toggleControls();
+		// mControlsVisible = true;
+		// toggleControls();
 
 		mPB = (ProgressBar)this.findViewById(R.id.romloadprogressbar);
 
@@ -181,8 +174,6 @@ public class Main extends Activity {
 	private void parseEmuOptions () {
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-		view.getThread().showFps(prefs.getBoolean("emufpscounter", false));
 	}
 
 	private void parseKeys () {

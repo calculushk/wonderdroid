@@ -2,23 +2,25 @@
 package uk.org.cardboardbox.wonderdroid.utils;
 
 import android.graphics.Canvas;
-import android.os.Process;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class EmuThread extends Thread {
 
 	public static interface Renderer {
-		public void start();
+		public void start ();
+
 		public void update (boolean skip);
-		public void render (Canvas c, boolean frameskip, boolean showFps, String fpsString);
+
+		public void render (Canvas c);
 	}
 
 	private Renderer renderer;
 
 	private static final boolean debug = false;
 	private static final String TAG = EmuThread.class.getSimpleName();
-	private static final int TARGETFRAMETIME = 1000 / 72;
+	private static final int TARGETFRAMETIME = (int) Math.round(1000 / 75.47);
 
 	private boolean mIsRunning = false;
 	private boolean isPaused = false;
@@ -28,11 +30,15 @@ public class EmuThread extends Thread {
 
 	private Canvas c;
 
+	private int frame;
 	private long frameStart;
 	private long frameEnd;
-	private long frametime;
-	private long holdtime;
-	private long averageFrameTime = TARGETFRAMETIME;
+	private int realRuntime;
+	private int emulatedRuntime;
+	private int frametime;
+
+	boolean skip = false;
+	boolean behind = false;
 
 	public EmuThread (Renderer renderer) {
 
@@ -62,7 +68,6 @@ public class EmuThread extends Thread {
 			SystemClock.sleep(20);
 		}
 
-		Process.setThreadPriority(Process.THREAD_PRIORITY_LESS_FAVORABLE);
 		// benchmark
 		/*
 		 * long start = System.currentTimeMillis(); for (int frame = 0; frame < 60; frame++) {
@@ -74,20 +79,15 @@ public class EmuThread extends Thread {
 		 * fps)); //
 		 */
 
-		boolean skip = false;
-
 		while (mIsRunning) {
 
 			if (isPaused) {
 				SystemClock.sleep(TARGETFRAMETIME);
-
 			} else {
 
+				skip = behind || frame % 3 == 0;
+
 				frameStart = System.currentTimeMillis();
-				// boolean skip = framecounter % mustSkipFrames == 0 || lastFrame > thisFrame + TARGETFRAMETIME;
-
-				skip = true;
-
 				renderer.update(skip);
 
 				if (!skip) {
@@ -95,8 +95,7 @@ public class EmuThread extends Thread {
 					try {
 						c = mSurfaceHolder.lockCanvas();
 						synchronized (mSurfaceHolder) {
-							renderer.render(c, skip, showFps, fpsString);
-
+							renderer.render(c);
 						}
 					} finally {
 						if (c != null) {
@@ -104,15 +103,19 @@ public class EmuThread extends Thread {
 						}
 					}
 				}
-				frameEnd = System.currentTimeMillis();
-				frametime = frameEnd - frameStart;
-				averageFrameTime = (averageFrameTime + frametime) / 2;
-				// updateFPSString();
 
-				if (frametime < TARGETFRAMETIME) {
-					SystemClock.sleep(TARGETFRAMETIME - frametime);
+				frameEnd = System.currentTimeMillis();
+				frametime = (int)(frameEnd - frameStart);
+				realRuntime += frametime;
+				emulatedRuntime += TARGETFRAMETIME;
+
+				if (realRuntime <= emulatedRuntime) {
+					behind = false;
+				} else {
+					behind = true;
 				}
 
+				frame++;
 			}
 
 		}
@@ -134,16 +137,6 @@ public class EmuThread extends Thread {
 
 	public void clearRunning () {
 		mIsRunning = false;
-	}
-
-	private String fpsString = new String();
-
-	private void updateFPSString () {
-		fpsString = String.format("%d frametime", averageFrameTime);
-	}
-
-	public void showFps (boolean show) {
-		showFps = show;
 	}
 
 }

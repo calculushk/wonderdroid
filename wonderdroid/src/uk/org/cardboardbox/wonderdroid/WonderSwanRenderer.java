@@ -16,9 +16,9 @@ import uk.org.cardboardbox.wonderdroid.utils.EmuThread;
 public class WonderSwanRenderer implements EmuThread.Renderer {
 
 	private AudioTrack audio = new AudioTrack(AudioManager.STREAM_MUSIC, WonderSwan.audiofreq, WonderSwan.channelconf,
-		WonderSwan.encoding, AudioTrack.getMinBufferSize(WonderSwan.audiofreq, WonderSwan.channelconf, WonderSwan.encoding) * 1,
+		WonderSwan.encoding, AudioTrack.getMinBufferSize(WonderSwan.audiofreq, WonderSwan.channelconf, WonderSwan.encoding) * 4,
 		AudioTrack.MODE_STREAM);
-	
+
 	private final ShortBuffer frameone;
 	private final Bitmap framebuffer;
 
@@ -38,14 +38,11 @@ public class WonderSwanRenderer implements EmuThread.Renderer {
 	}
 
 	@Override
-	public void render (Canvas c, boolean frameskip, boolean showFps, String fpsString) {
+	public void render (Canvas c) {
 
 		// c.drawARGB(0xff, 0, 0, 0);
-		c.drawBitmap(framebuffer, scale, paint);
-		//c.drawBitmap(framebuffer, 0, 0, null);
-		// if (showFps) {
-		// c.drawText(fpsString, 30, 50, textPaint);
-		// }
+	//	c.drawBitmap(framebuffer, scale, paint);
+		 c.drawBitmap(framebuffer, 0, 0, null);
 
 	}
 
@@ -57,7 +54,7 @@ public class WonderSwanRenderer implements EmuThread.Renderer {
 		return paint;
 	}
 
-	public void start(){
+	public void start () {
 		audio.play();
 	}
 
@@ -66,11 +63,11 @@ public class WonderSwanRenderer implements EmuThread.Renderer {
 
 		WonderSwan.execute_frame(frameone, skip);
 		audio.write(WonderSwan.audiobuffer, 0, WonderSwan.samples * 2);
+
 		if (!skip) {
 			framebuffer.copyPixelsFromBuffer(frameone);
 		}
 
-		// frame++;
 	}
 
 }

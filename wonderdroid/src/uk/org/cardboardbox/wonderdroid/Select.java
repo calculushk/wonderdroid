@@ -160,9 +160,9 @@ public class Select extends Activity {
 
 		setContentView(R.layout.select);
 		//
-		File romdir = new File(sdpath + "/wonderdroid/");
+		File romdir = new File(sdpath + WonderDroid.DIRECTORY);
 		romdir.mkdir();
-		File cartmemdir = new File(sdpath + "/wonderdroid/cartmem/");
+		File cartmemdir = new File(sdpath + WonderDroid.CARTMEMDIRECTORY);
 		cartmemdir.mkdir();
 		//
 
