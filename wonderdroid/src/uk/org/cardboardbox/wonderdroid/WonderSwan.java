@@ -72,16 +72,16 @@ public class WonderSwan {
 		buttons[1] = new HardwareButton(Buttons.Y4, buttonStrings[1]);
 		buttons[2] = new HardwareButton(Buttons.Y2, buttonStrings[2]);
 		buttons[3] = new HardwareButton(Buttons.Y3, buttonStrings[3]);
-		
+
 		buttons[4] = new HardwareButton(Buttons.X3, buttonStrings[4]);
 		buttons[5] = new HardwareButton(Buttons.X4, buttonStrings[5]);
 		buttons[6] = new HardwareButton(Buttons.X2, buttonStrings[6]);
 		buttons[7] = new HardwareButton(Buttons.X1, buttonStrings[7]);
-	
+
 		buttons[8] = new HardwareButton(Buttons.A, buttonStrings[8]);
 		buttons[9] = new HardwareButton(Buttons.B, buttonStrings[9]);
 		buttons[10] = new HardwareButton(Buttons.START, buttonStrings[10]);
-		
+
 		System.loadLibrary("wonderswan");
 	}
 
