@@ -4,7 +4,6 @@ package uk.org.cardboardbox.wonderdroid;
 import java.io.File;
 import java.io.IOException;
 
-import uk.org.cardboardbox.wonderdroid.WonderSwan.Buttons;
 import uk.org.cardboardbox.wonderdroid.views.EmuView;
 import android.app.Activity;
 import android.content.Intent;
@@ -32,24 +31,12 @@ public class Main extends Activity {
 	private ProgressBar mPB;
 	private EmuView view;
 
-	private int mButtonStartCode = 0;
-	private int mButtonACode = 0;
-	private int mButtonBCode = 0;
-	private int mButtonX1Code = 0;
-	private int mButtonX2Code = 0;
-	private int mButtonX3Code = 0;
-	private int mButtonX4Code = 0;
-	private int mButtonY1Code = 0;
-	private int mButtonY2Code = 0;
-	private int mButtonY3Code = 0;
-	private int mButtonY4Code = 0;
-
 	private String mRomPath;
 
 	private File mCartMem;
 
 	private Boolean mRomLoaded = false;
-	private boolean mControlsVisible = true;
+	private boolean mControlsVisible = false;
 
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
@@ -57,6 +44,8 @@ public class Main extends Activity {
 
 		view = new EmuView(this);
 		setContentView(view);
+		view.setFocusable(true);
+		view.setFocusableInTouchMode(true);
 
 		mRomPath = this.getIntent().getExtras().getString(ROMPATH);
 
@@ -70,11 +59,7 @@ public class Main extends Activity {
 			throw new RuntimeException();
 		}
 
-
-
 		parseKeys();
-		// mControlsVisible = true;
-		// toggleControls();
 
 		mPB = (ProgressBar)this.findViewById(R.id.romloadprogressbar);
 
@@ -151,118 +136,24 @@ public class Main extends Activity {
 	}
 
 	private void toggleControls () {
-
 		mControlsVisible = !mControlsVisible;
+		view.showButtons(mControlsVisible);
 	}
 
 	private void parseEmuOptions () {
-
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		// The emu options are all gone for now
+		// SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 	}
 
 	private void parseKeys () {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-		mButtonStartCode = prefs.getInt("hwcontrolStart", 0);
-
-		mButtonACode = prefs.getInt("hwcontrolA", 0);
-		mButtonBCode = prefs.getInt("hwcontrolB", 0);
-
-		mButtonX1Code = prefs.getInt("hwcontrolX1", 0);
-		mButtonX2Code = prefs.getInt("hwcontrolX2", 0);
-		mButtonX3Code = prefs.getInt("hwcontrolX3", 0);
-		mButtonX4Code = prefs.getInt("hwcontrolX4", 0);
-
-		mButtonY1Code = prefs.getInt("hwcontrolY1", 0);
-		mButtonY2Code = prefs.getInt("hwcontrolY2", 0);
-		mButtonY3Code = prefs.getInt("hwcontrolY3", 0);
-		mButtonY4Code = prefs.getInt("hwcontrolY4", 0);
-	}
-
-	private Buttons decodeKey (int keycode) {
-
-		if (keycode == mButtonStartCode) {
-			return Buttons.START;
-		}
-
-		else if (keycode == mButtonACode) {
-			return Buttons.A;
-		}
-
-		else if (keycode == mButtonBCode) {
-			return Buttons.B;
-		}
-
-		else if (keycode == mButtonX1Code) {
-			return Buttons.X1;
-		}
-
-		else if (keycode == mButtonX2Code) {
-			return Buttons.X2;
-		}
-
-		else if (keycode == mButtonX3Code) {
-			return Buttons.X3;
-		}
-
-		else if (keycode == mButtonX4Code) {
-			return Buttons.X4;
-		}
-
-		else if (keycode == mButtonY1Code) {
-			return Buttons.Y1;
-		}
-
-		else if (keycode == mButtonY2Code) {
-			return Buttons.Y2;
-		}
-
-		else if (keycode == mButtonY3Code) {
-			return Buttons.Y3;
-		}
-
-		else if (keycode == mButtonY4Code) {
-			return Buttons.Y4;
-		}
-
-		return null;
+		view.setKeyCodes(prefs.getInt("hwcontrolStart", 0), prefs.getInt("hwcontrolA", 0), prefs.getInt("hwcontrolB", 0),
+			prefs.getInt("hwcontrolX1", 0), prefs.getInt("hwcontrolX2", 0), prefs.getInt("hwcontrolX3", 0),
+			prefs.getInt("hwcontrolX4", 0), prefs.getInt("hwcontrolY1", 0), prefs.getInt("hwcontrolY2", 0),
+			prefs.getInt("hwcontrolY3", 0), prefs.getInt("hwcontrolY4", 0));
 
 	}
-
-	public boolean onKeyDown (int keyCode, KeyEvent event) {
-
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			// disable back key
-			return true;
-		}
-
-		if (keyCode == KeyEvent.KEYCODE_MENU) {
-			if (!mRomLoaded) {
-				return true;
-			}
-			return false;
-		}
-
-		Buttons pressed = decodeKey(keyCode);
-		if (pressed != null) {
-			view.changeButton(pressed, true);
-			return true;
-		}
-
-		return super.onKeyDown(keyCode, event);
-	}
-
-	public boolean onKeyUp (int keyCode, KeyEvent event) {
-
-		Buttons pressed = decodeKey(keyCode);
-		if (pressed != null) {
-			view.changeButton(pressed, false);
-			return true;
-		}
-
-		return super.onKeyUp(keyCode, event);
-	}
-
 
 	@Override
 	public void onRestart () {

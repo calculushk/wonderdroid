@@ -4,7 +4,7 @@ package uk.org.cardboardbox.wonderdroid.views;
 import uk.org.cardboardbox.wonderdroid.Button;
 import uk.org.cardboardbox.wonderdroid.R;
 import uk.org.cardboardbox.wonderdroid.WonderSwan;
-import uk.org.cardboardbox.wonderdroid.WonderSwan.Buttons;
+import uk.org.cardboardbox.wonderdroid.WonderSwan.WonderSwanButton;
 import uk.org.cardboardbox.wonderdroid.WonderSwanRenderer;
 import uk.org.cardboardbox.wonderdroid.utils.EmuThread;
 import android.content.Context;
@@ -15,6 +15,7 @@ import android.graphics.drawable.GradientDrawable;
 
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -28,7 +29,22 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 	private EmuThread mThread;
 	private WonderSwanRenderer renderer;
+	private boolean controlsVisible = false;
 	private GradientDrawable[] buttons;
+
+	public void setKeyCodes (int start, int a, int b, int x1, int x2, int x3, int x4, int y1, int y2, int y3, int y4) {
+		WonderSwanButton.START.keyCode = start;
+		WonderSwanButton.A.keyCode = a;
+		WonderSwanButton.B.keyCode = b;
+		WonderSwanButton.X1.keyCode = x1;
+		WonderSwanButton.X2.keyCode = x2;
+		WonderSwanButton.X3.keyCode = x3;
+		WonderSwanButton.X4.keyCode = x4;
+		WonderSwanButton.Y1.keyCode = y1;
+		WonderSwanButton.Y2.keyCode = y2;
+		WonderSwanButton.Y3.keyCode = y3;
+		WonderSwanButton.Y4.keyCode = y4;
+	}
 
 	public EmuView (Context context) {
 		this(context, null);
@@ -37,7 +53,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	public EmuView (Context context, AttributeSet attrs) {
 		super(context, attrs);
 
-		buttons = new GradientDrawable[WonderSwan.buttons.length];
+		buttons = new GradientDrawable[WonderSwanButton.values().length];
 
 		for (int i = 0; i < buttons.length; i++) {
 			buttons[i] = (GradientDrawable)getResources().getDrawable(R.drawable.button);
@@ -119,7 +135,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			textPaint.setAntiAlias(true);
 
 			for (int i = 0; i < buttons.length; i++) {
-				buts[i] = new Button(buttons[i], textPaint, WonderSwan.buttons[i].label);
+				buts[i] = new Button(buttons[i], textPaint, WonderSwanButton.values()[i].name());
 			}
 		}
 
@@ -191,43 +207,8 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 
-	public static void changeButton (Buttons which, boolean newstate) {
-		switch (which) {
-		case START:
-			WonderSwan.mButtonStart = newstate;
-			break;
-		case A:
-			WonderSwan.mButtonA = newstate;
-			break;
-		case B:
-			WonderSwan.mButtonB = newstate;
-			break;
-		case X1:
-			WonderSwan.mButtonX1 = newstate;
-			break;
-		case X2:
-			WonderSwan.mButtonX2 = newstate;
-			break;
-		case X3:
-			WonderSwan.mButtonX3 = newstate;
-			break;
-		case X4:
-			WonderSwan.mButtonX4 = newstate;
-			break;
-		case Y1:
-			WonderSwan.mButtonY1 = newstate;
-			break;
-		case Y2:
-			WonderSwan.mButtonY2 = newstate;
-			break;
-		case Y3:
-			WonderSwan.mButtonY3 = newstate;
-			break;
-		case Y4:
-			WonderSwan.mButtonY4 = newstate;
-			break;
-		}
-
+	public static void changeButton (WonderSwanButton which, boolean newstate) {
+		which.down = newstate;
 		WonderSwan.buttonsDirty = true;
 
 	}
@@ -245,25 +226,43 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 		return mThread;
 	}
 
+	public EmuThread.Renderer getRenderer () {
+		return renderer;
+	}
+
 	GradientDrawable primaryButton;
 	GradientDrawable secondaryButton;
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
 
-		int action = event.getAction();
-		float x = event.getX();
-		float y = event.getY();
-
-		switch (action) {
-		case MotionEvent.ACTION_DOWN:
-			checkButtons(x, y, true);
-			return true;
-		case MotionEvent.ACTION_UP:
-			checkButtons(x, y, false);
-			return true;
-
+		if (!controlsVisible) {
+			return false;
 		}
+
+		int action = event.getAction();
+
+		resetButtons();
+
+		// Log.d(TAG, "event " + action);
+
+		if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN
+			|| action == MotionEvent.ACTION_POINTER_2_DOWN) {
+
+			// Log.d(TAG, "down");
+
+			int pointers = event.getPointerCount();
+			for (int i = 0; i < pointers; i++) {
+				int id = event.getPointerId(i);
+
+				// Log.d(TAG, "pointer " + i + id);
+
+				checkButtons(event.getX(id), event.getY(id), true);
+			}
+			return true;
+		}
+
+		// }
 		// else if(action == MotionEvent.ACTION_MOVE){
 		// if(primaryButton != null){
 		// if(!primaryButton.getBounds().contains((int) x, (int)y)){
@@ -280,11 +279,66 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	private void checkButtons (float x, float y, boolean pressed) {
 		for (int i = 0; i < buttons.length; i++) {
 			if (buttons[i].getBounds().contains((int)x, (int)y)) {
-				changeButton(WonderSwan.buttons[i].button, pressed);
+				changeButton(WonderSwanButton.values()[i], pressed);
 				break;
 
 			}
 		}
+	}
+
+	private void resetButtons () {
+		for (WonderSwanButton button : WonderSwanButton.values()) {
+			changeButton(button, false | button.hardwareKeyDown);
+		}
+	}
+
+	private boolean decodeKey (int keycode, boolean down) {
+
+		for (WonderSwanButton button : WonderSwanButton.values()) {
+			if (button.keyCode == keycode) {
+				Log.d(TAG, "here");
+				button.hardwareKeyDown = down;
+
+				changeButton(button, down);
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+	public boolean onKeyDown (int keyCode, KeyEvent event) {
+
+		// Log.d(TAG, "key down");
+
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			// disable back key
+			return true;
+		}
+
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+			// if (!mRomLoaded) {
+			// return true;
+			// }
+			return false;
+		}
+
+		return decodeKey(keyCode, true);
+	}
+
+	public boolean onKeyUp (int keyCode, KeyEvent event) {
+
+		return decodeKey(keyCode, false);
+	}
+
+	public void showButtons (boolean show) {
+
+		controlsVisible = show;
+
+		// if(show){
+		// // renderer.setButtons(buttons);
+		// }
 	}
 
 }
