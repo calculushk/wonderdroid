@@ -31,6 +31,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	private WonderSwanRenderer renderer;
 	private boolean controlsVisible = false;
 	private GradientDrawable[] buttons;
+	private Button[] renderedButtons;
 
 	public void setKeyCodes (int start, int a, int b, int x1, int x2, int x3, int x4, int y1, int y2, int y3, int y4) {
 		WonderSwanButton.START.keyCode = start;
