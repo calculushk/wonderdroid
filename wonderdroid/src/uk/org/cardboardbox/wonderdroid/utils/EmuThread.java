@@ -4,15 +4,21 @@ package uk.org.cardboardbox.wonderdroid.utils;
 import uk.org.cardboardbox.wonderdroid.Button;
 import android.graphics.Canvas;
 import android.os.SystemClock;
-import android.util.Log;
+
 import android.view.SurfaceHolder;
 
 public class EmuThread extends Thread {
 
+	@SuppressWarnings("unused")
+	private static final String TAG = EmuThread.class.getSimpleName();
+
 	public static interface Renderer {
 		public void start ();
 
-		public void setButtons(Button[] buttons);
+		public void setButtons (Button[] buttons);
+
+		public void showButtons (boolean show);
+
 		public void update (boolean skip);
 
 		public void render (Canvas c);
@@ -20,8 +26,6 @@ public class EmuThread extends Thread {
 
 	private Renderer renderer;
 
-	private static final boolean debug = false;
-	private static final String TAG = EmuThread.class.getSimpleName();
 	private static final int TARGETFRAMETIME = (int)Math.round(1000 / 75.47);
 
 	private boolean mIsRunning = false;
@@ -42,9 +46,7 @@ public class EmuThread extends Thread {
 	boolean behind = false;
 
 	public EmuThread (Renderer renderer) {
-
 		this.renderer = renderer;
-
 	}
 
 	public void setSurfaceHolder (SurfaceHolder sh) {
@@ -102,7 +104,7 @@ public class EmuThread extends Thread {
 				if (realRuntime <= emulatedRuntime) {
 					behind = false;
 				} else {
-					//behind = true;
+					// behind = true;
 				}
 
 				frame++;

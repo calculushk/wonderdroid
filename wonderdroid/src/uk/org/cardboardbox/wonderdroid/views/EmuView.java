@@ -31,7 +31,6 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	private WonderSwanRenderer renderer;
 	private boolean controlsVisible = false;
 	private GradientDrawable[] buttons;
-	private Button[] renderedButtons;
 
 	public void setKeyCodes (int start, int a, int b, int x1, int x2, int x3, int x4, int y1, int y2, int y3, int y4) {
 		WonderSwanButton.START.keyCode = start;
@@ -214,15 +213,6 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 	}
 
-// public void setButton (Buttons which) {
-// changeButton(which, true);
-// }
-
-// public void clearButton (Buttons which) {
-// changeButton(which, false);
-
-// }
-
 	public EmuThread getThread () {
 		return mThread;
 	}
@@ -230,9 +220,6 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	public EmuThread.Renderer getRenderer () {
 		return renderer;
 	}
-
-	GradientDrawable primaryButton;
-	GradientDrawable secondaryButton;
 
 	@Override
 	public boolean onTouchEvent (MotionEvent event) {
@@ -329,17 +316,12 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	public boolean onKeyUp (int keyCode, KeyEvent event) {
-
 		return decodeKey(keyCode, false);
 	}
 
 	public void showButtons (boolean show) {
-
 		controlsVisible = show;
-
-		// if(show){
-		// // renderer.setButtons(buttons);
-		// }
+		renderer.showButtons(show);
 	}
 
 }

@@ -9,8 +9,9 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
 
+import uk.org.cardboardbox.wonderdroid.utils.CpuUtils;
+
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.util.Log;
 
@@ -44,7 +45,11 @@ public class WonderSwan {
 	}
 
 	static {
-		System.loadLibrary("wonderswan");
+		if (CpuUtils.hasNeon()) {
+			System.loadLibrary("wonderswan-neon");
+		} else {
+			System.loadLibrary("wonderswan");
+		}
 	}
 
 	static public native void load (String rompath, boolean wsc);

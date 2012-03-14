@@ -5,6 +5,8 @@ import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
+import uk.org.cardboardbox.wonderdroid.utils.ZipCache;
+
 import android.app.Application;
 
 @ReportsCrashes(formKey = "", // will not be used
@@ -19,6 +21,8 @@ public class WonderDroid extends Application {
 		super.onCreate();
 		ACRA.init(this);
 		WonderSwan.outputDebugShizzle();
+		ZipCache.dumpInfo(this.getBaseContext());
+		ZipCache.clean(this.getBaseContext());
 	}
 
 }

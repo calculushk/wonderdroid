@@ -16,7 +16,6 @@ public class RomGalleryView extends LinearLayout {
 
 	public RomGalleryView (Context context, AttributeSet attrs) {
 		super(context, attrs);
-
 		LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mLayout = (LinearLayout)((LinearLayout)layoutInflater.inflate(R.layout.romgalleyview, this)).getChildAt(0);
 	}

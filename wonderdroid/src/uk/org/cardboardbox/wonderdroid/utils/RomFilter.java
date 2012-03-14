@@ -1,3 +1,4 @@
+
 package uk.org.cardboardbox.wonderdroid.utils;
 
 import java.io.File;
@@ -10,7 +11,7 @@ public class RomFilter implements FileFilter {
 			String[] parts = pathname.getName().split("\\.");
 			if (parts.length >= 2) {
 				String extension = parts[parts.length - 1];
-				if (extension.compareTo("wsc") == 0 || extension.compareTo("ws") == 0) {
+				if (extension.compareTo("wsc") == 0 || extension.compareTo("ws") == 0 || extension.compareTo("zip") == 0) {
 					return true;
 				}
 			}

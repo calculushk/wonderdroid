@@ -9,9 +9,9 @@ import android.graphics.drawable.Drawable;
 
 public class Button {
 
-	Rect rect;
-	Rect drawrect;
-	Bitmap normal, pressed;
+	final Rect rect;
+	final Rect drawrect;
+	final Bitmap normal; // pressed;
 
 	public Button (Drawable base, Paint textPaint, String text) {
 
@@ -26,7 +26,7 @@ public class Button {
 		base.draw(canvas);
 		canvas.drawText(text, (drawrect.left + drawrect.width() / 2) - textLen,
 			(drawrect.top + drawrect.height() / 2) + (textPaint.getTextSize() / 2), textPaint);
-	
+
 		base.setBounds(rect);
 	}
 

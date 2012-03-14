@@ -23,12 +23,8 @@ public class Main extends Activity {
 
 	private ProgressBar mPB;
 	private EmuView view;
-
 	private String mRomPath;
-
 	private File mCartMem;
-
-	private Boolean mRomLoaded = false;
 	private boolean mControlsVisible = false;
 
 	@Override
@@ -60,7 +56,6 @@ public class Main extends Activity {
 
 			@Override
 			protected void onPreExecute () {
-				mRomLoaded = false;
 			}
 
 			@Override
@@ -79,7 +74,6 @@ public class Main extends Activity {
 				if (mCartMem.isFile() && (mCartMem.length() > 0)) {
 					WonderSwan.loadbackupdata(mCartMem.getAbsolutePath());
 				}
-				mRomLoaded = true;
 				view.start();
 			}
 		};
@@ -92,7 +86,6 @@ public class Main extends Activity {
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.main_exitmi:
-			mRomLoaded = false;
 			this.finish();
 			return true;
 

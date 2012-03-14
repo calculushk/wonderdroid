@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.Random;
 
 import uk.org.cardboardbox.wonderdroid.utils.RomAdapter;
+import uk.org.cardboardbox.wonderdroid.utils.RomAdapter.Rom;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -31,7 +32,10 @@ import android.widget.Toast;
 
 public class Select extends Activity {
 
+	
+	@SuppressWarnings("unused")
 	private static final String TAG = Select.class.getSimpleName();
+	
 	private Bitmap backgroundOne = null;
 	private Runnable bgSwitcher = new Runnable() {
 
@@ -137,7 +141,7 @@ public class Select extends Activity {
 
 	private void startEmu (int romid) {
 		Intent intent = new Intent(this, Main.class);
-		intent.putExtra(Main.ROMPATH, ((File)mRAdapter.getItem(romid)).getAbsolutePath());
+		intent.putExtra(Main.ROMPATH, Rom.getRomFile(this.getBaseContext(), mRAdapter.getItem(romid)).getAbsolutePath());
 		startActivity(intent);
 	}
 
@@ -168,7 +172,7 @@ public class Select extends Activity {
 
 		mScreenFormat = (TextView)this.findViewById(R.id.select_screenformat);
 		mAssetManager = this.getAssets();
-		mRAdapter = new RomAdapter(sdpath + "/wonderdroid/", mAssetManager);
+		mRAdapter = new RomAdapter(this.getBaseContext(), sdpath + "/wonderdroid/", mAssetManager);
 
 		if (mRAdapter.getCount() != 0) {
 
@@ -182,21 +186,23 @@ public class Select extends Activity {
 				@Override
 				public void onItemSelected (AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 
-					WonderSwan.Header header = new WonderSwan.Header((File)mRAdapter.getItem(arg2));
-					String newtext;
-					if (header.isColor) {
-						newtext = getString(R.string.colour);
-					} else {
-						newtext = getString(R.string.mono);
-					}
+					WonderSwan.Header header = mRAdapter.getHeader(arg2);
+					if (header != null) {
+						String newtext;
+						if (header.isColor) {
+							newtext = getString(R.string.colour);
+						} else {
+							newtext = getString(R.string.mono);
+						}
 
-					if (header.isVertical) {
-						newtext += getString(R.string.vertical);
-					} else {
-						newtext += getString(R.string.horizontal);
-					}
+						if (header.isVertical) {
+							newtext += getString(R.string.vertical);
+						} else {
+							newtext += getString(R.string.horizontal);
+						}
 
-					mScreenFormat.setText(newtext);
+						mScreenFormat.setText(newtext);
+					}
 				}
 
 				@Override
