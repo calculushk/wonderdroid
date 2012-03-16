@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.org.cardboardbox.wonderdroid"
-    android:versionCode="28"
-    android:versionName="1.7f" >
+    android:versionCode="29"
+    android:versionName="1.7fi" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
