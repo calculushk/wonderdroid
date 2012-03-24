@@ -23,6 +23,18 @@ import android.widget.BaseAdapter;
 
 public class RomAdapter extends BaseAdapter {
 
+	private class LoaderThread extends Thread {
+		public void run () {
+			super.run();
+			Log.d(TAG, "Preloading...");
+			for (int i = 0; i < RomAdapter.this.getCount(); i++) {
+				Log.d(TAG, "Loading " + i);
+				RomAdapter.this.getHeader(i);
+			}
+			Log.d(TAG, "exit");
+		}
+	}
+
 	public static final class Rom {
 		public static String[] romExtension = new String[] {"ws", "wsc"};
 
@@ -53,7 +65,6 @@ public class RomAdapter extends BaseAdapter {
 				}
 
 			}
-
 			return null;
 		}
 	}
@@ -73,6 +84,7 @@ public class RomAdapter extends BaseAdapter {
 		mRomDir = new File(romdir);
 		mContext = context;
 		mRoms = findRoms();
+		new LoaderThread().start();
 	}
 
 	private Rom[] findRoms () {
@@ -170,13 +182,15 @@ public class RomAdapter extends BaseAdapter {
 			Bitmap shot = getBitmap(header.getInternalName());
 			if (shot != null) {
 				view.setSnap(shot);
+			} else {
+				Log.d(TAG, "snap is null for " + mRoms[index].sourcefile);
 			}
 		}
 
 		return view;
 	}
 
-	public WonderSwan.Header getHeader (int index) {
+	public synchronized WonderSwan.Header getHeader (int index) {
 
 		if (mHeaderCache.containsKey(index)) {
 			return mHeaderCache.get(index);

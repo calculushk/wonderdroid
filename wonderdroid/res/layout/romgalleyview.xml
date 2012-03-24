@@ -19,6 +19,7 @@
   		android:shadowDy="1"
   		android:shadowRadius="2"
   		android:textSize="18sp"
+  		android:maxLines="1"
   		android:paddingBottom="25dp"/>
   
   	<ImageView

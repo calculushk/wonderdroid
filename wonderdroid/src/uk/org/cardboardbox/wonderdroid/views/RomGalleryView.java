@@ -25,6 +25,11 @@ public class RomGalleryView extends LinearLayout {
 	}
 
 	public void setTitle (String title) {
+
+		if (title.length() > 30) {
+			title = title.substring(0, 27) + "...";
+		}
+
 		((TextView)mLayout.getChildAt(0)).setText(title);
 	}
 }
