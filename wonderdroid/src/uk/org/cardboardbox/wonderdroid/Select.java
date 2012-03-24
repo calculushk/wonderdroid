@@ -32,10 +32,9 @@ import android.widget.Toast;
 
 public class Select extends Activity {
 
-	
 	@SuppressWarnings("unused")
 	private static final String TAG = Select.class.getSimpleName();
-	
+
 	private Bitmap backgroundOne = null;
 	private Runnable bgSwitcher = new Runnable() {
 
@@ -44,6 +43,7 @@ public class Select extends Activity {
 		@Override
 		public void run () {
 
+			int throwcount = 0;
 			int newindex = 0;
 
 			// work around for only having one game
@@ -51,8 +51,13 @@ public class Select extends Activity {
 			if (count == 1) {
 				newindex = 0;
 			} else { // normal path
-				while ((newindex = mRNG.nextInt(count - 1)) == splashindex)
-					;
+				while ((newindex = mRNG.nextInt(count - 1)) == splashindex) {
+					// I think we're getting a lock up here..
+					throwcount++;
+					if (throwcount > 10) {
+						break;
+					}
+				}
 				handler.postDelayed(this, 4000); // only run again if there is potentially more than one splash
 			}
 
