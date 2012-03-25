@@ -35,35 +35,32 @@ public class Select extends Activity {
 
 	private static final String TAG = Select.class.getSimpleName();
 
-	private Bitmap backgroundOne = null;
 	private Runnable bgSwitcher = new Runnable() {
 
-		private Random mRNG = new Random();
+		private int splashindex = 0;
+		private final Random mRNG = new Random();
+		private Bitmap backgroundOne = null;
 
 		@Override
 		public void run () {
 
-			Log.d(TAG, "Switching background");
-
-			int throwcount = 0;
-			int newindex = 0;
-
-			// work around for only having one game
 			int count = mRAdapter.getCount();
-			if (count == 1) {
-				newindex = 0;
-			} else { // normal path
-				while ((newindex = mRNG.nextInt(count - 1)) == splashindex) {
-					// I think we're getting a lock up here..
-					throwcount++;
-					if (throwcount > 10) {
-						break;
-					}
-				}
-				handler.postDelayed(this, 4000); // only run again if there is potentially more than one splash
+			if (count < 10) { // Dont bother if we have less than 10 games
+				return;
 			}
 
-			Bitmap newbitmap = mRAdapter.getBitmap(splashindex);
+			// Loop this shizzle
+			handler.removeCallbacks(this);
+			handler.postDelayed(this, 4000);
+			//
+
+			int newindex = mRNG.nextInt(count - 1);
+
+			if (newindex == splashindex) {
+				return;
+			}
+
+			Bitmap newbitmap = mRAdapter.getBitmap(newindex);
 			if (newbitmap == null) {
 				return;
 			}
@@ -85,11 +82,12 @@ public class Select extends Activity {
 			mBG2.startAnimation(fade);
 		}
 	};
+
 	private Animation fade;
 	private Handler handler;
 	private AssetManager mAssetManager;
-	private ImageView mBG1;
 
+	private ImageView mBG1;
 	private ImageView mBG2;
 
 	private RomAdapter mRAdapter;
@@ -97,7 +95,6 @@ public class Select extends Activity {
 	private TextView mScreenFormat;
 
 	private String sdpath;
-	private int splashindex = 0;
 
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
@@ -229,9 +226,6 @@ public class Select extends Activity {
 
 			mBG1 = (ImageView)this.findViewById(R.id.select_bg1);
 			mBG2 = (ImageView)this.findViewById(R.id.select_bg2);
-
-			backgroundOne = null;
-
 			bgSwitcher.run();
 
 		}
