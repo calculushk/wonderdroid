@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:paddingLeft="25dp"
-	android:paddingRight="25dp"
-	android:paddingBottom="25dp"
-	android:layout_height="wrap_content"
-	android:layout_width="wrap_content"
-	android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="274dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="25dp"
+    android:paddingLeft="25dp"
+    android:paddingRight="25dp" >
 
-	<TextView
-  		android:textColor="#ffffff"
-		android:textStyle="bold"
-  		android:layout_width="wrap_content"
-  		android:layout_gravity="center"
-  		android:layout_height="wrap_content"
-  		android:shadowColor="#000"
-  		android:shadowDx="1"
-  		android:shadowDy="1"
-  		android:shadowRadius="2"
-  		android:textSize="18sp"
-  		android:maxLines="1"
-  		android:paddingBottom="25dp"/>
-  
-  	<ImageView
-  		android:layout_width="wrap_content"
-  		android:layout_height="wrap_content"
-  		android:src="@drawable/unknownrom"
-  		android:layout_gravity="center" />
-  	
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:ellipsize="middle"
+        android:gravity="center"
+        android:maxLines="1"
+        android:minLines="1"
+        android:paddingBottom="25dp"
+        android:shadowColor="#000"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="144dp"
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        android:src="@drawable/unknownrom" />
+
 </LinearLayout>

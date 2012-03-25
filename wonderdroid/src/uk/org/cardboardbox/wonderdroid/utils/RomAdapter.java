@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,13 +50,15 @@ public class RomAdapter extends BaseAdapter {
 		}
 
 		public final Type type;
+		public final String displayName;
 		public final File sourcefile;
 		public final String fileName;
 
-		public Rom (Type type, File sourceFile, String fileName) {
+		public Rom (Type type, File sourceFile, String fileName, String displayName) {
 			this.type = type;
 			this.sourcefile = sourceFile;
 			this.fileName = fileName;
+			this.displayName = displayName;
 		}
 
 		public static File getRomFile (Context context, Rom rom) {
@@ -125,14 +128,15 @@ public class RomAdapter extends BaseAdapter {
 			if (sourceFiles[i].getName().endsWith("zip")) {
 				try {
 					for (String entry : ZipUtils.getValidEntries(new ZipFile(sourceFiles[i]), Rom.romExtension)) {
-						roms.add(new Rom(Rom.Type.ZIP, sourceFiles[i], entry));
+						roms.add(new Rom(Rom.Type.ZIP, sourceFiles[i], entry, sourceFiles[i].getName().replaceFirst("\\.zip", "")));
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
 					break;
 				}
 			} else {
-				roms.add(new Rom(Rom.Type.RAW, sourceFiles[i], null));
+				roms.add(new Rom(Rom.Type.RAW, sourceFiles[i], null, sourceFiles[i].getName().replaceFirst("\\.wsc", "")
+					.replaceFirst("\\.ws", "")));
 			}
 
 		}
@@ -150,14 +154,7 @@ public class RomAdapter extends BaseAdapter {
 
 	public Bitmap getBitmap (int index) {
 		WonderSwan.Header header = getHeader(index);
-		if (header != null) {
-			return getBitmap(header.getInternalName());
-		}
-		return null;
-	}
-
-	public Bitmap getBitmap (String internalname) {
-
+		String internalname = header.getInternalName();
 		if (mSplashCache.containsKey(internalname)) {
 			Bitmap splash = mSplashCache.get(internalname).get();
 			if (splash != null) {
@@ -167,6 +164,11 @@ public class RomAdapter extends BaseAdapter {
 
 		try {
 			Bitmap splash = BitmapFactory.decodeStream(mAssetManager.open("snaps/" + internalname + ".png"));
+			if (header.isVertical) {
+				Matrix rotationmatrix = new Matrix();
+				rotationmatrix.setRotate(270, splash.getWidth() / 2, splash.getHeight() / 2);
+				splash = Bitmap.createBitmap(splash, 0, 0, splash.getWidth(), splash.getHeight(), rotationmatrix, false);
+			}
 			mSplashCache.put(internalname, new SoftReference<Bitmap>(splash));
 			return splash;
 		} catch (IOException e) {
@@ -205,11 +207,11 @@ public class RomAdapter extends BaseAdapter {
 			view = (RomGalleryView)oldview;
 		}
 
-		view.setTitle(mRoms[index].sourcefile.getName());
+		view.setTitle(mRoms[index].displayName);
 
 		WonderSwan.Header header = getHeader(index);
 		if (header != null) {
-			Bitmap shot = getBitmap(header.getInternalName());
+			Bitmap shot = getBitmap(index);
 			if (shot != null) {
 				view.setSnap(shot);
 			} else {

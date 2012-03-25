@@ -21,15 +21,11 @@ public class RomGalleryView extends LinearLayout {
 	}
 
 	public void setSnap (Bitmap bm) {
-		((ImageView)mLayout.getChildAt(1)).setImageBitmap(bm);
+		ImageView iv = (ImageView)mLayout.getChildAt(1);
+		iv.setImageBitmap(bm);
 	}
 
 	public void setTitle (String title) {
-
-		if (title.length() > 30) {
-			title = title.substring(0, 27) + "...";
-		}
-
 		((TextView)mLayout.getChildAt(0)).setText(title);
 	}
 }
