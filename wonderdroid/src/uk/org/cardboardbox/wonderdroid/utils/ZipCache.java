@@ -1,13 +1,15 @@
 
 package uk.org.cardboardbox.wonderdroid.utils;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.util.Log;
 public class ZipCache {
 
 	private static final String TAG = ZipCache.class.getSimpleName();
+	private static final int MAXFILES = 10;
 
 	public static File getFile (Context context, ZipFile zip, String wantedFile, String[] extensionsToUnpack) {
 
@@ -35,6 +38,7 @@ public class ZipCache {
 			zipDir.setLastModified(System.currentTimeMillis());
 			return cachedFile;
 		} else {
+			prune(context);
 			Log.d(TAG, shortName + " hasn't been unpacked yet.. doing it now");
 			zipDir.mkdir();
 			Enumeration<? extends ZipEntry> entries = zip.entries();
@@ -43,7 +47,7 @@ public class ZipCache {
 				File target = new File(zipDir, entry.getName());
 				for (String extension : extensionsToUnpack) {
 					if (entry.getName().endsWith(extension)) {
-						extract(zip, entry, target);
+						ZipUtils.extractFile(zip, entry, target);
 						break;
 					}
 				}
@@ -58,40 +62,50 @@ public class ZipCache {
 		return null;
 	}
 
-	private static boolean extract (ZipFile zip, ZipEntry entry, File target) {
-		try {
-			Log.d(TAG, "extracting " + entry.getName());
-			if (entry.getSize() > (4 * 1024 * 1024)) {
-				Log.d(TAG, "File is bigger than 4MB");
-				return false;
-			}
-
-			byte[] buffer = new byte[1024];
-			InputStream is = zip.getInputStream(entry);
-			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(target));
-			int len;
-			while ((len = is.read(buffer)) != -1) {
-				bos.write(buffer, 0, len);
-			}
-			bos.flush();
-			Log.d(TAG, "Done!");
-			return true;
-		} catch (Exception ex) {
-			Log.d(TAG, "Failed!");
-			ex.printStackTrace();
-			return false;
-		}
+	public static boolean isZipInCache (Context context, ZipFile zip) {
+		String shortName = zip.getName().replaceAll(".*/", "");
+		File cacheDir = getCacheDir(context);
+		File zipDir = new File(cacheDir, shortName);
+		return zipDir.exists();
 	}
 
-	public static void clean (Context context) {
+	public synchronized static void prune (Context context) {
+		File cacheDir = getCacheDir(context);
+		File[] list = cacheDir.listFiles();
+		Arrays.sort(list, new LastModifiedFileComparator());
+		for (int i = 0; i < list.length; i++) {
+			File file = list[i];
+			if (i < list.length - MAXFILES) {
+				deleteDiretory(file);
+			}
+		}
+
+	}
+
+	public synchronized static void clean (Context context) {
 		File cacheDir = getCacheDir(context);
 		File[] list = cacheDir.listFiles();
 		long oneWeekAgo = System.currentTimeMillis() - (1000 * (60 * 60 * 24 * 7));
-		for (File file : list) {
-			if (file.lastModified() < oneWeekAgo) {
-				Log.d(TAG, "Deleting " + file.getName());
-				file.delete();
+
+		Arrays.sort(list, new LastModifiedFileComparator());
+
+		for (int i = 0; i < list.length; i++) {
+			File file = list[i];
+			if (i < list.length - MAXFILES || file.lastModified() < oneWeekAgo) {
+				deleteDiretory(file);
 			}
+		}
+	}
+
+	private static void deleteDiretory (File file) {
+		Log.d(TAG, "Deleting " + file.getName());
+		if (!file.exists()) {
+			throw new IllegalArgumentException();
+		}
+		try {
+			FileUtils.deleteDirectory(file);
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 

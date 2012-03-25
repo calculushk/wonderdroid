@@ -80,6 +80,7 @@ public class WonderSwan {
 	}
 
 	public static class Header {
+		public static final int HEADERLEN = 10;
 		private int developer = 0;
 		private int cartid = 0;
 		private int checksum = 0;
@@ -108,7 +109,14 @@ public class WonderSwan {
 				e.printStackTrace();
 				throw new RuntimeException();
 			}
+			parseHeader(header);
+		}
 
+		public Header (byte[] header) {
+			parseHeader(header);
+		}
+
+		private void parseHeader (byte[] header) {
 			developer = (header[0] & 0xFF);
 			cartid = (header[2] & 0xFF);
 

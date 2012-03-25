@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import uk.org.cardboardbox.wonderdroid.WonderSwan;
@@ -67,6 +68,28 @@ public class RomAdapter extends BaseAdapter {
 			}
 			return null;
 		}
+
+		public static WonderSwan.Header getHeader (Context context, Rom rom) {
+
+			File romFile = null;
+			try {
+				if (rom.type == Type.RAW || rom.type == Type.ZIP && ZipCache.isZipInCache(context, new ZipFile(rom.sourcefile))) {
+					romFile = Rom.getRomFile(context, rom);
+				} else if (rom.type == Type.ZIP) {
+					return new WonderSwan.Header(ZipUtils.getBytesFromFile(new ZipFile(rom.sourcefile), rom.fileName, 0,
+						WonderSwan.Header.HEADERLEN));
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+			if (romFile != null) {
+				WonderSwan.Header header = new WonderSwan.Header(romFile);
+				return header;
+			}
+
+			return null;
+		}
 	}
 
 	private static final String TAG = RomAdapter.class.getSimpleName();
@@ -84,7 +107,7 @@ public class RomAdapter extends BaseAdapter {
 		mRomDir = new File(romdir);
 		mContext = context;
 		mRoms = findRoms();
-		new LoaderThread().start();
+		// new LoaderThread().start();
 	}
 
 	private Rom[] findRoms () {
@@ -197,14 +220,10 @@ public class RomAdapter extends BaseAdapter {
 		}
 
 		Rom rom = (Rom)(this.getItem(index));
-		File romFile = Rom.getRomFile(mContext, rom);
-
-		if (romFile != null) {
-			WonderSwan.Header header = new WonderSwan.Header(romFile);
+		WonderSwan.Header header = Rom.getHeader(mContext, rom);
+		if (header != null) {
 			mHeaderCache.put(index, header);
-			return header;
 		}
-
-		return null;
+		return header;
 	}
 }
