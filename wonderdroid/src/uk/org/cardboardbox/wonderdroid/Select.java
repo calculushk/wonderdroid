@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,7 +33,6 @@ import android.widget.Toast;
 
 public class Select extends Activity {
 
-	@SuppressWarnings("unused")
 	private static final String TAG = Select.class.getSimpleName();
 
 	private Bitmap backgroundOne = null;
@@ -42,6 +42,8 @@ public class Select extends Activity {
 
 		@Override
 		public void run () {
+
+			Log.d(TAG, "Switching background");
 
 			int throwcount = 0;
 			int newindex = 0;

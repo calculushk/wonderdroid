@@ -6,7 +6,7 @@ import java.io.FileReader;
 
 public class CpuUtils {
 
-	private enum Arch { // Archs,.. I don't think there are any ARMv4 cores that can run Android ;)
+	public enum Arch { // Archs,.. I don't think there are any ARMv4 cores that can run Android ;)
 		UNKNOWN, ARMv5, ARMv6, ARMv7
 	}
 
@@ -103,5 +103,13 @@ public class CpuUtils {
 
 		return haveNeon;
 
+	}
+
+	public static Arch getArch () {
+		if (!detectionDone) {
+			doCPUDetection();
+		}
+
+		return arch;
 	}
 }

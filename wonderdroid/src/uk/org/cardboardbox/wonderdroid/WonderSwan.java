@@ -45,7 +45,7 @@ public class WonderSwan {
 	}
 
 	static {
-		if (CpuUtils.hasNeon()) {
+		if (CpuUtils.getArch() == CpuUtils.Arch.ARMv7 && CpuUtils.hasNeon()) {
 			System.loadLibrary("wonderswan-neon");
 		} else {
 			System.loadLibrary("wonderswan");
