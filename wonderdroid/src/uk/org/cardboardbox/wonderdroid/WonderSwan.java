@@ -93,7 +93,7 @@ public class WonderSwan {
 
 		public Header (File rom) {
 
-			byte header[] = new byte[10];
+			byte header[] = new byte[HEADERLEN];
 			FileInputStream fis;
 			try {
 				fis = new FileInputStream(rom);
@@ -104,7 +104,7 @@ public class WonderSwan {
 
 			FileChannel fc = fis.getChannel();
 			try {
-				fc.read(ByteBuffer.wrap(header), fc.size() - 10);
+				fc.read(ByteBuffer.wrap(header), fc.size() - HEADERLEN);
 			} catch (IOException e) {
 				e.printStackTrace();
 				throw new RuntimeException();
@@ -117,6 +117,11 @@ public class WonderSwan {
 		}
 
 		private void parseHeader (byte[] header) {
+
+			if (header.length != HEADERLEN) {
+				throw new IllegalArgumentException("Header must be " + HEADERLEN + " bytes");
+			}
+
 			developer = (header[0] & 0xFF);
 			cartid = (header[2] & 0xFF);
 

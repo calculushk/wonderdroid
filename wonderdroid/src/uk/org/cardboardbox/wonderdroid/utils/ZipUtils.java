@@ -33,27 +33,27 @@ public class ZipUtils {
 		return validEntries.toArray(new String[0]);
 	}
 
-	public static byte[] getBytesFromFile (ZipFile zip, String wantedFile, long offset, int len) {
-
-		Log.d(TAG, "Someone is asking for bytes from " + wantedFile + " from zip " + zip.getName());
+	public static ZipEntry getEntry (ZipFile zip, String wantedFile) {
 		Enumeration<? extends ZipEntry> entries = zip.entries();
 		while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();
 			if (entry.getName().compareTo(wantedFile) == 0) {
-				Log.d(TAG, "found the file");
-
-				byte[] bytes = new byte[len];
-
-				try {
-					InputStream is = zip.getInputStream(entry);
-					is.skip(offset);
-					is.read(bytes);
-					return bytes;
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-				break;
+				return entry;
 			}
+		}
+		return null;
+	}
+
+	public static byte[] getBytesFromEntry (ZipFile zip, ZipEntry entry, long offset, int len) {
+		byte[] bytes = new byte[len];
+
+		try {
+			InputStream is = zip.getInputStream(entry);
+			is.skip(offset);
+			is.read(bytes);
+			return bytes;
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 
 		return null;

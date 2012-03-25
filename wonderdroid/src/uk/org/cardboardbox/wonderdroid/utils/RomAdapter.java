@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.zip.ZipException;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import uk.org.cardboardbox.wonderdroid.WonderSwan;
@@ -27,10 +27,15 @@ public class RomAdapter extends BaseAdapter {
 	private class LoaderThread extends Thread {
 		public void run () {
 			super.run();
-			Log.d(TAG, "Preloading...");
+			Log.d(TAG, "Preloading headers...");
 			for (int i = 0; i < RomAdapter.this.getCount(); i++) {
 				Log.d(TAG, "Loading " + i);
 				RomAdapter.this.getHeader(i);
+				try {
+					Thread.sleep(250);
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+				}
 			}
 			Log.d(TAG, "exit");
 		}
@@ -76,7 +81,9 @@ public class RomAdapter extends BaseAdapter {
 				if (rom.type == Type.RAW || rom.type == Type.ZIP && ZipCache.isZipInCache(context, new ZipFile(rom.sourcefile))) {
 					romFile = Rom.getRomFile(context, rom);
 				} else if (rom.type == Type.ZIP) {
-					return new WonderSwan.Header(ZipUtils.getBytesFromFile(new ZipFile(rom.sourcefile), rom.fileName, 0,
+					ZipFile zip = new ZipFile(rom.sourcefile);
+					ZipEntry entry = ZipUtils.getEntry(zip, rom.fileName);
+					return new WonderSwan.Header(ZipUtils.getBytesFromEntry(zip, entry, entry.getSize() - WonderSwan.Header.HEADERLEN,
 						WonderSwan.Header.HEADERLEN));
 				}
 			} catch (Exception ex) {
@@ -107,7 +114,7 @@ public class RomAdapter extends BaseAdapter {
 		mRomDir = new File(romdir);
 		mContext = context;
 		mRoms = findRoms();
-		// new LoaderThread().start();
+		new LoaderThread().start();
 	}
 
 	private Rom[] findRoms () {
