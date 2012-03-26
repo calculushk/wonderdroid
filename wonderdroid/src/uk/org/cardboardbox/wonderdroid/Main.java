@@ -4,8 +4,10 @@ package uk.org.cardboardbox.wonderdroid;
 import java.io.File;
 import java.io.IOException;
 
+import uk.org.cardboardbox.wonderdroid.utils.RomAdapter.Rom;
 import uk.org.cardboardbox.wonderdroid.views.EmuView;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -19,11 +21,14 @@ import android.widget.ProgressBar;
 
 public class Main extends Activity {
 
-	public static final String ROMPATH = "rompath";
+	public static final String ROM = "rom";
+	public static final String ROMHEADER = "romheader";
 
+	private Context mContext;
 	private ProgressBar mPB;
 	private EmuView view;
-	private String mRomPath;
+	private Rom mRom;
+	private WonderSwan.Header mRomHeader;
 	private File mCartMem;
 	private boolean mControlsVisible = false;
 
@@ -31,22 +36,19 @@ public class Main extends Activity {
 	public void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		mRom = (Rom)this.getIntent().getExtras().getSerializable(ROM);
+		mRomHeader = (WonderSwan.Header)this.getIntent().getExtras().getSerializable(ROMHEADER);
+
+		if (mRom == null || mRomHeader == null) {
+			throw new IllegalArgumentException();
+		}
+
 		view = new EmuView(this);
 		setContentView(view);
 		view.setFocusable(true);
 		view.setFocusableInTouchMode(true);
 
-		mRomPath = this.getIntent().getExtras().getString(ROMPATH);
-
-		WonderSwan.Header header = new WonderSwan.Header(new File(mRomPath));
-		mCartMem = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/wonderdroid/cartmem/"
-			+ header.getInternalName() + ".mem");
-		try {
-			mCartMem.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException();
-		}
+		mContext = this.getBaseContext();
 
 		parseKeys();
 
@@ -60,7 +62,15 @@ public class Main extends Activity {
 
 			@Override
 			protected Void doInBackground (Void... params) {
-				WonderSwan.load(mRomPath, ((WonderSwan.Header)(new WonderSwan.Header(new File(mRomPath)))).isColor);
+				mCartMem = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/wonderdroid/cartmem/"
+					+ mRomHeader.internalname + ".mem");
+				try {
+					mCartMem.createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+					throw new RuntimeException();
+				}
+				WonderSwan.load(Rom.getRomFile(mContext, mRom).getAbsolutePath(), mRomHeader.isColor);
 				return null;
 			}
 

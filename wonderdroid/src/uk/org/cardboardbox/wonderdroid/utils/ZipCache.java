@@ -17,7 +17,7 @@ import android.util.Log;
 public class ZipCache {
 
 	private static final String TAG = ZipCache.class.getSimpleName();
-	private static final int MAXFILES = 10;
+	private static final int MAXFILES = 5;
 
 	public static File getFile (Context context, ZipFile zip, String wantedFile, String[] extensionsToUnpack) {
 

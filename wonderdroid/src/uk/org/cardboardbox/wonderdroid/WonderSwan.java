@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
@@ -79,62 +80,58 @@ public class WonderSwan {
 		Log.d(TAG, "Audio buffer min " + AudioTrack.getMinBufferSize(audiofreq, channelconf, encoding));
 	}
 
-	public static class Header {
+	public static class Header implements Serializable {
+		/**
+		 * 
+		 */
+
+		private static final long serialVersionUID = 1L;
 		public static final int HEADERLEN = 10;
-		private int developer = 0;
-		private int cartid = 0;
-		private int checksum = 0;
-		public boolean isColor = false;
-		public boolean isVertical = false;
+		private final int developer;
+		private final int cartid;
+		private final int checksum;
+		private final int romsize;
+		public final boolean isColor;
+		public final boolean isVertical;
+		public final String internalname;
 
-		public String getInternalName () {
-			return ((Integer)developer).toString() + "-" + ((Integer)cartid).toString() + "-" + ((Integer)checksum).toString();
-		}
-
-		public Header (File rom) {
-
+		private static byte[] getHeaderFromFile (File rom) {
 			byte header[] = new byte[HEADERLEN];
-			FileInputStream fis;
 			try {
+				FileInputStream fis;
 				fis = new FileInputStream(rom);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				return;
-			}
-
-			FileChannel fc = fis.getChannel();
-			try {
+				FileChannel fc = fis.getChannel();
 				fc.read(ByteBuffer.wrap(header), fc.size() - HEADERLEN);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				throw new RuntimeException();
 			}
-			parseHeader(header);
+			return header;
+		}
+
+		public Header (File rom) {
+			this(getHeaderFromFile(rom));
 		}
 
 		public Header (byte[] header) {
-			parseHeader(header);
-		}
-
-		private void parseHeader (byte[] header) {
-
-			if (header.length != HEADERLEN) {
+			if (header == null || header.length != HEADERLEN) {
 				throw new IllegalArgumentException("Header must be " + HEADERLEN + " bytes");
 			}
 
 			developer = (header[0] & 0xFF);
+			isColor = (header[1] == 1);
 			cartid = (header[2] & 0xFF);
-
-			if (header[1] == 1) {
-				isColor = true;
+			switch (header[4]) {
+			default:
+				romsize = 0;
 			}
-
-			if ((header[6] & 0x01) == 1) {
-				isVertical = true;
-			}
-
+			isVertical = ((header[6] & 0x01) == 1);
 			checksum = (header[8] & 0xFF) + ((header[9] << 8) & 0xFFFF);
+			internalname = ((Integer)developer).toString() + "-" + ((Integer)cartid).toString() + "-"
+				+ ((Integer)checksum).toString();
+
 		}
+
 	}
 
 	public static native void storebackupdata (String filename);

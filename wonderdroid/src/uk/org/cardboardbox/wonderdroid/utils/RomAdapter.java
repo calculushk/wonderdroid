@@ -3,6 +3,7 @@ package uk.org.cardboardbox.wonderdroid.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +27,11 @@ import android.widget.BaseAdapter;
 
 public class RomAdapter extends BaseAdapter {
 
-	public static final class Rom {
+	public static final class Rom implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public static String[] romExtension = new String[] {"ws", "wsc"};
 
 		public enum Type {
@@ -136,7 +142,7 @@ public class RomAdapter extends BaseAdapter {
 
 	public Bitmap getBitmap (int index) {
 		WonderSwan.Header header = getHeader(index);
-		String internalname = header.getInternalName();
+		String internalname = header.internalname;
 		if (mSplashCache.containsKey(internalname)) {
 			Bitmap splash = mSplashCache.get(internalname).get();
 			if (splash != null) {

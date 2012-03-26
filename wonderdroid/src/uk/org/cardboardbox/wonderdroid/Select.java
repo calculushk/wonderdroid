@@ -5,8 +5,6 @@ import java.io.File;
 import java.util.Random;
 
 import uk.org.cardboardbox.wonderdroid.utils.RomAdapter;
-import uk.org.cardboardbox.wonderdroid.utils.RomAdapter.Rom;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -14,7 +12,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -145,7 +142,8 @@ public class Select extends Activity {
 
 	private void startEmu (int romid) {
 		Intent intent = new Intent(this, Main.class);
-		intent.putExtra(Main.ROMPATH, Rom.getRomFile(this.getBaseContext(), mRAdapter.getItem(romid)).getAbsolutePath());
+		intent.putExtra(Main.ROM, mRAdapter.getItem(romid));
+		intent.putExtra(Main.ROMHEADER, mRAdapter.getHeader(romid));
 		startActivity(intent);
 	}
 

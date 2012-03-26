@@ -62,11 +62,6 @@ public class ZipUtils {
 	public static boolean extractFile (ZipFile zip, ZipEntry entry, File target) {
 		try {
 			Log.d(TAG, "extracting " + entry.getName());
-			if (entry.getSize() > (4 * 1024 * 1024)) {
-				Log.d(TAG, "File is bigger than 4MB");
-				return false;
-			}
-
 			byte[] buffer = new byte[1024];
 			InputStream is = zip.getInputStream(entry);
 			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(target));

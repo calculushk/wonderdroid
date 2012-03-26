@@ -15,6 +15,7 @@ public class WonderDroid extends Application {
 
 	public static final String DIRECTORY = "/wonderdroid/";
 	public static final String CARTMEMDIRECTORY = DIRECTORY + "cartmem/";
+	public static final String SAVESTATEDIRECTORY = DIRECTORY + "savestates/";
 
 	@Override
 	public void onCreate () {
