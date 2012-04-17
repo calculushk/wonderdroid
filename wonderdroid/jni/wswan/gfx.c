@@ -30,49 +30,49 @@
 
 
 
-static uint32 wsMonoPal[16][4];
-static uint32 wsColors[8];
-static uint32 wsCols[16][16];
+static uint32_t wsMonoPal[16][4];
+static uint32_t wsColors[8];
+static uint32_t wsCols[16][16];
 
-static uint16 ColorMapG[16];
-static uint16 ColorMap[16 * 16 * 16];
-static uint32 LayerEnabled = 7; // BG, FG, sprites
+static uint16_t ColorMapG[16];
+static uint16_t ColorMap[16 * 16 * 16];
+static uint32_t LayerEnabled = 7; // BG, FG, sprites
 
 /*current scanline*/
 
-static uint8 SpriteTable[0x80][4];
-static uint32 SpriteCountCache;
-static uint8 DispControl;
-static uint8 BGColor;
-static uint8 LineCompare;
-static uint8 SPRBase;
-static uint8 SpriteStart, SpriteCount;
-static uint8 FGBGLoc;
-static uint8 FGx0, FGy0, FGx1, FGy1;
-static uint8 SPRx0, SPRy0, SPRx1, SPRy1;
+static uint8_t SpriteTable[0x80][4];
+static uint32_t SpriteCountCache;
+static uint8_t DispControl;
+static uint8_t BGColor;
+static uint8_t LineCompare;
+static uint8_t SPRBase;
+static uint8_t SpriteStart, SpriteCount;
+static uint8_t FGBGLoc;
+static uint8_t FGx0, FGy0, FGx1, FGy1;
+static uint8_t SPRx0, SPRy0, SPRx1, SPRy1;
 
-static uint8 BGXScroll, BGYScroll;
-static uint8 FGXScroll, FGYScroll;
-static uint8 LCDControl, LCDIcons;
+static uint8_t BGXScroll, BGYScroll;
+static uint8_t FGXScroll, FGYScroll;
+static uint8_t LCDControl, LCDIcons;
 
-static uint8 BTimerControl;
-static uint16 HBTimerPeriod;
-static uint16 VBTimerPeriod;
+static uint8_t BTimerControl;
+static uint16_t HBTimerPeriod;
+static uint16_t VBTimerPeriod;
 
-static uint16 HBCounter, VBCounter;
-static uint8 VideoMode;
+static uint16_t HBCounter, VBCounter;
+static uint8_t VideoMode;
 
 
 void WSwan_GfxInit(void) {
 }
 
-void WSwan_GfxWSCPaletteRAMWrite(uint32 ws_offset, uint8 data) {
+void WSwan_GfxWSCPaletteRAMWrite(uint32_t ws_offset, uint8_t data) {
 	ws_offset = (ws_offset & 0xfffe) - 0xfe00;
 	wsCols[(ws_offset >> 1) >> 4][(ws_offset >> 1) & 15] = wsRAM[ws_offset + 0xfe00]
 			| ((wsRAM[ws_offset + 0xfe01] & 0x0f) << 8);
 }
 
-void WSwan_GfxWrite(uint32 A, uint8 V) {
+void WSwan_GfxWrite(uint32_t A, uint8_t V) {
 
 	if (A >= 0x1C && A <= 0x1F) {
 		wsColors[(A - 0x1C) * 2 + 0] = 0xF - (V & 0xf);
@@ -185,9 +185,9 @@ void WSwan_GfxWrite(uint32 A, uint8 V) {
 		}
 }
 
-uint8 WSwan_GfxRead(uint32 A) {
+uint8_t WSwan_GfxRead(uint32_t A) {
 	if (A >= 0x1C && A <= 0x1F) {
-		uint8 ret = 0;
+		uint8_t ret = 0;
 
 		ret |= 0xF - wsColors[(A - 0x1C) * 2 + 0];
 		ret |= (0xF - wsColors[(A - 0x1C) * 2 + 1]) << 4;
@@ -195,7 +195,7 @@ uint8 WSwan_GfxRead(uint32 A) {
 		return (ret);
 	}
 	else if (A >= 0x20 && A <= 0x3F) {
-		uint8 ret = wsMonoPal[(A - 0x20) >> 1][((A & 0x1) << 1) + 0]
+		uint8_t ret = wsMonoPal[(A - 0x20) >> 1][((A & 0x1) << 1) + 0]
 				| (wsMonoPal[(A - 0x20) >> 1][((A & 0x1) << 1) | 1] << 4);
 
 		return (ret);
@@ -282,7 +282,7 @@ uint8 WSwan_GfxRead(uint32 A) {
 		}
 }
 
-int wsExecuteLine(uint16 *pXBuf, bool skip) {
+int wsExecuteLine(uint16_t *pXBuf, bool skip) {
 
 	if (wsLine < 144) {
 		if (!skip) {
@@ -362,7 +362,7 @@ void WSwan_SetPixelFormat() {
 		for (int g = 0; g < 16; g++)
 			for (int b = 0; b < 16; b++) {
 
-				uint16 neo_r, neo_g, neo_b;
+				uint16_t neo_r, neo_g, neo_b;
 
 				neo_r = r * 2;
 				neo_g = g * 4;
@@ -374,7 +374,7 @@ void WSwan_SetPixelFormat() {
 			}
 
 	for (int i = 0; i < 16; i++) {
-		uint16 neo_r, neo_g, neo_b;
+		uint16_t neo_r, neo_g, neo_b;
 
 		neo_r = (i) * 2;
 		neo_g = (i) * 4;
@@ -386,11 +386,11 @@ void WSwan_SetPixelFormat() {
 
 static bool in_window[256 + 8 * 2];
 
-void wsScanline(uint16 *target) {
-	uint32 start_tile_n, map_a, startindex, adrbuf, b1, b2, j, t, l;
+void wsScanline(uint16_t *target) {
+	uint32_t start_tile_n, map_a, startindex, adrbuf, b1, b2, j, t, l;
 	char ys2;
-	static uint8 b_bg[256];
-	static uint8 b_bg_pal[256];
+	static uint8_t b_bg[256];
+	static uint8_t b_bg_pal[256];
 
 	if (!wsVMode)
 		memset(b_bg, wsColors[BGColor & 0xF] & 0xF, 256);
@@ -399,7 +399,7 @@ void wsScanline(uint16 *target) {
 		memset(&b_bg_pal[0], (BGColor >> 4) & 0xF, 256);
 	}
 	start_tile_n = (wsLine + BGYScroll) & 0xff;/*First line*/
-	map_a = (((uint32)(FGBGLoc & 0xF)) << 11) + ((start_tile_n & 0xfff8) << 3);
+	map_a = (((uint32_t)(FGBGLoc & 0xF)) << 11) + ((start_tile_n & 0xfff8) << 3);
 	startindex = BGXScroll >> 3; /*First tile in row*/
 	adrbuf = 7 - (BGXScroll & 7); /*Pixel in tile*/
 
@@ -408,7 +408,7 @@ void wsScanline(uint16 *target) {
 		for (t = 0; t < 29; t++) {
 			b1 = wsRAM[map_a + (startindex << 1)];
 			b2 = wsRAM[map_a + (startindex << 1) + 1];
-			uint32 palette = (b2 >> 1) & 15;
+			uint32_t palette = (b2 >> 1) & 15;
 			b2 = (b2 << 8) | b1;
 			wsGetTile(b2 & 0x1ff, start_tile_n & 7, b2 & 0x8000, b2 & 0x4000, b2 & 0x2000);
 
@@ -441,7 +441,7 @@ void wsScanline(uint16 *target) {
 
 	if ((DispControl & 0x02) && (LayerEnabled & 0x02))/*FG layer*/
 	{
-		uint8 windowtype = DispControl & 0x30;
+		uint8_t windowtype = DispControl & 0x30;
 		//static bool in_window[256 + 8 * 2];
 
 		if(windowtype)
@@ -471,14 +471,14 @@ void wsScanline(uint16 *target) {
 		memset(in_window, 1, sizeof(in_window));
 
 		start_tile_n = (wsLine + FGYScroll) & 0xff;
-		map_a = (((uint32)((FGBGLoc >> 4) & 0xF)) << 11) + ((start_tile_n >> 3) << 6);
+		map_a = (((uint32_t)((FGBGLoc >> 4) & 0xF)) << 11) + ((start_tile_n >> 3) << 6);
 		startindex = FGXScroll >> 3;
 		adrbuf = 7 - (FGXScroll & 7);
 
 		for (t = 0; t < 29; t++) {
 			b1 = wsRAM[map_a + (startindex << 1)];
 			b2 = wsRAM[map_a + (startindex << 1) + 1];
-			uint32 palette = (b2 >> 1) & 15;
+			uint32_t palette = (b2 >> 1) & 15;
 			b2 = (b2 << 8) | b1;
 			wsGetTile(b2 & 0x1ff, start_tile_n & 7, b2 & 0x8000, b2 & 0x4000, b2 & 0x2000);
 
@@ -529,7 +529,7 @@ void wsScanline(uint16 *target) {
 			ts = SpriteTable[h][0];
 			as = SpriteTable[h][1];
 			ysx = SpriteTable[h][2];
-			ys2 = (int8) SpriteTable[h][2];
+			ys2 = (int8_t) SpriteTable[h][2];
 			xs = SpriteTable[h][3];
 
 			if (xs >= 249)
@@ -543,7 +543,7 @@ void wsScanline(uint16 *target) {
 			ys = wsLine - ys;
 
 			if (ys >= 0 && ys < 8 && xs < 224) {
-				uint32 palette = ((as >> 1) & 0x7);
+				uint32_t palette = ((as >> 1) & 0x7);
 
 				ts |= (as & 1) << 8;
 				wsGetTile(ts, ys, as & 0x80, as & 0x40, 0);

@@ -25,6 +25,7 @@ extern "C" {
 #include "log.h"
 
 #include "wswan.h"
+#include <stdint.h>
 #include "sound.h"
 #include "v30mz.h"
 #include "memory.h"
@@ -40,31 +41,31 @@ static Blip_Synth<blip_med_quality, 256 * 15> VoiceSynth;
 static Blip_Buffer sbuf[2];
 //static int16 WaveIL[8000];
 
-static uint16 period[4];
-static uint8 volume[4]; // left volume in upper 4 bits, right in lower 4 bits
-static uint8 voice_volume;
+static uint16_t period[4];
+static uint8_t volume[4]; // left volume in upper 4 bits, right in lower 4 bits
+static uint8_t voice_volume;
 
-static uint8 sweep_step, sweep_value;
-static uint8 noise_control;
-static uint8 control;
-static uint8 output_control;
+static uint8_t sweep_step, sweep_value;
+static uint8_t noise_control;
+static uint8_t control;
+static uint8_t output_control;
 
-static int32 sweep_8192_divider;
-static uint8 sweep_counter;
-static uint8 SampleRAMPos;
+static int32_t sweep_8192_divider;
+static uint8_t sweep_counter;
+static uint8_t SampleRAMPos;
 
-static int32 sample_cache[4][2];
+static int32_t sample_cache[4][2];
 
-static int32 last_v_val;
+static int32_t last_v_val;
 
-static uint8 HyperVoice;
-static int32 last_hv_val;
+static uint8_t HyperVoice;
+static int32_t last_hv_val;
 
-static int32 period_counter[4];
-static int32 last_val[4][2]; // Last outputted value, l&r
-static uint8 sample_pos[4];
-static uint16 nreg;
-static uint32 last_ts;
+static int32_t period_counter[4];
+static int32_t last_val[4][2]; // Last outputted value, l&r
+static uint8_t sample_pos[4];
+static uint16_t nreg;
+static uint32_t last_ts;
 
 
 #define MK_SAMPLE_CACHE	\
@@ -86,7 +87,7 @@ static uint32 last_ts;
 
 #define SYNCSAMPLE(wt)	\
    {	\
-    int32 left = sample_cache[ch][0], right = sample_cache[ch][1];	\
+    int32_t left = sample_cache[ch][0], right = sample_cache[ch][1];	\
     WaveSynth.offset_inline(wt, left - last_val[ch][0], &sbuf[0]);	\
     WaveSynth.offset_inline(wt, right - last_val[ch][1], &sbuf[1]);	\
     last_val[ch][0] = left;	\
@@ -95,7 +96,7 @@ static uint32 last_ts;
 
 #define SYNCSAMPLE_NOISE(wt)  \
    {    \
-    int32 left = sample_cache[ch][0], right = sample_cache[ch][1];      \
+    int32_t left = sample_cache[ch][0], right = sample_cache[ch][1];      \
     NoiseSynth.offset_inline(wt, left - last_val[ch][0], &sbuf[0]);      \
     NoiseSynth.offset_inline(wt, right - last_val[ch][1], &sbuf[1]);     \
     last_val[ch][0] = left;     \
@@ -109,7 +110,7 @@ void WSwan_SoundUpdate(void)
 {
 
 
- int32 run_time;
+ int32_t run_time;
 
  //printf("%d\n", v30mz_timestamp);
  //printf("%02x %02x\n", control, noise_control);
@@ -123,7 +124,7 @@ void WSwan_SoundUpdate(void)
 
   if(ch == 1 && (control & 0x20)) // Direct D/A mode?
   {
-   int32 neoval = (volume[ch] - 0x80) * voice_volume;
+   int32_t neoval = (volume[ch] - 0x80) * voice_volume;
 
    VoiceSynth.offset(v30mz_timestamp, neoval - last_v_val, &sbuf[0]);
    VoiceSynth.offset(v30mz_timestamp, neoval - last_v_val, &sbuf[1]);
@@ -132,13 +133,13 @@ void WSwan_SoundUpdate(void)
   }
   else if(ch == 2 && (control & 0x40) && sweep_value) // Sweep
   {
-   uint32 tmp_pt = 2048 - period[ch];
-   uint32 meow_timestamp = v30mz_timestamp - run_time;
-   uint32 tmp_run_time = run_time;
+   uint32_t tmp_pt = 2048 - period[ch];
+   uint32_t meow_timestamp = v30mz_timestamp - run_time;
+   uint32_t tmp_run_time = run_time;
 
    while(tmp_run_time)
    {
-    int32 sub_run_time = tmp_run_time;
+    int32_t sub_run_time = tmp_run_time;
 
     if(sub_run_time > sweep_8192_divider)
      sub_run_time = sweep_8192_divider;
@@ -151,7 +152,7 @@ void WSwan_SoundUpdate(void)
      if(sweep_counter <= 0)
      {
       sweep_counter = sweep_step + 1;
-      period[ch] = (period[ch] + (int8)sweep_value) & 0x7FF;
+      period[ch] = (period[ch] + (int8_t)sweep_value) & 0x7FF;
      }
     }
 
@@ -173,7 +174,7 @@ void WSwan_SoundUpdate(void)
   }
   else if(ch == 3 && (noise_control & 0x10)) //(control & 0x80)) // Noise
   {
-   uint32 tmp_pt = 2048 - period[ch];
+   uint32_t tmp_pt = 2048 - period[ch];
 
    period_counter[ch] -= run_time;
    while(period_counter[ch] <= 0)
@@ -199,7 +200,7 @@ void WSwan_SoundUpdate(void)
   }
   else
   {
-   uint32 tmp_pt = 2048 - period[ch];
+   uint32_t tmp_pt = 2048 - period[ch];
 
    if(tmp_pt > 4)
    {
@@ -217,7 +218,7 @@ void WSwan_SoundUpdate(void)
  }
 
  {
-  int32 tmphv = HyperVoice;
+  int32_t tmphv = HyperVoice;
 
   if(tmphv - last_hv_val)
   {
@@ -229,11 +230,11 @@ void WSwan_SoundUpdate(void)
  last_ts = v30mz_timestamp;
 }
 
-extern "C" void wswan_soundwrite(uint32 A, uint8 V){
+extern "C" void wswan_soundwrite(uint32_t A, uint8_t V){
 	WSwan_SoundWrite(A, V);
 }
 
-void WSwan_SoundWrite(uint32 A, uint8 V)
+void WSwan_SoundWrite(uint32_t A, uint8_t V)
 {
 
 
@@ -302,11 +303,11 @@ void WSwan_SoundWrite(uint32 A, uint8 V)
  WSwan_SoundUpdate();
 }
 
-extern "C" uint8 wswan_soundread(uint32 A){
+extern "C" uint8_t wswan_soundread(uint32_t A){
 	return WSwan_SoundRead(A);
 }
 
-uint8 WSwan_SoundRead(uint32 A)
+uint8_t WSwan_SoundRead(uint32_t A)
 {
 
 	//LOGD("WSwan_SoundRead");
@@ -342,13 +343,13 @@ uint8 WSwan_SoundRead(uint32 A)
 }
 
 
-extern "C" int16 wswan_soundflush(int16 *buffer){
+extern "C" int16_t wswan_soundflush(int16_t *buffer){
 	return WSwan_SoundFlush(buffer);
 }
 
 
 
-int16 WSwan_SoundFlush(int16 *buffer)
+int16_t WSwan_SoundFlush(int16_t *buffer)
 {
 
 	//LOGD("> WSwan_SoundFlush()");
@@ -372,12 +373,12 @@ int16 WSwan_SoundFlush(int16 *buffer)
 	return love;
 }
 
-extern "C" void wswan_soundcheckramwrite(uint32 A){
+extern "C" void wswan_soundcheckramwrite(uint32_t A){
 	WSwan_SoundCheckRAMWrite(A);
 }
 
 // Call before wsRAM is updated
-void WSwan_SoundCheckRAMWrite(uint32 A)
+void WSwan_SoundCheckRAMWrite(uint32_t A)
 {
  if((A >> 6) == SampleRAMPos)
   WSwan_SoundUpdate();

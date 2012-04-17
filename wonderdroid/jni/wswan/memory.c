@@ -33,33 +33,33 @@
 
 #include "log.h"
 
-uint32 wsRAMSize;
-//uint8 wsRAM[65536];
-uint8 *wsSRAM = NULL;
+uint32_t wsRAMSize;
+//uint8_t wsRAM[65536];
+uint8_t *wsSRAM = NULL;
 
-uint8 *wsCartROM;
-uint32 sram_size;
-uint32 eeprom_size;
+uint8_t *wsCartROM;
+uint32_t sram_size;
+uint32_t eeprom_size;
 
-static uint8 ButtonWhich, ButtonReadLatch;
+static uint8_t ButtonWhich, ButtonReadLatch;
 
-static uint32 DMASource, DMADest;
-static uint16 DMALength;
-static uint8 DMAControl;
+static uint32_t DMASource, DMADest;
+static uint16_t DMALength;
+static uint8_t DMAControl;
 
-static uint32 SoundDMASource;
-static uint16 SoundDMALength;
-static uint8 SoundDMAControl;
+static uint32_t SoundDMASource;
+static uint16_t SoundDMALength;
+static uint8_t SoundDMAControl;
 
-static uint8 BankSelector[4];
+static uint8_t BankSelector[4];
 
-static uint8 CommControl, CommData;
+static uint8_t CommControl, CommData;
 
-extern uint16 WSButtonStatus;
+extern uint16_t WSButtonStatus;
 
-inline void WSwan_writemem20(uint32 A, uint8 V)
+inline void WSwan_writemem20(uint32_t A, uint8_t V)
 {
- uint32 offset, bank;
+ uint32_t offset, bank;
 
  offset = A & 0xffff;
  bank = (A>>16) & 0xF;
@@ -85,16 +85,16 @@ inline void WSwan_writemem20(uint32 A, uint8 V)
 
 
 
-inline uint8 WSwan_readmem20(uint32 A)
+inline uint8_t WSwan_readmem20(uint32_t A)
 {
 
 
- uint32	offset, bank;
+ uint32_t	offset, bank;
 
  offset = A & 0xFFFF;
  bank = (A >> 16) & 0xF;
   
- uint8 byte = 0;
+ uint8_t byte = 0;
 
 
 
@@ -114,7 +114,7 @@ inline uint8 WSwan_readmem20(uint32 A)
 
 	default: 
 		{
-		 uint8 bank_num = ((BankSelector[0] & 0xF) << 4) | (bank & 0xf);
+		 uint8_t bank_num = ((BankSelector[0] & 0xF) << 4) | (bank & 0xf);
 		 bank_num &= (rom_size >> 16) - 1;
 		 byte = (wsCartROM[(bank_num << 16) | offset]);
 		}
@@ -123,7 +123,7 @@ inline uint8 WSwan_readmem20(uint32 A)
   	return byte;
 }
 
-static uint8 ReadCartByte(uint32 address){
+static uint8_t ReadCartByte(uint32_t address){
 	return 0;
 }
 
@@ -150,7 +150,7 @@ void WSwan_CheckSoundDMA(void)
  {
   if(SoundDMALength)
   {
-   uint8 zebyte = WSwan_readmem20(SoundDMASource);
+   uint8_t zebyte = WSwan_readmem20(SoundDMASource);
 
    if(SoundDMAControl & 0x08)
     zebyte ^= 0x80;
@@ -169,7 +169,7 @@ void WSwan_CheckSoundDMA(void)
  }
 }
 
-uint8 WSwan_readport(uint32 number)
+uint8_t WSwan_readport(uint32_t number)
 {
 	//char tempstring[256];
 	//sprintf(tempstring,"WSwan_readport(%d)", number);
@@ -221,7 +221,7 @@ uint8 WSwan_readport(uint32 number)
 
    case 0xb3: 
 	     {
-	      uint8 ret = CommControl & 0xf0;
+	      uint8_t ret = CommControl & 0xf0;
 
 	      if(CommControl & 0x80)
 	       ret |= 0x4; // Send complete
@@ -230,7 +230,7 @@ uint8 WSwan_readport(uint32 number)
 	     }
    case 0xb5: 
 	     {
-	      uint8 ret = (ButtonWhich << 4) | ButtonReadLatch;
+	      uint8_t ret = (ButtonWhich << 4) | ButtonReadLatch;
   	      return(ret);
 	     }
  }
@@ -241,7 +241,7 @@ uint8 WSwan_readport(uint32 number)
  return(0);
 }
 
-void WSwan_writeport(uint32 IOPort, uint8 V)
+void WSwan_writeport(uint32_t IOPort, uint8_t V)
 {
 //	char tempstring[256];
 	//sprintf(tempstring,"WSwan_writeport(%d, 0x%x)", IOPort, V);
@@ -349,17 +349,17 @@ void WSwan_MemoryKill(void)
  }
 }
 
-void WSwan_MemoryInit(bool IsWSC, uint32 ssize)
+void WSwan_MemoryInit(bool IsWSC, uint32_t ssize)
 {
  wsRAMSize = 65536;
  sram_size = ssize;
 
- //uint16 byear = MDFN_GetSettingUI("wswan.byear");
- //uint8 bmonth = MDFN_GetSettingUI("wswan.bmonth");
- //uint8 bday = MDFN_GetSettingUI("wswan.bday");
+ //uint16_t byear = MDFN_GetSettingUI("wswan.byear");
+ //uint8_t bmonth = MDFN_GetSettingUI("wswan.bmonth");
+ //uint8_t bday = MDFN_GetSettingUI("wswan.bday");
  //std::string sex_s = MDFN_GetSettingS("wswan.sex");
  //std::string blood_s = MDFN_GetSettingS("wswan.blood");
- //uint8 sex = 1, blood = 1;
+ //uint8_t sex = 1, blood = 1;
 
 // if(!strcasecmp(sex_s.c_str(), "m") || !strcasecmp(sex_s.c_str(), "male"))
  // sex = 1;
@@ -395,7 +395,7 @@ void WSwan_MemoryInit(bool IsWSC, uint32 ssize)
 
  if(sram_size)
  {
-  wsSRAM = (uint8*)malloc(sram_size);
+  wsSRAM = (uint8_t*)malloc(sram_size);
   memset(wsSRAM, 0, sram_size);
  }
 

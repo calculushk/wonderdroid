@@ -3,6 +3,8 @@ package uk.org.cardboardbox.wonderdroid.views;
 
 import uk.org.cardboardbox.wonderdroid.Button;
 import uk.org.cardboardbox.wonderdroid.R;
+import uk.org.cardboardbox.wonderdroid.TouchInputHandler;
+import uk.org.cardboardbox.wonderdroid.TouchInputHandler.Pointer;
 import uk.org.cardboardbox.wonderdroid.WonderSwan;
 import uk.org.cardboardbox.wonderdroid.WonderSwan.WonderSwanButton;
 import uk.org.cardboardbox.wonderdroid.WonderSwanRenderer;
@@ -31,6 +33,7 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 	private WonderSwanRenderer renderer;
 	private boolean controlsVisible = false;
 	private GradientDrawable[] buttons;
+	private final TouchInputHandler inputHandler;
 
 	public void setKeyCodes (int start, int a, int b, int x1, int x2, int x3, int x4, int y1, int y2, int y3, int y4) {
 		WonderSwanButton.START.keyCode = start;
@@ -52,6 +55,8 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public EmuView (Context context, AttributeSet attrs) {
 		super(context, attrs);
+
+		inputHandler = new TouchInputHandler(context);
 
 		buttons = new GradientDrawable[WonderSwanButton.values().length];
 
@@ -228,54 +233,32 @@ public class EmuView extends SurfaceView implements SurfaceHolder.Callback {
 			return false;
 		}
 
-		int action = event.getAction();
-
+		inputHandler.onTouchEvent(event);
 		resetButtons();
 
-		// Log.d(TAG, "event " + action);
-
-		if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN
-			|| action == MotionEvent.ACTION_POINTER_2_DOWN) {
-
-			// Log.d(TAG, "down");
-
-			int pointers = event.getPointerCount();
-			for (int i = 0; i < pointers; i++) {
-				int id = event.getPointerId(i);
-
-				// Log.d(TAG, "pointer " + i + id);
-
-				checkButtons(event.getX(id), event.getY(id), true);
+		for (Pointer pointer : inputHandler.pointers) {
+			if (pointer.down) {
+				checkButtons(pointer.x, pointer.y, true);
 			}
-			return true;
 		}
+		return true;
 
-		// }
-		// else if(action == MotionEvent.ACTION_MOVE){
-		// if(primaryButton != null){
-		// if(!primaryButton.getBounds().contains((int) x, (int)y)){
-		// primaryButton = null;
-		// Log.d(TAG, "out");
-		// //
-		// }
-		// }
-		// }
-
-		return false;
 	}
 
-	private void checkButtons (float x, float y, boolean pressed) {
+	private boolean checkButtons (float x, float y, boolean pressed) {
 		for (int i = 0; i < buttons.length; i++) {
 			if (buttons[i].getBounds().contains((int)x, (int)y)) {
 				changeButton(WonderSwanButton.values()[i], pressed);
-				break;
-
+				return true;
 			}
 		}
+		return false;
 	}
 
+	private final WonderSwanButton[] buttonVals = WonderSwanButton.values();
+
 	private void resetButtons () {
-		for (WonderSwanButton button : WonderSwanButton.values()) {
+		for (WonderSwanButton button : buttonVals) {
 			changeButton(button, false | button.hardwareKeyDown);
 		}
 	}

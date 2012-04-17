@@ -27,69 +27,74 @@ static uint32_t ClockCycleCounter;
 static uint8_t wsCA15;
 static uint8_t Command, Data;
 
-void WSwan_RTCWrite(uint32 A, uint8 V)
-{
- switch(A)
- {
-  case 0xca: 
-	if(V==0x15)
-	 wsCA15=0; 
-	Command = V;
-	break;
-  case 0xcb: Data = V; break;
- }
+void WSwan_RTCWrite(uint32_t A, uint8_t V) {
+	switch (A) {
+		case 0xca:
+			if (V == 0x15)
+				wsCA15 = 0;
+			Command = V;
+			break;
+		case 0xcb:
+			Data = V;
+			break;
+	}
 
 }
 
+uint8_t WSwan_RTCRead(uint32_t A) {
+	switch (A) {
+		case 0xca:
+			return (Command | 0x80);
+		case 0xcb:
+			if (Command == 0x15) {
+				time_t long_time = CurrentTime;
+				struct tm *newtime = gmtime(&long_time);
 
-uint8_t WSwan_RTCRead(uint32 A)
-{
- switch(A)
- {
-          case 0xca : return (Command|0x80);
-          case 0xcb :
-                  if(Command == 0x15)
-                  {
-                    time_t long_time = CurrentTime;
-                    struct tm *newtime = gmtime( &long_time );
+				switch (wsCA15) {
+					case 0:
+						wsCA15++;
+						return mBCD(newtime->tm_year-100);
+					case 1:
+						wsCA15++;
+						return mBCD(newtime->tm_mon);
+					case 2:
+						wsCA15++;
+						return mBCD(newtime->tm_mday);
+					case 3:
+						wsCA15++;
+						return mBCD(newtime->tm_wday);
+					case 4:
+						wsCA15++;
+						return mBCD(newtime->tm_hour);
+					case 5:
+						wsCA15++;
+						return mBCD(newtime->tm_min);
+					case 6:
+						wsCA15 = 0;
+						return mBCD(newtime->tm_sec);
+				}
+				return 0;
+			}
+			else
+				return Data | 0x80;
 
-                    switch(wsCA15)
-                    {
-                     case 0: wsCA15++;return mBCD(newtime->tm_year-100);
-                     case 1: wsCA15++;return mBCD(newtime->tm_mon);
-                     case 2: wsCA15++;return mBCD(newtime->tm_mday);
-                     case 3: wsCA15++;return mBCD(newtime->tm_wday);
-                     case 4: wsCA15++;return mBCD(newtime->tm_hour);
-                     case 5: wsCA15++;return mBCD(newtime->tm_min);
-                     case 6: wsCA15=0;return mBCD(newtime->tm_sec);
-                    }
-                   return 0;
-                  }
-                  else
-                   return Data | 0x80;
-
- }
- return(0);
+	}
+	return (0);
 }
 
-void WSwan_RTCReset(void)
-{
- time_t happy_time = time(NULL);
+void WSwan_RTCReset(void) {
+	time_t happy_time = time(NULL);
 
- CurrentTime = mktime(localtime(&happy_time));
- ClockCycleCounter = 0;
- wsCA15 = 0;
+	CurrentTime = mktime(localtime(&happy_time));
+	ClockCycleCounter = 0;
+	wsCA15 = 0;
 }
 
-void WSwan_RTCClock(uint32 cycles)
-{
- ClockCycleCounter += cycles;
- while(ClockCycleCounter >= 3072000)
- {
-  ClockCycleCounter -= 3072000;
-  CurrentTime++;
- }
+void WSwan_RTCClock(uint32_t cycles) {
+	ClockCycleCounter += cycles;
+	while (ClockCycleCounter >= 3072000) {
+		ClockCycleCounter -= 3072000;
+		CurrentTime++;
+	}
 }
-
-
 
