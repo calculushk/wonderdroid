@@ -62,20 +62,19 @@ public class WonderSwanRenderer implements EmuThread.Renderer {
 		return paint;
 	}
 
+	@Override
 	public void start () {
 		audio.play();
 	}
 
 	@Override
 	public void update (boolean skip) {
-
 		WonderSwan.execute_frame(frameone, skip);
 		audio.write(WonderSwan.audiobuffer, 0, WonderSwan.samples * 2);
 
 		if (!skip) {
 			framebuffer.copyPixelsFromBuffer(frameone);
 		}
-
 	}
 
 	@Override
@@ -83,6 +82,7 @@ public class WonderSwanRenderer implements EmuThread.Renderer {
 		this.buttons = buttons;
 	}
 
+	@Override
 	public void showButtons (boolean show) {
 		this.showButtons = show;
 	}

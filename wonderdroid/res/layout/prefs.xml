@@ -1,70 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-  xmlns:android="http://schemas.android.com/apk/res/android">
-  
-   <PreferenceCategory android:title="Control Settings"
-   		>
-   		<uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolY1"
-                android:title="Y1" />
-        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolY2"
-                android:title="Y2" /> 
-        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolY3"
-                android:title="Y3" /> 
-        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolY4"
-                android:title="Y4" /> 
-   		<uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolX1"
-                android:title="X1 (Up)" />
-        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolX2"
-                android:title="X2 (Right)" />
-        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolX3"
-                android:title="X3 (Down)" /> 
-        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolX4"
-                android:title="X4 (Left)" />
-         <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolA"
-                android:title="A" /> 
-          <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolB"
-                android:title="B" />
-          <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference  
-                android:key="hwcontrolStart"
-                android:title="Start" /> 
-        
-    
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Control Settings" >
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolY1"
+            android:title="Y1" />
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolY2"
+            android:title="Y2" />
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolY3"
+            android:title="Y3" />
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolY4"
+            android:title="Y4" />
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolX1"
+            android:title="X1 (Up)" />
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolX2"
+            android:title="X2 (Right)" />
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolX3"
+            android:title="X3 (Down)" />
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolX4"
+            android:title="X4 (Left)" />
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolA"
+            android:title="A" />
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolB"
+            android:title="B" />
+
+        <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
+            android:key="hwcontrolStart"
+            android:title="Start" />
     </PreferenceCategory>
-     
-    <PreferenceCategory android:title="Emulator Settings">
-    <!--<CheckBoxPreference
+
+    <!-- <PreferenceCategory android:title="Emulator Settings" > -->
+
+
+    <!--
+        <CheckBoxPreference
                 android:key="emusound"
                 android:title="Enable Sound"
                 android:defaultValue="true"
-                android:summary="Disable this if you find the emulator too slow." /> -->
-       
+                android:summary="Disable this if you find the emulator too slow." />
+    -->
+
+
+    <!--
        <CheckBoxPreference
                 android:key="emufpscounter"
                 android:title="Enable FPS counter"
                 android:defaultValue="false"
                 android:summary="Show an FPS counter on the screen" />
-       
-       <!--  <CheckBoxPreference
+    -->
+
+
+    <!--
+             <CheckBoxPreference
                 android:key="emuframeskip"
                 android:title="Enable Frameskip"
                 android:defaultValue="true"
-                android:summary="Enable frameskipping to help the emulator catch up if it gets behind." /> -->
-    	<!--  
+                android:summary="Enable frameskipping to help the emulator catch up if it gets behind." />
+    -->
+    <!--
     	<CheckBoxPreference
                 android:key="emuforcemono"
                 android:title="Force Mono"
                 android:defaultValue="false"
-                android:summary="Force the emulator to emulate an original mono Wonder Swan." />-->
-                
-    </PreferenceCategory> -->
+                android:summary="Force the emulator to emulate an original mono Wonder Swan." />
+    -->
+    <!-- <PreferenceCategory> -->
+
+    <PreferenceCategory>
+    </PreferenceCategory>
+
 </PreferenceScreen>

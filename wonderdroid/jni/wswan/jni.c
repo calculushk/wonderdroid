@@ -191,49 +191,19 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_updatebut
 
 	uint16_t newbuttons = 0x0000;
 
-	if(start){
-		newbuttons |= 0x100;
-	}
+	if(start) newbuttons |= 0x100;
+	if(a) newbuttons |= 0x200;
+	if(b) newbuttons |= 0x400;
+	if(x1)newbuttons |= 0x1;
+	if(x2) newbuttons |= 0x2;
+    if(x3) newbuttons |= 0x4;
+	if(x4) newbuttons |= 0x8;
+	if(y1) newbuttons |= 0x10;
+	if(y2) newbuttons |= 0x20;
+	if(y3) newbuttons |= 0x40;
+	if(y4) newbuttons |= 0x80;
 
-	if(a){
-		newbuttons |= 0x200;
-	}
 
-	if(b){
-		newbuttons |= 0x400;
-	}
-
-	if(x1){
-			newbuttons |= 0x1;
-	}
-
-	if(x2){
-				newbuttons |= 0x2;
-		}
-
-	if(x3){
-				newbuttons |= 0x4;
-		}
-
-	if(x4){
-				newbuttons |= 0x8;
-		}
-
-	if(y1){
-				newbuttons |= 0x10;
-		}
-
-		if(y2){
-					newbuttons |= 0x20;
-			}
-
-		if(y3){
-					newbuttons |= 0x40;
-			}
-
-		if(y4){
-					newbuttons |= 0x80;
-			}
 	WSButtonStatus = newbuttons;
 }
 

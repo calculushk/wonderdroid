@@ -28,6 +28,7 @@
         android:layout_width="fill_parent"
         android:layout_height="144dp"
         android:layout_gravity="center"
+        android:contentDescription="Game Screenshot"
         android:scaleType="fitCenter"
         android:src="@drawable/unknownrom" />
 

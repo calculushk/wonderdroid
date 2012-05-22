@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class RomGalleryView extends LinearLayout {
 
-	LinearLayout mLayout;
+	private final LinearLayout mLayout;
 
 	public RomGalleryView (Context context, AttributeSet attrs) {
 		super(context, attrs);

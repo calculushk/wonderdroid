@@ -28,7 +28,7 @@ public class Main extends Activity {
 	private ProgressBar mPB;
 	private EmuView view;
 	private Rom mRom;
-	private WonderSwan.Header mRomHeader;
+	private WonderSwanHeader mRomHeader;
 	private File mCartMem;
 	private boolean mControlsVisible = false;
 
@@ -37,7 +37,7 @@ public class Main extends Activity {
 		super.onCreate(savedInstanceState);
 
 		mRom = (Rom)this.getIntent().getExtras().getSerializable(ROM);
-		mRomHeader = (WonderSwan.Header)this.getIntent().getExtras().getSerializable(ROMHEADER);
+		mRomHeader = (WonderSwanHeader)this.getIntent().getExtras().getSerializable(ROMHEADER);
 
 		if (mRom == null || mRomHeader == null) {
 			throw new IllegalArgumentException();

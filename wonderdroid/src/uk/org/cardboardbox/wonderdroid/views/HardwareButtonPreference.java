@@ -1,6 +1,7 @@
 
 package uk.org.cardboardbox.wonderdroid.views;
 
+import uk.org.cardboardbox.wonderdroid.R;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -34,68 +36,57 @@ public class HardwareButtonPreference extends Preference {
 
 	@Override
 	protected View onCreateView (ViewGroup parent) {
-		layout = new LinearLayout(getContext());
-		LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-			LinearLayout.LayoutParams.WRAP_CONTENT);
-		params1.gravity = Gravity.LEFT;
-		params1.weight = 1.0f;
-		LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(80, LinearLayout.LayoutParams.WRAP_CONTENT);
-		params2.gravity = Gravity.RIGHT;
 
-		LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(30, LinearLayout.LayoutParams.WRAP_CONTENT);
-		params3.gravity = Gravity.CENTER;
+		LayoutInflater layoutInflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LinearLayout layout = (LinearLayout)layoutInflater.inflate(R.layout.hardwardbuttonpref, null);
 
-		layout.setPadding(15, 5, 10, 5);
-		layout.setOrientation(LinearLayout.HORIZONTAL);
+		TextView controltext = (TextView)layout.getChildAt(0);
+		controltext.setText(getTitle());
 
-		TextView view = new TextView(getContext());
-		view.setText(getTitle());
-		view.setTextSize(18);
-		view.setTypeface(Typeface.SANS_SERIF, Typeface.BOLD);
-		view.setGravity(Gravity.LEFT);
-		view.setLayoutParams(params1);
+		final TextView current = (TextView)layout.getChildAt(1);
+		if (getSharedPreferences().contains(getKey())) {
+			current.setText(keycodeDecode(getSharedPreferences().getInt(getKey(), 0)));
+		}
 
-		Button clear = new Button(parent.getContext());
-		clear.setText("Clear");
-		clear.setOnClickListener(new OnClickListener() {
+		Button set = (Button)layout.getChildAt(2);
+		set.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick (View v) {
-				SharedPreferences.Editor editor = getEditor();
-				editor.putInt(getKey(), 0);
-				editor.commit();
-			}
-		});
-
-		Button button = new Button(parent.getContext());
-		button.setText("Set button");
-		button.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick (View v) {
-				KeyCaptureAlert alert = new KeyCaptureAlert(v.getContext());
+				KeyCaptureAlert alert = new KeyCaptureAlert(v.getContext(), current);
 				alert.setTitle("Press a key");
 				alert.show();
 
 			}
 		});
-		this.layout.addView(view);
-		layout.addView(button);
-		layout.addView(clear);
+
+		Button clear = (Button)layout.getChildAt(3);
+		clear.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick (View v) {
+				SharedPreferences.Editor editor = getEditor();
+				current.setText("");
+				editor.putInt(getKey(), 0);
+				editor.commit();
+			}
+		});
 
 		return layout;
 	}
 
 	@Override
 	public View getView (View convertView, ViewGroup parent) {
-
 		convertView = this.layout == null ? onCreateView(parent) : this.layout;
 		return convertView;
 	}
 
 	public class KeyCaptureAlert extends AlertDialog {
-		public KeyCaptureAlert (Context arg0) {
+		final TextView current;
+
+		public KeyCaptureAlert (Context arg0, TextView current) {
 			super(arg0);
+			this.current = current;
 		}
 
 		public boolean onKeyDown (int keyCode, KeyEvent event) {
@@ -104,10 +95,41 @@ public class HardwareButtonPreference extends Preference {
 			SharedPreferences.Editor editor = getEditor();
 			editor.putInt(getKey(), keyCode);
 			editor.commit();
+			current.setText(keycodeDecode(keyCode));
 			this.dismiss();
 			return true;
 
 		}
+	}
 
+	static String keycodeDecode (int keycode) {
+		switch (keycode) {
+		case KeyEvent.KEYCODE_BACK:
+			return "back";
+		case KeyEvent.KEYCODE_CAMERA:
+			return "camera";
+		case KeyEvent.KEYCODE_MENU:
+			return "menu";
+		case KeyEvent.KEYCODE_HOME:
+			return "home";
+		case KeyEvent.KEYCODE_SEARCH:
+			return "search";
+		case KeyEvent.KEYCODE_DPAD_CENTER:
+			return "dpad center";
+		case KeyEvent.KEYCODE_DPAD_UP:
+			return "dpad up";
+		case KeyEvent.KEYCODE_DPAD_DOWN:
+			return "dpad down";
+		case KeyEvent.KEYCODE_DPAD_LEFT:
+			return "dpad left";
+		case KeyEvent.KEYCODE_DPAD_RIGHT:
+			return "dpad right";
+		case KeyEvent.KEYCODE_VOLUME_UP:
+			return "volume up";
+		case KeyEvent.KEYCODE_VOLUME_DOWN:
+			return "volume down";
+		default:
+			return "key " + keycode;
+		}
 	}
 }

@@ -28,8 +28,6 @@
 #include "v30mz.h"
 #include "rtc.h"
 
-
-
 static uint32_t wsMonoPal[16][4];
 static uint32_t wsColors[8];
 static uint32_t wsCols[16][16];
@@ -61,7 +59,6 @@ static uint16_t VBTimerPeriod;
 
 static uint16_t HBCounter, VBCounter;
 static uint8_t VideoMode;
-
 
 void WSwan_GfxInit(void) {
 }
@@ -321,7 +318,6 @@ int wsExecuteLine(uint16_t *pXBuf, bool skip) {
 		}
 	}
 
-
 	v30mz_execute(224);
 	wsLine = (wsLine + 1) % 159;
 	if (wsLine == LineCompare) {
@@ -370,7 +366,7 @@ void WSwan_SetPixelFormat() {
 
 				ColorMap[(r << 8) | (g << 4) | (b << 0)] = ((((neo_r) << gs) | neo_g) << bs) | neo_b;
 
-						//((neo_r << rs) | (neo_g << gs)) | (neo_b << bs);
+				//((neo_r << rs) | (neo_g << gs)) | (neo_b << bs);
 			}
 
 	for (int i = 0; i < 16; i++) {
@@ -444,31 +440,28 @@ void wsScanline(uint16_t *target) {
 		uint8_t windowtype = DispControl & 0x30;
 		//static bool in_window[256 + 8 * 2];
 
-		if(windowtype)
-		{
+		if (windowtype) {
 			memset(in_window, 0, sizeof(in_window));
 
-			if(windowtype == 0x20) // Display FG only inside window
-			{
-				if((wsLine >= FGy0) && (wsLine < FGy1))
-				for(j = FGx0; j <= FGx1 && j < 224; j++)
-				in_window[7 + j] = 1;
+			if (windowtype == 0x20) // Display FG only inside window
+					{
+				if ((wsLine >= FGy0) && (wsLine < FGy1))
+					for (j = FGx0; j <= FGx1 && j < 224; j++)
+						in_window[7 + j] = 1;
 			}
-			else if(windowtype == 0x30) // Display FG only outside window
-			{
-				for(j = 0; j < 224; j++)
-				{
-					if(!(j >= FGx0 && j < FGx1) || !((wsLine >= FGy0) && (wsLine < FGy1)))
-					in_window[7 + j] = 1;
+			else if (windowtype == 0x30) // Display FG only outside window
+					{
+				for (j = 0; j < 224; j++) {
+					if (!(j >= FGx0 && j < FGx1) || !((wsLine >= FGy0) && (wsLine < FGy1)))
+						in_window[7 + j] = 1;
 				}
 			}
-			else
-			{
+			else {
 				//puts("Who knows!");
 			}
 		}
 		else
-		memset(in_window, 1, sizeof(in_window));
+			memset(in_window, 1, sizeof(in_window));
 
 		start_tile_n = (wsLine + FGYScroll) & 0xff;
 		map_a = (((uint32_t)((FGBGLoc >> 4) & 0xF)) << 11) + ((start_tile_n >> 3) << 6);
@@ -515,15 +508,14 @@ void wsScanline(uint16_t *target) {
 		int xs, ts, as, ys, ysx, h;
 		//bool in_window[256 + 8 * 2];
 
-	if(DispControl & 0x08)
-		{
+		if (DispControl & 0x08) {
 			memset(in_window, 0, sizeof(in_window));
-			if((wsLine >= SPRy0) && (wsLine < SPRy1))
-			for(j = SPRx0; j < SPRx1 && j < 256; j++)
-			in_window[7 + j] = 1;
+			if ((wsLine >= SPRy0) && (wsLine < SPRy1))
+				for (j = SPRx0; j < SPRx1 && j < 256; j++)
+					in_window[7 + j] = 1;
 		}
 		else
-		memset(in_window, 1, sizeof(in_window));
+			memset(in_window, 1, sizeof(in_window));
 
 		for (h = SpriteCountCache - 1; h >= 0; h--) {
 			ts = SpriteTable[h][0];
@@ -626,7 +618,7 @@ void wsScanline(uint16_t *target) {
 		}
 	}
 	else {
-		for (l = 0; l < 224; l++){
+		for (l = 0; l < 224; l++) {
 			target[l] = (ColorMapG[(b_bg[l + 7]) & 15]);
 		}
 	}
@@ -675,5 +667,4 @@ void WSwan_GfxReset(void) {
 	WSwan_SetPixelFormat();
 
 }
-
 

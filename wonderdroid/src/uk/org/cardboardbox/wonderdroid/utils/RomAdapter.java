@@ -13,6 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import uk.org.cardboardbox.wonderdroid.WonderSwan;
+import uk.org.cardboardbox.wonderdroid.WonderSwanHeader;
 import uk.org.cardboardbox.wonderdroid.views.RomGalleryView;
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -66,7 +67,7 @@ public class RomAdapter extends BaseAdapter {
 			return null;
 		}
 
-		public static WonderSwan.Header getHeader (Context context, Rom rom) {
+		public static WonderSwanHeader getHeader (Context context, Rom rom) {
 
 			File romFile = null;
 			try {
@@ -75,15 +76,15 @@ public class RomAdapter extends BaseAdapter {
 				} else if (rom.type == Type.ZIP) {
 					ZipFile zip = new ZipFile(rom.sourcefile);
 					ZipEntry entry = ZipUtils.getEntry(zip, rom.fileName);
-					return new WonderSwan.Header(ZipUtils.getBytesFromEntry(zip, entry, entry.getSize() - WonderSwan.Header.HEADERLEN,
-						WonderSwan.Header.HEADERLEN));
+					return new WonderSwanHeader(ZipUtils.getBytesFromEntry(zip, entry, entry.getSize() - WonderSwanHeader.HEADERLEN,
+						WonderSwanHeader.HEADERLEN));
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 
 			if (romFile != null) {
-				WonderSwan.Header header = new WonderSwan.Header(romFile);
+				WonderSwanHeader header = new WonderSwanHeader(romFile);
 				return header;
 			}
 
@@ -93,7 +94,7 @@ public class RomAdapter extends BaseAdapter {
 
 	private static final String TAG = RomAdapter.class.getSimpleName();
 
-	private final HashMap<Integer, WonderSwan.Header> mHeaderCache = new HashMap<Integer, WonderSwan.Header>();
+	private final HashMap<Integer, WonderSwanHeader> mHeaderCache = new HashMap<Integer, WonderSwanHeader>();
 	private final HashMap<String, SoftReference<Bitmap>> mSplashCache = new HashMap<String, SoftReference<Bitmap>>();
 
 	private final AssetManager mAssetManager;
@@ -141,7 +142,7 @@ public class RomAdapter extends BaseAdapter {
 	}
 
 	public Bitmap getBitmap (int index) {
-		WonderSwan.Header header = getHeader(index);
+		WonderSwanHeader header = getHeader(index);
 		String internalname = header.internalname;
 		if (mSplashCache.containsKey(internalname)) {
 			Bitmap splash = mSplashCache.get(internalname).get();
@@ -197,7 +198,7 @@ public class RomAdapter extends BaseAdapter {
 
 		view.setTitle(mRoms[index].displayName);
 
-		WonderSwan.Header header = getHeader(index);
+		WonderSwanHeader header = getHeader(index);
 		if (header != null) {
 			Bitmap shot = getBitmap(index);
 			if (shot != null) {
@@ -210,14 +211,14 @@ public class RomAdapter extends BaseAdapter {
 		return view;
 	}
 
-	public synchronized WonderSwan.Header getHeader (int index) {
+	public synchronized WonderSwanHeader getHeader (int index) {
 
 		if (mHeaderCache.containsKey(index)) {
 			return mHeaderCache.get(index);
 		}
 
 		Rom rom = (Rom)(this.getItem(index));
-		WonderSwan.Header header = Rom.getHeader(mContext, rom);
+		WonderSwanHeader header = Rom.getHeader(mContext, rom);
 		if (header != null) {
 			mHeaderCache.put(index, header);
 		}

@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.ColorFilter;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -32,7 +33,7 @@ public class Select extends Activity {
 
 	private static final String TAG = Select.class.getSimpleName();
 
-	private Runnable bgSwitcher = new Runnable() {
+	private final Runnable bgSwitcher = new Runnable() {
 
 		private int splashindex = 0;
 		private final Random mRNG = new Random();
@@ -188,7 +189,7 @@ public class Select extends Activity {
 				@Override
 				public void onItemSelected (AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 
-					WonderSwan.Header header = mRAdapter.getHeader(arg2);
+					WonderSwanHeader header = mRAdapter.getHeader(arg2);
 					if (header != null) {
 						String newtext;
 						if (header.isColor) {

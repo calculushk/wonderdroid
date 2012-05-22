@@ -1,14 +1,7 @@
 
 package uk.org.cardboardbox.wonderdroid;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
-import java.nio.channels.FileChannel;
 
 import uk.org.cardboardbox.wonderdroid.utils.CpuUtils;
 
@@ -42,7 +35,6 @@ public class WonderSwan {
 
 	public WonderSwan () {
 		throw new UnsupportedOperationException();
-
 	}
 
 	static {
@@ -78,60 +70,6 @@ public class WonderSwan {
 
 	static public void outputDebugShizzle () {
 		Log.d(TAG, "Audio buffer min " + AudioTrack.getMinBufferSize(audiofreq, channelconf, encoding));
-	}
-
-	public static class Header implements Serializable {
-		/**
-		 * 
-		 */
-
-		private static final long serialVersionUID = 1L;
-		public static final int HEADERLEN = 10;
-		private final int developer;
-		private final int cartid;
-		private final int checksum;
-		private final int romsize;
-		public final boolean isColor;
-		public final boolean isVertical;
-		public final String internalname;
-
-		private static byte[] getHeaderFromFile (File rom) {
-			byte header[] = new byte[HEADERLEN];
-			try {
-				FileInputStream fis;
-				fis = new FileInputStream(rom);
-				FileChannel fc = fis.getChannel();
-				fc.read(ByteBuffer.wrap(header), fc.size() - HEADERLEN);
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException();
-			}
-			return header;
-		}
-
-		public Header (File rom) {
-			this(getHeaderFromFile(rom));
-		}
-
-		public Header (byte[] header) {
-			if (header == null || header.length != HEADERLEN) {
-				throw new IllegalArgumentException("Header must be " + HEADERLEN + " bytes");
-			}
-
-			developer = (header[0] & 0xFF);
-			isColor = (header[1] == 1);
-			cartid = (header[2] & 0xFF);
-			switch (header[4]) {
-			default:
-				romsize = 0;
-			}
-			isVertical = ((header[6] & 0x01) == 1);
-			checksum = (header[8] & 0xFF) + ((header[9] << 8) & 0xFFFF);
-			internalname = ((Integer)developer).toString() + "-" + ((Integer)cartid).toString() + "-"
-				+ ((Integer)checksum).toString();
-
-		}
-
 	}
 
 	public static native void storebackupdata (String filename);
