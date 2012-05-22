@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="Control Settings" >
+    <PreferenceCategory android:title="@string/settings_cat_controls" >
 
         <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
             android:key="hwcontrolY1"
@@ -21,19 +21,19 @@
 
         <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
             android:key="hwcontrolX1"
-            android:title="X1 (Up)" />
+            android:title="@string/control_x1" />
 
         <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
             android:key="hwcontrolX2"
-            android:title="X2 (Right)" />
+            android:title="@string/control_x2" />
 
         <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
             android:key="hwcontrolX3"
-            android:title="X3 (Down)" />
+            android:title="@string/control_x3" />
 
         <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
             android:key="hwcontrolX4"
-            android:title="X4 (Left)" />
+            android:title="@string/control_x4" />
 
         <uk.org.cardboardbox.wonderdroid.views.HardwareButtonPreference
             android:key="hwcontrolA"

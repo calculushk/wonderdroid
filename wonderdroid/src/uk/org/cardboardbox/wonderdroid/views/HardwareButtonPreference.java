@@ -54,7 +54,7 @@ public class HardwareButtonPreference extends Preference {
 			@Override
 			public void onClick (View v) {
 				KeyCaptureAlert alert = new KeyCaptureAlert(v.getContext(), current);
-				alert.setTitle("Press a key");
+				alert.setTitle(R.string.pressakey);
 				alert.show();
 
 			}
@@ -104,6 +104,8 @@ public class HardwareButtonPreference extends Preference {
 
 	static String keycodeDecode (int keycode) {
 		switch (keycode) {
+		case 0:
+			return "";
 		case KeyEvent.KEYCODE_BACK:
 			return "back";
 		case KeyEvent.KEYCODE_CAMERA:

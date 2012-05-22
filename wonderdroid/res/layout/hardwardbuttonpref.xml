@@ -21,15 +21,15 @@
         android:paddingRight="20dp" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="70dp"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:text="Set" />
+        android:text="@string/set" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="70dp"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:text="Clear" />
+        android:text="@string/clear" />
 
 </LinearLayout>
