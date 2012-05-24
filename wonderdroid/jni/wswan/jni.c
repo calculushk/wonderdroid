@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include "wswan.h"
 
-#include "main.h"
+
 #include "gfx.h"
 #include "memory.h"
 #include "start.h"
