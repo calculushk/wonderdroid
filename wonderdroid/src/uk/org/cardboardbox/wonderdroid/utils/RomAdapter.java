@@ -112,24 +112,25 @@ public class RomAdapter extends BaseAdapter {
 	private Rom[] findRoms () {
 		File[] sourceFiles = mRomDir.listFiles(new RomFilter());
 		ArrayList<Rom> roms = new ArrayList<Rom>();
-		for (int i = 0; i < sourceFiles.length; i++) {
+		if (sourceFiles != null) {
+			for (int i = 0; i < sourceFiles.length; i++) {
 
-			if (sourceFiles[i].getName().endsWith("zip")) {
-				try {
-					for (String entry : ZipUtils.getValidEntries(new ZipFile(sourceFiles[i]), Rom.romExtension)) {
-						roms.add(new Rom(Rom.Type.ZIP, sourceFiles[i], entry, sourceFiles[i].getName().replaceFirst("\\.zip", "")));
+				if (sourceFiles[i].getName().endsWith("zip")) {
+					try {
+						for (String entry : ZipUtils.getValidEntries(new ZipFile(sourceFiles[i]), Rom.romExtension)) {
+							roms.add(new Rom(Rom.Type.ZIP, sourceFiles[i], entry, sourceFiles[i].getName().replaceFirst("\\.zip", "")));
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						break;
 					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					break;
+				} else {
+					roms.add(new Rom(Rom.Type.RAW, sourceFiles[i], null, sourceFiles[i].getName().replaceFirst("\\.wsc", "")
+						.replaceFirst("\\.ws", "")));
 				}
-			} else {
-				roms.add(new Rom(Rom.Type.RAW, sourceFiles[i], null, sourceFiles[i].getName().replaceFirst("\\.wsc", "")
-					.replaceFirst("\\.ws", "")));
+
 			}
-
 		}
-
 		Rom[] allRoms = roms.toArray(new Rom[0]);
 
 		Arrays.sort(allRoms, new Comparator<Rom>() {
