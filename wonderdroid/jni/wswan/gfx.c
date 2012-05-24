@@ -395,7 +395,7 @@ void wsScanline(uint16_t *target) {
 		memset(&b_bg_pal[0], (BGColor >> 4) & 0xF, 256);
 	}
 	start_tile_n = (wsLine + BGYScroll) & 0xff;/*First line*/
-	map_a = (((uint32_t)(FGBGLoc & 0xF)) << 11) + ((start_tile_n & 0xfff8) << 3);
+	map_a = (((uint32_t) (FGBGLoc & 0xF)) << 11) + ((start_tile_n & 0xfff8) << 3);
 	startindex = BGXScroll >> 3; /*First tile in row*/
 	adrbuf = 7 - (BGXScroll & 7); /*Pixel in tile*/
 
@@ -464,7 +464,7 @@ void wsScanline(uint16_t *target) {
 			memset(in_window, 1, sizeof(in_window));
 
 		start_tile_n = (wsLine + FGYScroll) & 0xff;
-		map_a = (((uint32_t)((FGBGLoc >> 4) & 0xF)) << 11) + ((start_tile_n >> 3) << 6);
+		map_a = (((uint32_t) ((FGBGLoc >> 4) & 0xF)) << 11) + ((start_tile_n >> 3) << 6);
 		startindex = FGXScroll >> 3;
 		adrbuf = 7 - (FGXScroll & 7);
 

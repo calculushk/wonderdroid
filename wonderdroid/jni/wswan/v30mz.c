@@ -60,10 +60,10 @@ typedef struct {
 	uint8_t TF, IF, DF;
 } v30mz_regs_t;
 
-static void (*cpu_writemem20)( uint32_t, uint8_t) = NULL;
-static uint8_t (*cpu_readport)( uint32_t) = NULL;
-static void (*cpu_writeport)( uint32_t, uint8_t) = NULL;
-static uint8_t (*cpu_readmem20)( uint32_t) = NULL;
+static void (*cpu_writemem20)(uint32_t, uint8_t) = NULL;
+static uint8_t (*cpu_readport)(uint32_t) = NULL;
+static void (*cpu_writeport)(uint32_t, uint8_t) = NULL;
+static uint8_t (*cpu_readmem20)(uint32_t) = NULL;
 
 /***************************************************************************/
 /* cpu state                                                               */
@@ -126,8 +126,8 @@ static RegGroupType DBGCPURegsGroup =
 
 #endif
 
-void v30mz_init(uint8_t (*readmem20)( uint32_t), void (*writemem20)( uint32_t, uint8_t), uint8_t (*readport)( uint32_t),
-		void (*writeport)( uint32_t, uint8_t)) {
+void v30mz_init(uint8_t (*readmem20)(uint32_t), void (*writemem20)(uint32_t, uint8_t), uint8_t (*readport)(uint32_t),
+		void (*writeport)(uint32_t, uint8_t)) {
 	cpu_readmem20 = readmem20;
 	cpu_writemem20 = writemem20;
 
@@ -997,14 +997,14 @@ static void DoOP(uint8_t opcode) {
 			uint32_t tmp;
 			DEF_r16w;
 			FETCHuint16(tmp);
-			dst = (int32_t)((int16_t) src) * (int32_t)((int16_t) tmp);
+			dst = (int32_t) ((int16_t) src) * (int32_t) ((int16_t) tmp);
 			I.CarryVal = I.OverVal = (((int32_t) dst) >> 15 != 0) && (((int32_t) dst) >> 15 != -1);
 			RegWord(ModRM) = (uint16_t) dst;
 			CLKM(4, 3);
 		}
 			OP_EPILOGUE;
 		OP( 0x6a, i_push_d8) {
-			uint32_t tmp = (uint16_t)((int16_t)((int8_t)FETCH));
+			uint32_t tmp = (uint16_t) ((int16_t) ((int8_t) FETCH));
 			PUSH(tmp);
 			CLK(1);
 		}
@@ -1012,8 +1012,8 @@ static void DoOP(uint8_t opcode) {
 		OP( 0x6b, i_imul_d8) {
 			uint32_t src2;
 			DEF_r16w;
-			src2 = (uint16_t)((int16_t)((int8_t)FETCH));
-			dst = (int32_t)((int16_t) src) * (int32_t)((int16_t) src2);
+			src2 = (uint16_t) ((int16_t) ((int8_t) FETCH));
+			dst = (int32_t) ((int16_t) src) * (int32_t) ((int16_t) src2);
 			I.CarryVal = I.OverVal = (((int32_t) dst) >> 15 != 0) && (((int32_t) dst) >> 15 != -1);
 			RegWord(ModRM) = (uint16_t) dst;
 			CLKM(4, 3);
@@ -1226,7 +1226,7 @@ static void DoOP(uint8_t opcode) {
 			uint32_t dst, src;
 			GetModRM;
 			dst = GetRMByte(ModRM);
-			src = (uint8_t)((int8_t)FETCH);
+			src = (uint8_t) ((int8_t) FETCH);
 			CLKM(3, 1);
 			switch (ModRM & 0x38) {
 				case 0x00:
@@ -1278,7 +1278,7 @@ static void DoOP(uint8_t opcode) {
 			uint32_t dst, src;
 			GetModRM;
 			dst = GetRMWord(ModRM);
-			src = (uint16_t)((int16_t)((int8_t)FETCH));
+			src = (uint16_t) ((int16_t) ((int8_t) FETCH));
 			CLKM(3, 1);
 			switch (ModRM & 0x38) {
 				case 0x00:
@@ -1929,7 +1929,7 @@ static void DoOP(uint8_t opcode) {
 		OP( 0xd0, i_rotshft_b) {
 			uint32_t src, dst;
 			GetModRM;
-			src = (uint32_t)GetRMByte(ModRM);
+			src = (uint32_t) GetRMByte(ModRM);
 			dst = src;
 			CLKM(3, 1);
 			switch (ModRM & 0x38) {
@@ -1980,7 +1980,7 @@ static void DoOP(uint8_t opcode) {
 		OP( 0xd1, i_rotshft_w) {
 			uint32_t src, dst;
 			GetModRM;
-			src = (uint32_t)GetRMWord(ModRM);
+			src = (uint32_t) GetRMWord(ModRM);
 			dst = src;
 			CLKM(3, 1);
 			switch (ModRM & 0x38) {
@@ -2033,7 +2033,7 @@ static void DoOP(uint8_t opcode) {
 			uint32_t src, dst;
 			uint8_t c;
 			GetModRM;
-			src = (uint32_t)GetRMByte(ModRM);
+			src = (uint32_t) GetRMByte(ModRM);
 			dst = src;
 			c = I.regs.b[CL];
 			CLKM(5, 3);
@@ -2089,7 +2089,7 @@ static void DoOP(uint8_t opcode) {
 			uint32_t src, dst;
 			uint8_t c;
 			GetModRM;
-			src = (uint32_t)GetRMWord(ModRM);
+			src = (uint32_t) GetRMWord(ModRM);
 			dst = src;
 			c = I.regs.b[CL];
 			c &= 0x1f;
@@ -2178,10 +2178,10 @@ static void DoOP(uint8_t opcode) {
 			OP_EPILOGUE;
 
 		OP( 0xe0, i_loopne) {
-			int8_t disp = (int8_t)FETCH;
+			int8_t disp = (int8_t) FETCH;
 			I.regs.w[CW]--;
 			if (!ZF && I.regs.w[CW]) {
-				I.pc = (uint16_t)(I.pc + disp);
+				I.pc = (uint16_t) (I.pc + disp);
 				CLK(6);
 			}
 			else
@@ -2189,10 +2189,10 @@ static void DoOP(uint8_t opcode) {
 		}
 			OP_EPILOGUE;
 		OP( 0xe1, i_loope) {
-			int8_t disp = (int8_t)FETCH;
+			int8_t disp = (int8_t) FETCH;
 			I.regs.w[CW]--;
 			if (ZF && I.regs.w[CW]) {
-				I.pc = (uint16_t)(I.pc + disp);
+				I.pc = (uint16_t) (I.pc + disp);
 				CLK(6);
 			}
 			else
@@ -2200,10 +2200,10 @@ static void DoOP(uint8_t opcode) {
 		}
 			OP_EPILOGUE;
 		OP( 0xe2, i_loop) {
-			int8_t disp = (int8_t)FETCH;
+			int8_t disp = (int8_t) FETCH;
 			I.regs.w[CW]--;
 			if (I.regs.w[CW]) {
-				I.pc = (uint16_t)(I.pc + disp);
+				I.pc = (uint16_t) (I.pc + disp);
 				CLK(5);ADDBRANCHTRACE(I.sregs[PS], I.pc);
 			}
 			else
@@ -2211,9 +2211,9 @@ static void DoOP(uint8_t opcode) {
 		}
 			OP_EPILOGUE;
 		OP( 0xe3, i_jcxz) {
-			int8_t disp = (int8_t)FETCH;
+			int8_t disp = (int8_t) FETCH;
 			if (I.regs.w[CW] == 0) {
-				I.pc = (uint16_t)(I.pc + disp);
+				I.pc = (uint16_t) (I.pc + disp);
 				CLK(4);ADDBRANCHTRACE(I.sregs[PS], I.pc);
 			}
 			else
@@ -2251,7 +2251,7 @@ static void DoOP(uint8_t opcode) {
 			uint32_t tmp;
 			FETCHuint16(tmp);
 			PUSH(I.pc);
-			I.pc = (uint16_t)(I.pc + (int16_t) tmp);
+			I.pc = (uint16_t) (I.pc + (int16_t) tmp);
 			ADDBRANCHTRACE(I.sregs[PS], I.pc);
 			CLK(5);
 		}
@@ -2259,7 +2259,7 @@ static void DoOP(uint8_t opcode) {
 		OP( 0xe9, i_jmp_d16) {
 			uint32_t tmp;
 			FETCHuint16(tmp);
-			I.pc = (uint16_t)(I.pc + (int16_t) tmp);
+			I.pc = (uint16_t) (I.pc + (int16_t) tmp);
 			ADDBRANCHTRACE(I.sregs[PS], I.pc);
 			CLK(4);
 		}
@@ -2275,9 +2275,9 @@ static void DoOP(uint8_t opcode) {
 		}
 			OP_EPILOGUE;
 		OP( 0xeb, i_jmp_d8) {
-			int tmp = (int) ((int8_t)FETCH);
+			int tmp = (int) ((int8_t) FETCH);
 			CLK(4);
-			I.pc = (uint16_t)(I.pc + tmp);
+			I.pc = (uint16_t) (I.pc + tmp);
 			ADDBRANCHTRACE(I.sregs[PS], I.pc);
 		}
 			OP_EPILOGUE;
@@ -2732,7 +2732,7 @@ static void DoOP(uint8_t opcode) {
 					CLKM(4, 3);
 					break; /* MULU */
 				case 0x28:
-					result = (int16_t)((int8_t) I.regs.b[AL]) * (int16_t)((int8_t) tmp);
+					result = (int16_t) ((int8_t) I.regs.b[AL]) * (int16_t) ((int8_t) tmp);
 					I.regs.w[AW] = (uint16_t) result;
 					I.CarryVal = I.OverVal = (I.regs.b[AH] != 0);
 					CLKM(4, 3);
@@ -2792,7 +2792,7 @@ static void DoOP(uint8_t opcode) {
 					CLKM(4, 3);
 					break; /* MULU */
 				case 0x28:
-					result = (int32_t)((int16_t) I.regs.w[AW]) * (int32_t)((int16_t) tmp);
+					result = (int32_t) ((int16_t) I.regs.w[AW]) * (int32_t) ((int16_t) tmp);
 					I.regs.w[AW] = result & 0xffff;
 					I.regs.w[DW] = result >> 16;
 					I.CarryVal = I.OverVal = (I.regs.w[DW] != 0);

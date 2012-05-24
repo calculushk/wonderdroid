@@ -12,7 +12,6 @@
 typedef void (*writefunc)(uint32_t A, uint8_t V);
 typedef uint8_t (*readfunc)(uint32_t A);
 
-
 //typedef uint32_t UTF32; /* at least 32 bits */
 //typedef uint16_t UTF16; /* at least 16 bits */
 //typedef uint8_t UTF8; /* typically 8 bits */
