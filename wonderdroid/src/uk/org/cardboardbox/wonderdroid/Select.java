@@ -4,15 +4,20 @@ package uk.org.cardboardbox.wonderdroid;
 import java.io.File;
 import java.util.Random;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
+
 import uk.org.cardboardbox.wonderdroid.utils.RomAdapter;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.ColorFilter;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +29,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.FrameLayout;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -94,6 +100,8 @@ public class Select extends Activity {
 
 	private String sdpath;
 
+	private boolean adSupported = true;
+
 	@Override
 	public void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -154,6 +162,13 @@ public class Select extends Activity {
 		handler.removeCallbacks(bgSwitcher);
 	}
 
+	AdView ad = null;
+
+	private void parseSupportOptions () {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		adSupported = prefs.getBoolean("adsupported", false);
+	}
+
 	@Override
 	protected void onResume () {
 		super.onResume();
@@ -166,6 +181,18 @@ public class Select extends Activity {
 		sdpath = Environment.getExternalStorageDirectory().getAbsolutePath();
 
 		setContentView(R.layout.select);
+
+		parseSupportOptions();
+
+		if (adSupported) {
+			FrameLayout adbox = (FrameLayout)findViewById(R.id.adbox);
+			ad = new AdView(this, AdSize.BANNER, "a14fbeecba23019");
+			AdRequest r = new AdRequest();
+			r.addTestDevice("6A3DABBD306114452F0D233CDADCF438");
+			ad.loadAd(r);
+			adbox.addView(ad);
+		}
+
 		//
 		File romdir = new File(sdpath + WonderDroid.DIRECTORY);
 		romdir.mkdir();

@@ -85,7 +85,37 @@
     -->
     <!-- <PreferenceCategory> -->
 
-    <PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_cat_ws" >
+
+        <EditTextPreference
+            android:key="ws_name"
+            android:title="@string/name"
+            android:maxLength="16" />
+        
+        <uk.org.cardboardbox.wonderdroid.views.DatePreference
+            android:key="ws_birthday"
+            android:title="@string/birthday" />
+
+        <ListPreference
+            android:entries="@array/sexes"
+            android:entryValues="@array/sexvalues"
+            android:key="ws_sex"
+            android:title="@string/sex" />
+
+        <ListPreference
+            android:entries="@array/bloodtypes"
+            android:entryValues="@array/bloodtypevalues"
+            android:key="ws_blood"
+            android:title="@string/bloodtype" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Support Settings" >
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="adsupported"
+            android:summary="This allows adverts to be displayed on the game selection screen. In the future this will unlock extra features like save states."
+            android:title="Allow adverts" />
     </PreferenceCategory>
 
 </PreferenceScreen>

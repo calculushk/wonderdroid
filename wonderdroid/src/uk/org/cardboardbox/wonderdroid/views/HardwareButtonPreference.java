@@ -5,11 +5,9 @@ import uk.org.cardboardbox.wonderdroid.R;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.preference.Preference;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,7 +65,7 @@ public class HardwareButtonPreference extends Preference {
 			public void onClick (View v) {
 				SharedPreferences.Editor editor = getEditor();
 				current.setText("");
-				editor.putInt(getKey(), 0);
+				editor.remove(getKey());
 				editor.commit();
 			}
 		});

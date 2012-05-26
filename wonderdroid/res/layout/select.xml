@@ -8,7 +8,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scaleType="centerCrop"
-        android:tint="#BB111111" />
+        android:tint="#BB111111" android:contentDescription="TODO"/>
 
     <ImageView
         android:id="@+id/select_bg2"
@@ -59,5 +59,10 @@
         android:textColor="#fff"
         android:textStyle="bold"
         android:visibility="invisible" />
+
+    <FrameLayout
+        android:id="@+id/adbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

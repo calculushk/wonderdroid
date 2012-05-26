@@ -15,6 +15,7 @@
     <string name="pause">停止</string>
     <string name="reset">リセット</string>
     <string name="settings_cat_controls">コントロール設定</string>
+    <string name="settings_cat_ws">ワンダースワン設定</string>
     <string name="control_x2">X2 (右)</string>
     <string name="control_x3">X3 (下)</string>
     <string name="control_x4">X4 (左)</string>
@@ -23,5 +24,14 @@
     <string name="clear">クリア</string>
     <string name="pressakey">ボタンを押してください</string>
     <string name="crash_string">WonderDroid crashed!</string>
+    <string name="birthday">誕生日</string>
+    <string name="sex">性別</string>
+    <string name="bloodtype">血液型</string>
+    <string name="name">名前</string>
 
+    <string-array name="sexes">
+        <item>男性</item>
+        <item>女性</item>
+    </string-array>
+    
 </resources>

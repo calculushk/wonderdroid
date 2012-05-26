@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_reset(JNI
 }
 
 JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_load(JNIEnv * env, jclass obj, jstring filename,
-		jboolean iswsc) {
+		jboolean iswsc, jstring name, jint year, jint month, jint day, jint blood, jint sex) {
 
 	if (iswsc) {
 		LOGD("Emulating a WonderSwan Color");
@@ -74,7 +74,7 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_load(JNIE
 		//break;
 	}
 
-	sprintf(temp, "Loading %s", str);
+	snprintf(temp, sizeof(temp), "Loading %s", str);
 	LOGD(temp);
 	FILE* file = fopen(str, "r");
 	if (file != NULL) {
@@ -146,6 +146,14 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_load(JNIE
 	// sprintf(tempstring, "WSwan_MemoryInit(%d, %d)", wsc, sram_size);
 	// LOGD(tempstring);
 	WSwan_MemoryInit(wsc, sram_size); // EEPROM and SRAM are loaded in this func.
+
+	const jbyte *namestr;
+	str = (*env)->GetStringUTFChars(env, name, NULL);
+	if (str == NULL) {
+		//return NULL; /* OutOfMemoryError already thrown */
+		//break;
+	}
+	WSwan_EEPROMInit("", (uint16_t) year, (uint8_t) month, (uint8_t) day, (uint8_t) sex, (uint8_t) blood);
 
 // LOGD("WSwan_GfxInit()");
 	WSwan_GfxInit();
@@ -229,24 +237,23 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_loadbacku
 		return; /* OutOfMemoryError already thrown */
 	}
 
-	sprintf(temp, "eeprom size %d, sram size %d", eeprom_size, sram_size);
+	snprintf(temp, sizeof(temp), "eeprom size %d, sram size %d", eeprom_size, sram_size);
 
 	FILE* file = fopen(str, "r");
 	if (file != NULL) {
-		LOGD("The file loaded!!!");
+		if (sram_size) {
+			LOGD("Loading SRAM");
+			fread(wsSRAM, sizeof(uint8_t), sram_size, file);
+		}
+
+		else if (eeprom_size) {
+			LOGD("Loading eeprom");
+			fread(wsEEPROM, sizeof(uint8_t), eeprom_size, file);
+		}
+
+		fclose(file);
 	}
 
-	if (sram_size) {
-		LOGD("Loading SRAM");
-		fread(wsSRAM, sizeof(uint8_t), sram_size, file);
-	}
-
-	else if (eeprom_size) {
-		LOGD("Loading eeprom");
-		fread(wsEEPROM, sizeof(uint8_t), eeprom_size, file);
-	}
-
-	fclose(file);
 }
 
 JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_storebackupdata(JNIEnv *env, jclass obj,
@@ -261,21 +268,19 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_storeback
 		//break;
 	}
 
-	sprintf(temp, "eeprom size %d, sram size %d", eeprom_size, sram_size);
+	snprintf(temp, sizeof(temp), "eeprom size %d, sram size %d", eeprom_size, sram_size);
 
 	FILE* file = fopen(str, "w");
 	if (file != NULL) {
-		LOGD("The file loaded!!!");
+		if (sram_size) {
+			LOGD("Writing SRAM");
+			fwrite(wsSRAM, sizeof(uint8_t), sram_size, file);
+		}
+		else if (eeprom_size) {
+			LOGD("Writing eeprom");
+			fwrite(wsEEPROM, sizeof(uint8_t), eeprom_size, file);
+		}
+		fclose(file);
 	}
 
-	if (sram_size) {
-		LOGD("Writing SRAM");
-		fwrite(wsSRAM, sizeof(uint8_t), sram_size, file);
-	}
-
-	else if (eeprom_size) {
-		LOGD("Writing eeprom");
-		fwrite(wsEEPROM, sizeof(uint8_t), eeprom_size, file);
-	}
-	fclose(file);
 }

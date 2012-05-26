@@ -3,6 +3,7 @@ package uk.org.cardboardbox.wonderdroid;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.GregorianCalendar;
 
 import uk.org.cardboardbox.wonderdroid.utils.RomAdapter.Rom;
 import uk.org.cardboardbox.wonderdroid.views.EmuView;
@@ -70,7 +71,17 @@ public class Main extends Activity {
 					e.printStackTrace();
 					throw new RuntimeException();
 				}
-				WonderSwan.load(Rom.getRomFile(mContext, mRom).getAbsolutePath(), mRomHeader.isColor);
+
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Main.this);
+				String name = prefs.getString("ws_name", "");
+				String sex = prefs.getString("ws_sex", "1");
+				String blood = prefs.getString("ws_blood", "1");
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTimeInMillis(prefs.getLong("ws_birthday", 0));
+
+				WonderSwan.load(Rom.getRomFile(mContext, mRom).getAbsolutePath(), mRomHeader.isColor, name,
+					cal.get(GregorianCalendar.YEAR), cal.get(GregorianCalendar.MONTH), cal.get(GregorianCalendar.DAY_OF_MONTH),
+					Integer.parseInt(blood), Integer.parseInt(sex));
 				return null;
 			}
 

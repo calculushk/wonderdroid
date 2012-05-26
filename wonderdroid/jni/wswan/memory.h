@@ -18,7 +18,7 @@ uint8_t WSwan_readmem20(uint32_t);
 void WSwan_writemem20(uint32_t address, uint8_t data);
 
 void WSwan_MemoryInit(bool IsWSC, uint32_t ssize);
-void WSwan_MemoryKill(void);
+
 
 void WSwan_CheckSoundDMA(void);
 

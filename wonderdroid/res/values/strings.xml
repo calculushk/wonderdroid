@@ -23,5 +23,17 @@
     <string name="set">Set</string>
     <string name="clear">Clear</string>
     <string name="pressakey">Press a key</string>
+    <string name="birthday">Birthday</string>
+    <string name="sex">Sex</string>
+    <string name="bloodtype">Bloodtype</string>
+    <string name="settings_cat_ws">WonderSwan settings</string>
+    <string name="name">Name</string>
+
+    <string-array name="sexes">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+    
+
 
 </resources>

@@ -45,7 +45,7 @@ public class WonderSwan {
 		}
 	}
 
-	static public native void load (String rompath, boolean wsc);
+	static public native void load (String rompath, boolean wsc, String name, int year, int month, int day, int blood, int sex);
 
 	static public native void reset ();
 

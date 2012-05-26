@@ -25,7 +25,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;Z)V
  */
 JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_load
-  (JNIEnv *, jclass, jstring, jboolean);
+  (JNIEnv *, jclass, jstring, jboolean, jstring, jint, jint, jint, jint, jint);
 
 /*
  * Class:     uk_org_cardboardbox_wonderdroid_WonderSwan

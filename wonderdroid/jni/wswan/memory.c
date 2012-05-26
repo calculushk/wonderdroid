@@ -385,24 +385,7 @@ void WSwan_writeport(uint32_t IOPort, uint8_t V) {
 		}
 }
 
-void WSwan_MemoryKill(void) {
-	if (sram_size || eeprom_size) {
-		// std::vector<PtrLengthPair> EvilRams;
 
-		//if(eeprom_size)
-		//  EvilRams.push_back(PtrLengthPair(wsEEPROM, eeprom_size));
-
-		// if(sram_size)
-		//  EvilRams.push_back(PtrLengthPair(wsSRAM, sram_size));
-
-//  MDFN_DumpToFile(MDFN_MakeFName(MDFNMKF_SAV, 0, "sav").c_str(), 6, EvilRams);
-	}
-
-	if (wsSRAM) {
-		free(wsSRAM);
-		wsSRAM = NULL;
-	}
-}
 
 void WSwan_MemoryInit(bool IsWSC, uint32_t ssize) {
 	wsRAMSize = 65536;
