@@ -7,129 +7,144 @@ import android.view.MotionEvent;
 
 public class TouchInputHandler {
 
-	private final String TAG = TouchInputHandler.class.getSimpleName();
-	private final boolean hasMultiTouch;
+    private final String TAG = TouchInputHandler.class.getSimpleName();
 
-	public TouchInputHandler (Context context) {
-		hasMultiTouch = context.getPackageManager().hasSystemFeature("android.hardware.touchscreen.multitouch");
-		if (hasMultiTouch) {
-			Log.d(TAG, "has multitouch");
-		}
-		for (int i = 0; i < pointers.length; i++) {
-			pointers[i] = new Pointer();
-		}
-	}
+    private final boolean hasMultiTouch;
 
-	public static class Pointer {
-		private int id = -1;
-		public boolean down = false;
-		public int x, y;
-	}
+    public TouchInputHandler(Context context) {
+        hasMultiTouch = context.getPackageManager().hasSystemFeature(
+                "android.hardware.touchscreen.multitouch");
+        if (hasMultiTouch) {
+            Log.d(TAG, "has multitouch");
+        }
+        for (int i = 0; i < pointers.length; i++) {
+            pointers[i] = new Pointer();
+        }
+    }
 
-	public Pointer[] pointers = new Pointer[6];
+    public static class Pointer {
+        private int id = -1;
 
-	private void newPointer (int id, int x, int y) {
-		for (Pointer pointer : pointers) {
-			if (pointer.id == id) {
-				pointer.x = x;
-				pointer.y = y;
-				pointer.down = true;
-				// Log.d(TAG, "Reusing existing pointer for " + id + " @ " + x + ":" + y);
-				return;
-			}
-		}
+        public boolean down = false;
 
-		for (Pointer pointer : pointers) {
-			if (!pointer.down) {
-				pointer.id = id;
-				pointer.x = x;
-				pointer.y = y;
-				pointer.down = true;
-				// Log.d(TAG, "Created pointer for " + id + " @ " + x + ":" + y);
-				return;
-			}
-		}
-	}
+        public int x, y;
 
-	private void freePointer (int id) {
-		for (Pointer pointer : pointers) {
-			if (pointer.id == id) {
-				pointer.down = false;
-				// Log.d(TAG, "Freed pointer for " + id);
-				return;
-			}
-		}
-	}
+        public long downTime = 0;
 
-	private void updatePointer (int id, int x, int y) {
-		for (Pointer pointer : pointers) {
-			if (pointer.id == id) {
-				pointer.x = x;
-				pointer.y = y;
-				// Log.d(TAG, "Updated pointer for " + id + " @ " + x + ":" + y);
-				return;
-			}
-		}
-	}
+        public int downX, downY;
+    }
 
-	public synchronized void onTouchEvent (MotionEvent event) {
+    public Pointer[] pointers = new Pointer[6];
 
-		final int action = event.getAction() & MotionEvent.ACTION_MASK;
-		if (hasMultiTouch) {
-			int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+    private void newPointer(int id, int x, int y) {
+        for (Pointer pointer : pointers) {
+            if (pointer.id == id) {
+                pointer.x = x;
+                pointer.y = y;
+                pointer.down = true;
 
-			int x, y;
+                pointer.downX = x;
+                pointer.downY = y;
+                pointer.downTime = System.currentTimeMillis();
+                // Log.d(TAG, "Reusing existing pointer for " + id + " @ " + x +
+                // ":" + y);
+                return;
+            }
+        }
 
-			switch (action) {
-			case MotionEvent.ACTION_DOWN:
-			case MotionEvent.ACTION_POINTER_DOWN:
-				x = (int)event.getX(pointerIndex);
-				y = (int)event.getY(pointerIndex);
-				newPointer(pointerIndex, x, y);
-				break;
+        for (Pointer pointer : pointers) {
+            if (!pointer.down) {
+                pointer.id = id;
+                pointer.x = x;
+                pointer.y = y;
+                pointer.down = true;
+                // Log.d(TAG, "Created pointer for " + id + " @ " + x + ":" +
+                // y);
+                return;
+            }
+        }
+    }
 
-			case MotionEvent.ACTION_UP:
-			case MotionEvent.ACTION_POINTER_UP:
-			case MotionEvent.ACTION_OUTSIDE:
-			case MotionEvent.ACTION_CANCEL:
-				freePointer(pointerIndex);
-				break;
+    private void freePointer(int id) {
+        for (Pointer pointer : pointers) {
+            if (pointer.id == id) {
+                pointer.down = false;
+                // Log.d(TAG, "Freed pointer for " + id);
+                return;
+            }
+        }
+    }
 
-			case MotionEvent.ACTION_MOVE:
-				int pointerCount = event.getPointerCount();
-				for (int i = 0; i < pointerCount; i++) {
-					pointerIndex = i;
-					int pointerId = event.getPointerId(pointerIndex);
-					x = (int)event.getX(pointerIndex);
-					y = (int)event.getY(pointerIndex);
-					updatePointer(pointerId, x, y);
-				}
-				break;
-			}
+    private void updatePointer(int id, int x, int y) {
+        for (Pointer pointer : pointers) {
+            if (pointer.id == id) {
+                pointer.x = x;
+                pointer.y = y;
+                // Log.d(TAG, "Updated pointer for " + id + " @ " + x + ":" +
+                // y);
+                return;
+            }
+        }
+    }
 
-		} else {
-			int x, y;
-			x = (int)event.getX();
-			y = (int)event.getY();
+    public synchronized void onTouchEvent(MotionEvent event) {
 
-			switch (action) {
-			case MotionEvent.ACTION_DOWN:
-			case MotionEvent.ACTION_POINTER_DOWN:
-				newPointer(0, x, y);
-				break;
+        final int action = event.getAction() & MotionEvent.ACTION_MASK;
+        if (hasMultiTouch) {
+            int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+            int pointerId = event.getPointerId(pointerIndex);
+            int x, y;
 
-			case MotionEvent.ACTION_UP:
-			case MotionEvent.ACTION_POINTER_UP:
-			case MotionEvent.ACTION_OUTSIDE:
-			case MotionEvent.ACTION_CANCEL:
-				freePointer(0);
-				break;
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    x = (int)event.getX(pointerIndex);
+                    y = (int)event.getY(pointerIndex);
+                    newPointer(pointerId, x, y);
+                    break;
 
-			case MotionEvent.ACTION_MOVE:
-				updatePointer(0, x, y);
-				break;
-			}
-		}
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_POINTER_UP:
+                case MotionEvent.ACTION_OUTSIDE:
+                case MotionEvent.ACTION_CANCEL:
+                    freePointer(pointerId);
+                    break;
 
-	}
+                case MotionEvent.ACTION_MOVE:
+                    int pointerCount = event.getPointerCount();
+                    for (int i = 0; i < pointerCount; i++) {
+                        pointerIndex = i;
+                        pointerId = event.getPointerId(pointerIndex);
+                        x = (int)event.getX(pointerIndex);
+                        y = (int)event.getY(pointerIndex);
+                        updatePointer(pointerId, x, y);
+                    }
+                    break;
+            }
+
+        } else {
+            int x, y;
+            x = (int)event.getX();
+            y = (int)event.getY();
+
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    newPointer(0, x, y);
+                    break;
+
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_POINTER_UP:
+                case MotionEvent.ACTION_OUTSIDE:
+                case MotionEvent.ACTION_CANCEL:
+                    freePointer(0);
+                    break;
+
+                case MotionEvent.ACTION_MOVE:
+                    updatePointer(0, x, y);
+                    break;
+            }
+        }
+
+    }
 }
