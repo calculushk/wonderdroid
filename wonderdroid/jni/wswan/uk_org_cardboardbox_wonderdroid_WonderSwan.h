@@ -41,7 +41,7 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_reset
  * Signature: (ZLjava/nio/ShortBuffer;[S)I
  */
 JNIEXPORT jint JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan__1execute_1frame
-  (JNIEnv *, jclass, jboolean, jobject, jshortArray);
+  (JNIEnv *, jclass, jboolean, jboolean, jobject, jshortArray);
 
 /*
  * Class:     uk_org_cardboardbox_wonderdroid_WonderSwan

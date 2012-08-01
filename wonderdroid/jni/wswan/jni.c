@@ -168,25 +168,29 @@ JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_load(JNIE
 //reset();
 }
 
-// FIXME
-
 JNIEXPORT jint JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan__1execute_1frame(JNIEnv *env, jclass obj,
-		jboolean skip, jobject framebuffer, jshortArray audiobuffer) {
+		jboolean skip, jboolean audio, jobject framebuffer, jshortArray audiobuffer) {
 
+	// execute the active frame cycles
 	uint16_t* fb = (uint16_t*) (*env)->GetDirectBufferAddress(env, framebuffer);
+	while (wsExecuteLine(fb, skip) < 144) {};
 
-	int16_t* ab = (int16_t*) (*env)->GetShortArrayElements(env, audiobuffer, NULL);
-
-	while (wsExecuteLine(fb, skip) < 144) {
-	};
-	jint samples = (jint) wswan_soundflush(ab);
-	(*env)->ReleaseShortArrayElements(env, audiobuffer, ab, 0);
-
-	while (wsExecuteLine(NULL, FALSE) != 0) {
+	// grab the audio if we want it
+	jint samples = 0;
+	if(audio){
+		int16_t* ab = (int16_t*) (*env)->GetShortArrayElements(env, audiobuffer, NULL);
+		samples = (jint) wswan_soundflush(ab);
+		(*env)->ReleaseShortArrayElements(env, audiobuffer, ab, 0);
+	}
+	else {
+		wswan_soundclear();
 	}
 
+	// execute the vblank section
+	while (wsExecuteLine(NULL, FALSE) != 0) {}
+
+	// return the number of new audio samples
 	return samples;
-	//
 }
 
 JNIEXPORT void JNICALL Java_uk_org_cardboardbox_wonderdroid_WonderSwan_updatebuttons(JNIEnv *env, jclass obj,

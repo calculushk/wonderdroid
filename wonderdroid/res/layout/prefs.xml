@@ -48,50 +48,46 @@
             android:title="Start" />
     </PreferenceCategory>
 
-    <!-- <PreferenceCategory android:title="Emulator Settings" > -->
+    <PreferenceCategory android:title="Emulator Settings" >
 
-
-    <!--
         <CheckBoxPreference
-                android:key="emusound"
-                android:title="Enable Sound"
-                android:defaultValue="true"
-                android:summary="Disable this if you find the emulator too slow." />
-    -->
+            android:defaultValue="true"
+            android:key="emusound"
+            android:summary="Disable this if you find the emulator too slow."
+            android:title="Enable Sound" />
 
-
-    <!--
+        <!--
        <CheckBoxPreference
                 android:key="emufpscounter"
                 android:title="Enable FPS counter"
                 android:defaultValue="false"
                 android:summary="Show an FPS counter on the screen" />
-    -->
+        -->
 
 
-    <!--
+        <!--
              <CheckBoxPreference
                 android:key="emuframeskip"
                 android:title="Enable Frameskip"
                 android:defaultValue="true"
                 android:summary="Enable frameskipping to help the emulator catch up if it gets behind." />
-    -->
-    <!--
+        -->
+        <!--
     	<CheckBoxPreference
                 android:key="emuforcemono"
                 android:title="Force Mono"
                 android:defaultValue="false"
                 android:summary="Force the emulator to emulate an original mono Wonder Swan." />
-    -->
-    <!-- <PreferenceCategory> -->
+        -->
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings_cat_ws" >
 
         <EditTextPreference
             android:key="ws_name"
-            android:title="@string/name"
-            android:maxLength="16" />
-        
+            android:maxLength="16"
+            android:title="@string/name" />
+
         <uk.org.cardboardbox.wonderdroid.views.DatePreference
             android:key="ws_birthday"
             android:title="@string/birthday" />

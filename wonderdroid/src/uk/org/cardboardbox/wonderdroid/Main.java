@@ -22,164 +22,175 @@ import android.widget.ProgressBar;
 
 public class Main extends Activity {
 
-	public static final String ROM = "rom";
-	public static final String ROMHEADER = "romheader";
+    public static final String ROM = "rom";
 
-	private Context mContext;
-	private ProgressBar mPB;
-	private EmuView view;
-	private Rom mRom;
-	private WonderSwanHeader mRomHeader;
-	private File mCartMem;
-	private boolean mControlsVisible = false;
+    public static final String ROMHEADER = "romheader";
 
-	@Override
-	public void onCreate (Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    private Context mContext;
 
-		mRom = (Rom)this.getIntent().getExtras().getSerializable(ROM);
-		mRomHeader = (WonderSwanHeader)this.getIntent().getExtras().getSerializable(ROMHEADER);
+    private ProgressBar mPB;
 
-		if (mRom == null || mRomHeader == null) {
-			throw new IllegalArgumentException();
-		}
+    private EmuView view;
 
-		view = new EmuView(this);
-		setContentView(view);
-		view.setFocusable(true);
-		view.setFocusableInTouchMode(true);
+    private Rom mRom;
 
-		mContext = this.getBaseContext();
+    private WonderSwanHeader mRomHeader;
 
-		parseKeys();
+    private File mCartMem;
 
-		mPB = (ProgressBar)this.findViewById(R.id.romloadprogressbar);
+    private boolean mControlsVisible = false;
 
-		AsyncTask<Void, Void, Void> loader = new AsyncTask<Void, Void, Void>() {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-			@Override
-			protected void onPreExecute () {
-			}
+        mRom = (Rom)this.getIntent().getExtras().getSerializable(ROM);
+        mRomHeader = (WonderSwanHeader)this.getIntent().getExtras().getSerializable(ROMHEADER);
 
-			@Override
-			protected Void doInBackground (Void... params) {
-				mCartMem = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/wonderdroid/cartmem/"
-					+ mRomHeader.internalname + ".mem");
-				try {
-					mCartMem.createNewFile();
-				} catch (IOException e) {
-					e.printStackTrace();
-					throw new RuntimeException();
-				}
+        if (mRom == null || mRomHeader == null) {
+            throw new IllegalArgumentException();
+        }
 
-				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Main.this);
-				String name = prefs.getString("ws_name", "");
-				String sex = prefs.getString("ws_sex", "1");
-				String blood = prefs.getString("ws_blood", "1");
-				GregorianCalendar cal = new GregorianCalendar();
-				cal.setTimeInMillis(prefs.getLong("ws_birthday", 0));
+        view = new EmuView(this);
+        setContentView(view);
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
 
-				WonderSwan.load(Rom.getRomFile(mContext, mRom).getAbsolutePath(), mRomHeader.isColor, name,
-					cal.get(GregorianCalendar.YEAR), cal.get(GregorianCalendar.MONTH), cal.get(GregorianCalendar.DAY_OF_MONTH),
-					Integer.parseInt(blood), Integer.parseInt(sex));
-				return null;
-			}
+        mContext = this.getBaseContext();
 
-			@Override
-			protected void onPostExecute (Void result) {
-				if (mPB != null) {
-					mPB.setVisibility(ProgressBar.GONE);
-				}
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        parseEmuOptions(prefs);
+        parseKeys(prefs);
 
-				WonderSwan.reset();
-				if (mCartMem.isFile() && (mCartMem.length() > 0)) {
-					WonderSwan.loadbackupdata(mCartMem.getAbsolutePath());
-				}
-				view.start();
-			}
-		};
+        mPB = (ProgressBar)this.findViewById(R.id.romloadprogressbar);
 
-		loader.execute((Void[])null);
-	}
+        AsyncTask<Void, Void, Void> loader = new AsyncTask<Void, Void, Void>() {
 
-	@Override
-	public boolean onOptionsItemSelected (MenuItem item) {
-		// Handle item selection
-		switch (item.getItemId()) {
-		case R.id.main_exitmi:
-			this.finish();
-			return true;
+            @Override
+            protected void onPreExecute() {
+            }
 
-		case R.id.main_pausemi:
-			view.togglepause();
-			return true;
+            @Override
+            protected Void doInBackground(Void... params) {
+                mCartMem = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + "/wonderdroid/cartmem/" + mRomHeader.internalname + ".mem");
+                try {
+                    mCartMem.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException();
+                }
 
-		case R.id.main_resetmi:
-			WonderSwan.reset();
-			return true;
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Main.this);
+                String name = prefs.getString("ws_name", "");
+                String sex = prefs.getString("ws_sex", "1");
+                String blood = prefs.getString("ws_blood", "1");
+                GregorianCalendar cal = new GregorianCalendar();
+                cal.setTimeInMillis(prefs.getLong("ws_birthday", 0));
 
-		case R.id.main_prefsmi:
-			Intent intent = new Intent(this, Prefs.class);
-			startActivity(intent);
-			return true;
+                WonderSwan.load(Rom.getRomFile(mContext, mRom).getAbsolutePath(),
+                        mRomHeader.isColor, name, cal.get(GregorianCalendar.YEAR),
+                        cal.get(GregorianCalendar.MONTH), cal.get(GregorianCalendar.DAY_OF_MONTH),
+                        Integer.parseInt(blood), Integer.parseInt(sex));
+                return null;
+            }
 
-		case R.id.main_togcntrlmi:
-			toggleControls();
-			return true;
-			// case R.id.quit:
-			// quit();
-			// return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
+            @Override
+            protected void onPostExecute(Void result) {
+                if (mPB != null) {
+                    mPB.setVisibility(ProgressBar.GONE);
+                }
 
-	@Override
-	public boolean onCreateOptionsMenu (Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_main, menu);
+                WonderSwan.reset();
+                if (mCartMem.isFile() && (mCartMem.length() > 0)) {
+                    WonderSwan.loadbackupdata(mCartMem.getAbsolutePath());
+                }
+                view.start();
+            }
+        };
 
-		return true;
-	}
+        loader.execute((Void[])null);
+    }
 
-	private void toggleControls () {
-		mControlsVisible = !mControlsVisible;
-		view.showButtons(mControlsVisible);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.main_exitmi:
+                this.finish();
+                return true;
 
-	private void parseEmuOptions () {
-		// The emu options are all gone for now
-		// SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-	}
+            case R.id.main_pausemi:
+                view.togglepause();
+                return true;
 
-	private void parseKeys () {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            case R.id.main_resetmi:
+                WonderSwan.reset();
+                return true;
 
-		view.setKeyCodes(prefs.getInt("hwcontrolStart", 0), prefs.getInt("hwcontrolA", 0), prefs.getInt("hwcontrolB", 0),
-			prefs.getInt("hwcontrolX1", 0), prefs.getInt("hwcontrolX2", 0), prefs.getInt("hwcontrolX3", 0),
-			prefs.getInt("hwcontrolX4", 0), prefs.getInt("hwcontrolY1", 0), prefs.getInt("hwcontrolY2", 0),
-			prefs.getInt("hwcontrolY3", 0), prefs.getInt("hwcontrolY4", 0));
+            case R.id.main_prefsmi:
+                Intent intent = new Intent(this, Prefs.class);
+                startActivity(intent);
+                return true;
 
-	}
+            case R.id.main_togcntrlmi:
+                toggleControls();
+                return true;
+                // case R.id.quit:
+                // quit();
+                // return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
-	@Override
-	public void onRestart () {
-		super.onRestart();
-		view.onResume();
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
 
-	@Override
-	public void onPause () {
-		super.onPause();
-		view.stop();
-		WonderSwan.storebackupdata(mCartMem.getAbsolutePath());
-	}
+        return true;
+    }
 
-	@Override
-	protected void onResume () {
-		super.onResume();
-		parseEmuOptions();
-		parseKeys();
-	}
+    private void toggleControls() {
+        mControlsVisible = !mControlsVisible;
+        view.showButtons(mControlsVisible);
+    }
+
+    private void parseEmuOptions(SharedPreferences prefs) {
+        WonderSwan.audioEnabled = prefs.getBoolean("emusound", true);
+    }
+
+    private void parseKeys(SharedPreferences prefs) {
+
+        view.setKeyCodes(prefs.getInt("hwcontrolStart", 0), prefs.getInt("hwcontrolA", 0),
+                prefs.getInt("hwcontrolB", 0), prefs.getInt("hwcontrolX1", 0),
+                prefs.getInt("hwcontrolX2", 0), prefs.getInt("hwcontrolX3", 0),
+                prefs.getInt("hwcontrolX4", 0), prefs.getInt("hwcontrolY1", 0),
+                prefs.getInt("hwcontrolY2", 0), prefs.getInt("hwcontrolY3", 0),
+                prefs.getInt("hwcontrolY4", 0));
+
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        view.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        view.stop();
+        WonderSwan.storebackupdata(mCartMem.getAbsolutePath());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        parseEmuOptions(prefs);
+        parseKeys(prefs);
+    }
 
 }

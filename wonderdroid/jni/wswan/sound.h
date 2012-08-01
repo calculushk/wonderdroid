@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 int16_t WSwan_SoundFlush(int16_t *buffer);
+void WSwan_SoundClear();
 void WSwan_SoundInit();
 
 void WSwan_Sound(int rate);
@@ -25,6 +26,7 @@ void WSwan_SoundReset(void);
 	int16_t wswan_soundflush(int16_t *buffer);
 	void wswan_soundreset(void);
 	void wswan_soundcheckramwrite(uint32_t A);
+	void wswan_soundclear();
 #endif
 
 void WSwan_SoundCheckRAMWrite(uint32_t A);

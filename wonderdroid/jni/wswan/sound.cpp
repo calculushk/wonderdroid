@@ -350,6 +350,20 @@ int16_t WSwan_SoundFlush(int16_t *buffer) {
 	return love;
 }
 
+extern "C" void wswan_soundclear() {
+	return WSwan_SoundClear();
+}
+
+void WSwan_SoundClear() {
+
+	for (int y = 0; y < 2; y++) // 2
+			{
+		sbuf[y].clear(1);
+	}
+	last_ts = 0;
+	v30mz_timestamp = 0;
+}
+
 extern "C" void wswan_soundcheckramwrite(uint32_t A) {
 	WSwan_SoundCheckRAMWrite(A);
 }
