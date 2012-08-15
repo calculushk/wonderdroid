@@ -79,6 +79,11 @@
                 android:defaultValue="false"
                 android:summary="Force the emulator to emulate an original mono Wonder Swan." />
         -->
+
+        <EditTextPreference
+            android:key="emu_rompath"
+            android:maxLength="256"
+            android:title="@string/overriderompath" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings_cat_ws" >

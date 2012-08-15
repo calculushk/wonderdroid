@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import uk.org.cardboardbox.wonderdroid.WonderSwan;
 import uk.org.cardboardbox.wonderdroid.WonderSwanHeader;
 import uk.org.cardboardbox.wonderdroid.views.RomGalleryView;
 import android.content.Context;
@@ -28,201 +27,218 @@ import android.widget.BaseAdapter;
 
 public class RomAdapter extends BaseAdapter {
 
-	public static final class Rom implements Serializable {
-		/**
+    public static final class Rom implements Serializable {
+        /**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
-		public static String[] romExtension = new String[] {"ws", "wsc"};
+        private static final long serialVersionUID = 1L;
 
-		public enum Type {
-			ZIP, RAW
-		}
+        public static String[] romExtension = new String[] {
+                "ws", "wsc"
+        };
 
-		public final Type type;
-		public final String displayName;
-		public final File sourcefile;
-		public final String fileName;
+        public enum Type {
+            ZIP, RAW
+        }
 
-		public Rom (Type type, File sourceFile, String fileName, String displayName) {
-			this.type = type;
-			this.sourcefile = sourceFile;
-			this.fileName = fileName;
-			this.displayName = displayName;
-		}
+        public final Type type;
 
-		public static File getRomFile (Context context, Rom rom) {
-			switch (rom.type) {
-			case RAW:
-				return rom.sourcefile;
-			case ZIP:
-				try {
-					return ZipCache.getFile(context, new ZipFile(rom.sourcefile), rom.fileName, romExtension);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-					return null;
-				}
+        public final String displayName;
 
-			}
-			return null;
-		}
+        public final File sourcefile;
 
-		public static WonderSwanHeader getHeader (Context context, Rom rom) {
+        public final String fileName;
 
-			File romFile = null;
-			try {
-				if (rom.type == Type.RAW || rom.type == Type.ZIP && ZipCache.isZipInCache(context, new ZipFile(rom.sourcefile))) {
-					romFile = Rom.getRomFile(context, rom);
-				} else if (rom.type == Type.ZIP) {
-					ZipFile zip = new ZipFile(rom.sourcefile);
-					ZipEntry entry = ZipUtils.getEntry(zip, rom.fileName);
-					return new WonderSwanHeader(ZipUtils.getBytesFromEntry(zip, entry, entry.getSize() - WonderSwanHeader.HEADERLEN,
-						WonderSwanHeader.HEADERLEN));
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+        public Rom(Type type, File sourceFile, String fileName, String displayName) {
+            this.type = type;
+            this.sourcefile = sourceFile;
+            this.fileName = fileName;
+            this.displayName = displayName;
+        }
 
-			if (romFile != null) {
-				WonderSwanHeader header = new WonderSwanHeader(romFile);
-				return header;
-			}
+        public static File getRomFile(Context context, Rom rom) {
+            switch (rom.type) {
+                case RAW:
+                    return rom.sourcefile;
+                case ZIP:
+                    try {
+                        return ZipCache.getFile(context, new ZipFile(rom.sourcefile), rom.fileName,
+                                romExtension);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return null;
+                    }
 
-			return null;
-		}
-	}
+            }
+            return null;
+        }
 
-	private static final String TAG = RomAdapter.class.getSimpleName();
+        public static WonderSwanHeader getHeader(Context context, Rom rom) {
 
-	private final HashMap<Integer, WonderSwanHeader> mHeaderCache = new HashMap<Integer, WonderSwanHeader>();
-	private final HashMap<String, SoftReference<Bitmap>> mSplashCache = new HashMap<String, SoftReference<Bitmap>>();
+            File romFile = null;
+            try {
+                if (rom.type == Type.RAW || rom.type == Type.ZIP
+                        && ZipCache.isZipInCache(context, new ZipFile(rom.sourcefile))) {
+                    romFile = Rom.getRomFile(context, rom);
+                } else if (rom.type == Type.ZIP) {
+                    ZipFile zip = new ZipFile(rom.sourcefile);
+                    ZipEntry entry = ZipUtils.getEntry(zip, rom.fileName);
+                    return new WonderSwanHeader(ZipUtils.getBytesFromEntry(zip, entry,
+                            entry.getSize() - WonderSwanHeader.HEADERLEN,
+                            WonderSwanHeader.HEADERLEN));
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
-	private final AssetManager mAssetManager;
-	private final File mRomDir;
-	private final Context mContext;
-	private final Rom[] mRoms;
+            if (romFile != null) {
+                WonderSwanHeader header = new WonderSwanHeader(romFile);
+                return header;
+            }
 
-	public RomAdapter (Context context, String romdir, AssetManager assetManager) {
-		mAssetManager = assetManager;
-		mRomDir = new File(romdir);
-		mContext = context;
-		mRoms = findRoms();
-	}
+            return null;
+        }
+    }
 
-	private Rom[] findRoms () {
-		File[] sourceFiles = mRomDir.listFiles(new RomFilter());
-		ArrayList<Rom> roms = new ArrayList<Rom>();
-		if (sourceFiles != null) {
-			for (int i = 0; i < sourceFiles.length; i++) {
+    private static final String TAG = RomAdapter.class.getSimpleName();
 
-				if (sourceFiles[i].getName().endsWith("zip")) {
-					try {
-						for (String entry : ZipUtils.getValidEntries(new ZipFile(sourceFiles[i]), Rom.romExtension)) {
-							roms.add(new Rom(Rom.Type.ZIP, sourceFiles[i], entry, sourceFiles[i].getName().replaceFirst("\\.zip", "")));
-						}
-					} catch (Exception ex) {
-						ex.printStackTrace();
-						break;
-					}
-				} else {
-					roms.add(new Rom(Rom.Type.RAW, sourceFiles[i], null, sourceFiles[i].getName().replaceFirst("\\.wsc", "")
-						.replaceFirst("\\.ws", "")));
-				}
+    private final HashMap<Integer, WonderSwanHeader> mHeaderCache = new HashMap<Integer, WonderSwanHeader>();
 
-			}
-		}
-		Rom[] allRoms = roms.toArray(new Rom[0]);
+    private final HashMap<String, SoftReference<Bitmap>> mSplashCache = new HashMap<String, SoftReference<Bitmap>>();
 
-		Arrays.sort(allRoms, new Comparator<Rom>() {
-			public int compare (Rom lhs, Rom rhs) {
-				return lhs.sourcefile.compareTo(rhs.sourcefile);
-			}
-		});
+    private final AssetManager mAssetManager;
 
-		return allRoms;
-	}
+    private final File mRomDir;
 
-	public Bitmap getBitmap (int index) {
-		WonderSwanHeader header = getHeader(index);
-		String internalname = header.internalname;
-		if (mSplashCache.containsKey(internalname)) {
-			Bitmap splash = mSplashCache.get(internalname).get();
-			if (splash != null) {
-				return splash;
-			}
-		}
+    private final Context mContext;
 
-		try {
-			Bitmap splash = BitmapFactory.decodeStream(mAssetManager.open("snaps/" + internalname + ".png"));
-			if (header.isVertical) {
-				Matrix rotationmatrix = new Matrix();
-				rotationmatrix.setRotate(270, splash.getWidth() / 2, splash.getHeight() / 2);
-				splash = Bitmap.createBitmap(splash, 0, 0, splash.getWidth(), splash.getHeight(), rotationmatrix, false);
-			}
-			mSplashCache.put(internalname, new SoftReference<Bitmap>(splash));
-			return splash;
-		} catch (IOException e) {
-			// e.printStackTrace();
-			Log.d(TAG, "No shot for " + internalname);
-			return null;
-		}
+    private final Rom[] mRoms;
 
-	}
+    public RomAdapter(Context context, String romdir, AssetManager assetManager) {
+        mAssetManager = assetManager;
+        mRomDir = new File(romdir);
+        mContext = context;
+        mRoms = findRoms();
+    }
 
-	@Override
-	public int getCount () {
-		if (mRoms != null) {
-			return mRoms.length;
-		}
-		return 0;
-	}
+    private Rom[] findRoms() {
+        File[] sourceFiles = mRomDir.listFiles(new RomFilter());
+        ArrayList<Rom> roms = new ArrayList<Rom>();
+        if (sourceFiles != null) {
+            for (int i = 0; i < sourceFiles.length; i++) {
 
-	@Override
-	public Rom getItem (int arg0) {
-		return mRoms[arg0];
-	}
+                if (sourceFiles[i].getName().endsWith("zip")) {
+                    try {
+                        for (String entry : ZipUtils.getValidEntries(new ZipFile(sourceFiles[i]),
+                                Rom.romExtension)) {
+                            roms.add(new Rom(Rom.Type.ZIP, sourceFiles[i], entry, sourceFiles[i]
+                                    .getName().replaceFirst("\\.zip", "")));
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        break;
+                    }
+                } else {
+                    roms.add(new Rom(Rom.Type.RAW, sourceFiles[i], null, sourceFiles[i].getName()
+                            .replaceFirst("\\.wsc", "").replaceFirst("\\.ws", "")));
+                }
 
-	@Override
-	public long getItemId (int arg0) {
-		return 0;
-	}
+            }
+        }
+        Rom[] allRoms = roms.toArray(new Rom[0]);
 
-	@Override
-	public View getView (int index, View oldview, ViewGroup arg2) {
+        Arrays.sort(allRoms, new Comparator<Rom>() {
+            public int compare(Rom lhs, Rom rhs) {
+                return lhs.sourcefile.compareTo(rhs.sourcefile);
+            }
+        });
 
-		RomGalleryView view;
-		if (oldview == null) {
-			view = new RomGalleryView(arg2.getContext(), null);
-		} else {
-			view = (RomGalleryView)oldview;
-		}
+        return allRoms;
+    }
 
-		view.setTitle(mRoms[index].displayName);
+    public Bitmap getBitmap(int index) {
+        WonderSwanHeader header = getHeader(index);
+        String internalname = header.internalname;
+        if (mSplashCache.containsKey(internalname)) {
+            Bitmap splash = mSplashCache.get(internalname).get();
+            if (splash != null) {
+                return splash;
+            }
+        }
 
-		WonderSwanHeader header = getHeader(index);
-		if (header != null) {
-			Bitmap shot = getBitmap(index);
-			if (shot != null) {
-				view.setSnap(shot);
-			} else {
-				Log.d(TAG, "snap is null for " + mRoms[index].sourcefile);
-			}
-		}
+        try {
+            Bitmap splash = BitmapFactory.decodeStream(mAssetManager.open("snaps/" + internalname
+                    + ".png"));
+            if (header.isVertical) {
+                Matrix rotationmatrix = new Matrix();
+                rotationmatrix.setRotate(270, splash.getWidth() / 2, splash.getHeight() / 2);
+                splash = Bitmap.createBitmap(splash, 0, 0, splash.getWidth(), splash.getHeight(),
+                        rotationmatrix, false);
+            }
+            mSplashCache.put(internalname, new SoftReference<Bitmap>(splash));
+            return splash;
+        } catch (IOException e) {
+            // e.printStackTrace();
+            Log.d(TAG, "No shot for " + internalname);
+            return null;
+        }
 
-		return view;
-	}
+    }
 
-	public synchronized WonderSwanHeader getHeader (int index) {
+    @Override
+    public int getCount() {
+        if (mRoms != null) {
+            return mRoms.length;
+        }
+        return 0;
+    }
 
-		if (mHeaderCache.containsKey(index)) {
-			return mHeaderCache.get(index);
-		}
+    @Override
+    public Rom getItem(int arg0) {
+        return mRoms[arg0];
+    }
 
-		Rom rom = (Rom)(this.getItem(index));
-		WonderSwanHeader header = Rom.getHeader(mContext, rom);
-		if (header != null) {
-			mHeaderCache.put(index, header);
-		}
-		return header;
-	}
+    @Override
+    public long getItemId(int arg0) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int index, View oldview, ViewGroup arg2) {
+
+        RomGalleryView view;
+        if (oldview == null) {
+            view = new RomGalleryView(arg2.getContext(), null);
+        } else {
+            view = (RomGalleryView)oldview;
+        }
+
+        view.setTitle(mRoms[index].displayName);
+
+        WonderSwanHeader header = getHeader(index);
+        if (header != null) {
+            Bitmap shot = getBitmap(index);
+            if (shot != null) {
+                view.setSnap(shot);
+            } else {
+                Log.d(TAG, "snap is null for " + mRoms[index].sourcefile);
+            }
+        }
+
+        return view;
+    }
+
+    public synchronized WonderSwanHeader getHeader(int index) {
+
+        if (mHeaderCache.containsKey(index)) {
+            return mHeaderCache.get(index);
+        }
+
+        Rom rom = (Rom)(this.getItem(index));
+        WonderSwanHeader header = Rom.getHeader(mContext, rom);
+        if (header != null) {
+            mHeaderCache.put(index, header);
+        }
+        return header;
+    }
 }

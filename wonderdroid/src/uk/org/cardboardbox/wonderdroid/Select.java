@@ -9,7 +9,6 @@ import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
 import uk.org.cardboardbox.wonderdroid.utils.RomAdapter;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
@@ -35,227 +34,231 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Select extends Activity {
+public class Select extends BaseActivity {
 
-	private static final String TAG = Select.class.getSimpleName();
+    private static final String TAG = Select.class.getSimpleName();
 
-	private final Runnable bgSwitcher = new Runnable() {
+    private final Runnable bgSwitcher = new Runnable() {
 
-		private int splashindex = 0;
-		private final Random mRNG = new Random();
-		private Bitmap backgroundOne = null;
+        private int splashindex = 0;
 
-		@Override
-		public void run () {
+        private final Random mRNG = new Random();
 
-			int count = mRAdapter.getCount();
-			if (count < 10) { // Dont bother if we have less than 10 games
-				return;
-			}
+        private Bitmap backgroundOne = null;
 
-			// Loop this shizzle
-			handler.removeCallbacks(this);
-			handler.postDelayed(this, 4000);
-			//
+        @Override
+        public void run() {
 
-			int newindex = mRNG.nextInt(count - 1);
+            int count = mRAdapter.getCount();
+            if (count < 10) { // Dont bother if we have less than 10 games
+                return;
+            }
 
-			if (newindex == splashindex) {
-				return;
-			}
+            // Loop this shizzle
+            handler.removeCallbacks(this);
+            handler.postDelayed(this, 4000);
+            //
 
-			Bitmap newbitmap = mRAdapter.getBitmap(newindex);
-			if (newbitmap == null) {
-				return;
-			}
+            int newindex = mRNG.nextInt(count - 1);
 
-			splashindex = newindex;
+            if (newindex == splashindex) {
+                return;
+            }
 
-			// first run
-			if (backgroundOne == null) {
-				backgroundOne = newbitmap;
-				mBG1.setImageBitmap(backgroundOne);
-				return;
-			}
+            Bitmap newbitmap = mRAdapter.getBitmap(newindex);
+            if (newbitmap == null) {
+                return;
+            }
 
-			mBG2.setImageBitmap(backgroundOne);
-			mBG2.setVisibility(View.VISIBLE); // hide the new splash before switching
-			mBG1.setImageBitmap(newbitmap);
-			backgroundOne = newbitmap;
+            splashindex = newindex;
 
-			mBG2.startAnimation(fade);
-		}
-	};
+            // first run
+            if (backgroundOne == null) {
+                backgroundOne = newbitmap;
+                mBG1.setImageBitmap(backgroundOne);
+                return;
+            }
 
-	private Animation fade;
-	private Handler handler;
-	private AssetManager mAssetManager;
+            mBG2.setImageBitmap(backgroundOne);
+            mBG2.setVisibility(View.VISIBLE); // hide the new splash before
+                                              // switching
+            mBG1.setImageBitmap(newbitmap);
+            backgroundOne = newbitmap;
 
-	private ImageView mBG1;
-	private ImageView mBG2;
+            mBG2.startAnimation(fade);
+        }
+    };
 
-	private RomAdapter mRAdapter;
+    private Animation fade;
 
-	private TextView mScreenFormat;
+    private Handler handler;
 
-	private String sdpath;
+    private AssetManager mAssetManager;
 
-	private boolean adSupported = true;
+    private ImageView mBG1;
 
-	@Override
-	public void onCreate (Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		handler = new Handler();
-		fade = AnimationUtils.loadAnimation(this, R.anim.splashfade);
-		fade.setAnimationListener(new AnimationListener() {
+    private ImageView mBG2;
 
-			@Override
-			public void onAnimationEnd (Animation animation) {
-				mBG2.setVisibility(View.GONE);
-			}
+    private RomAdapter mRAdapter;
 
-			@Override
-			public void onAnimationRepeat (Animation animation) {
-			}
+    private TextView mScreenFormat;
 
-			@Override
-			public void onAnimationStart (Animation animation) {
-				mBG2.setVisibility(View.VISIBLE);
-			}
-		});
+    private boolean adSupported = true;
 
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        handler = new Handler();
+        fade = AnimationUtils.loadAnimation(this, R.anim.splashfade);
+        fade.setAnimationListener(new AnimationListener() {
 
-	@Override
-	public boolean onCreateOptionsMenu (Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_select, menu);
-		return true;
-	}
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mBG2.setVisibility(View.GONE);
+            }
 
-	@Override
-	public boolean onOptionsItemSelected (MenuItem item) {
-		// Handle item selection
-		switch (item.getItemId()) {
-		case R.id.select_exitmi:
-			this.finish();
-			return true;
-		case R.id.select_prefsmi:
-			Intent intent = new Intent(this, Prefs.class);
-			startActivity(intent);
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
 
-	private void startEmu (int romid) {
-		Intent intent = new Intent(this, Main.class);
-		intent.putExtra(Main.ROM, mRAdapter.getItem(romid));
-		intent.putExtra(Main.ROMHEADER, mRAdapter.getHeader(romid));
-		startActivity(intent);
-	}
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mBG2.setVisibility(View.VISIBLE);
+            }
+        });
 
-	@Override
-	protected void onPause () {
-		super.onPause();
-		handler.removeCallbacks(bgSwitcher);
-	}
+    }
 
-	AdView ad = null;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_select, menu);
+        return true;
+    }
 
-	private void parseSupportOptions () {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		adSupported = prefs.getBoolean("adsupported", false);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.select_exitmi:
+                this.finish();
+                return true;
+            case R.id.select_prefsmi:
+                Intent intent = new Intent(this, Prefs.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
-	@Override
-	protected void onResume () {
-		super.onResume();
+    private void startEmu(int romid) {
+        Intent intent = new Intent(this, Main.class);
+        intent.putExtra(Main.ROM, mRAdapter.getItem(romid));
+        intent.putExtra(Main.ROMHEADER, mRAdapter.getHeader(romid));
+        startActivity(intent);
+    }
 
-		if (Environment.getExternalStorageState().compareTo(Environment.MEDIA_MOUNTED) != 0) {
-			Toast.makeText(this, R.string.nosdcard, 2000).show();
-			return;
-		}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacks(bgSwitcher);
+    }
 
-		sdpath = Environment.getExternalStorageDirectory().getAbsolutePath();
+    AdView ad = null;
 
-		setContentView(R.layout.select);
+    private void parseSupportOptions() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        adSupported = prefs.getBoolean("adsupported", false);
+    }
 
-		parseSupportOptions();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		if (adSupported) {
-			FrameLayout adbox = (FrameLayout)findViewById(R.id.adbox);
-			ad = new AdView(this, AdSize.BANNER, "a14fbeecba23019");
-			AdRequest r = new AdRequest();
-			r.addTestDevice("6A3DABBD306114452F0D233CDADCF438");
-			ad.loadAd(r);
-			adbox.addView(ad);
-		}
+        File romdirx = getWonderDroidApplication().getRomDir();
+        if (romdirx == null) {
+            Toast.makeText(this, R.string.nosdcard, 2000).show();
+            return;
+        }
 
-		//
-		File romdir = new File(sdpath + WonderDroid.DIRECTORY);
-		romdir.mkdir();
-		File cartmemdir = new File(sdpath + WonderDroid.CARTMEMDIRECTORY);
-		cartmemdir.mkdir();
-		//
+        String sdpath = romdirx.getAbsolutePath();
 
-		mScreenFormat = (TextView)this.findViewById(R.id.select_screenformat);
-		mAssetManager = this.getAssets();
-		mRAdapter = new RomAdapter(this.getBaseContext(), sdpath + "/wonderdroid/", mAssetManager);
+        setContentView(R.layout.select);
 
-		if (mRAdapter.getCount() != 0) {
+        parseSupportOptions();
 
-			((TextView)this.findViewById(R.id.select_noroms)).setVisibility(View.GONE);
+        if (adSupported) {
+            FrameLayout adbox = (FrameLayout)findViewById(R.id.adbox);
+            ad = new AdView(this, AdSize.BANNER, "a14fbeecba23019");
+            AdRequest r = new AdRequest();
+            r.addTestDevice("6A3DABBD306114452F0D233CDADCF438");
+            ad.loadAd(r);
+            adbox.addView(ad);
+        }
 
-			mScreenFormat.setVisibility(View.VISIBLE);
-			Gallery mRomGallery = (Gallery)this.findViewById(R.id.select_gallery);
-			mRomGallery.setAdapter(mRAdapter);
-			mRomGallery.setOnItemSelectedListener(new OnItemSelectedListener() {
+        //
+        File romdir = new File(sdpath + WonderDroid.DIRECTORY);
+        romdir.mkdir();
+        File cartmemdir = new File(sdpath + WonderDroid.CARTMEMDIRECTORY);
+        cartmemdir.mkdir();
+        //
 
-				@Override
-				public void onItemSelected (AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+        mScreenFormat = (TextView)this.findViewById(R.id.select_screenformat);
+        mAssetManager = this.getAssets();
+        mRAdapter = new RomAdapter(this.getBaseContext(), sdpath + "/wonderdroid/", mAssetManager);
 
-					WonderSwanHeader header = mRAdapter.getHeader(arg2);
-					if (header != null) {
-						String newtext;
-						if (header.isColor) {
-							newtext = getString(R.string.colour);
-						} else {
-							newtext = getString(R.string.mono);
-						}
+        if (mRAdapter.getCount() != 0) {
 
-						if (header.isVertical) {
-							newtext += getString(R.string.vertical);
-						} else {
-							newtext += getString(R.string.horizontal);
-						}
+            ((TextView)this.findViewById(R.id.select_noroms)).setVisibility(View.GONE);
 
-						mScreenFormat.setText(newtext);
-					}
-				}
+            mScreenFormat.setVisibility(View.VISIBLE);
+            Gallery mRomGallery = (Gallery)this.findViewById(R.id.select_gallery);
+            mRomGallery.setAdapter(mRAdapter);
+            mRomGallery.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-				@Override
-				public void onNothingSelected (AdapterView<?> arg0) {
-				}
+                @Override
+                public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 
-			});
+                    WonderSwanHeader header = mRAdapter.getHeader(arg2);
+                    if (header != null) {
+                        String newtext;
+                        if (header.isColor) {
+                            newtext = getString(R.string.colour);
+                        } else {
+                            newtext = getString(R.string.mono);
+                        }
 
-			mRomGallery.setOnItemClickListener(new OnItemClickListener() {
+                        if (header.isVertical) {
+                            newtext += getString(R.string.vertical);
+                        } else {
+                            newtext += getString(R.string.horizontal);
+                        }
 
-				@Override
-				public void onItemClick (AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-					startEmu(arg2);
-				}
+                        mScreenFormat.setText(newtext);
+                    }
+                }
 
-			});
+                @Override
+                public void onNothingSelected(AdapterView<?> arg0) {
+                }
 
-			mBG1 = (ImageView)this.findViewById(R.id.select_bg1);
-			mBG2 = (ImageView)this.findViewById(R.id.select_bg2);
-			bgSwitcher.run();
+            });
 
-		}
+            mRomGallery.setOnItemClickListener(new OnItemClickListener() {
 
-	}
+                @Override
+                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                    startEmu(arg2);
+                }
 
+            });
+
+            mBG1 = (ImageView)this.findViewById(R.id.select_bg1);
+            mBG2 = (ImageView)this.findViewById(R.id.select_bg2);
+            bgSwitcher.run();
+
+        }
+
+    }
 }

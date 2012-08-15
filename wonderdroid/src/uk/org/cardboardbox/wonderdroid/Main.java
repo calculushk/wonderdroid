@@ -7,7 +7,6 @@ import java.util.GregorianCalendar;
 
 import uk.org.cardboardbox.wonderdroid.utils.RomAdapter.Rom;
 import uk.org.cardboardbox.wonderdroid.views.EmuView;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,7 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
 
-public class Main extends Activity {
+public class Main extends BaseActivity {
 
     public static final String ROM = "rom";
 
