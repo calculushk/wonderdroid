@@ -26,7 +26,7 @@
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="2"
-        android:text="wonderdroid 1.7BETA"
+        android:text="wonderdroid 1.8c"
         android:textColor="#55008800"
         android:textSize="28sp"
         android:textStyle="bold" />
