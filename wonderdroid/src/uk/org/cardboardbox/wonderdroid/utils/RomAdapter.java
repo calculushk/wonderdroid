@@ -4,7 +4,6 @@ package uk.org.cardboardbox.wonderdroid.utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 
+import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +28,7 @@ import android.widget.BaseAdapter;
 public class RomAdapter extends BaseAdapter {
 
     public static final class Rom implements Serializable {
-        /**
-		 * 
-		 */
+
         private static final long serialVersionUID = 1L;
 
         public static String[] romExtension = new String[] {
@@ -104,7 +102,7 @@ public class RomAdapter extends BaseAdapter {
 
     private final HashMap<Integer, WonderSwanHeader> mHeaderCache = new HashMap<Integer, WonderSwanHeader>();
 
-    private final HashMap<String, SoftReference<Bitmap>> mSplashCache = new HashMap<String, SoftReference<Bitmap>>();
+    private final LruCache<String, Bitmap> splashCache = new LruCache<String, Bitmap>(10);
 
     private final AssetManager mAssetManager;
 
@@ -159,23 +157,20 @@ public class RomAdapter extends BaseAdapter {
     public Bitmap getBitmap(int index) {
         WonderSwanHeader header = getHeader(index);
         String internalname = header.internalname;
-        if (mSplashCache.containsKey(internalname)) {
-            Bitmap splash = mSplashCache.get(internalname).get();
-            if (splash != null) {
-                return splash;
-            }
-        }
+        Bitmap splash = splashCache.get(internalname);
+        if (splash != null)
+            return splash;
 
         try {
-            Bitmap splash = BitmapFactory.decodeStream(mAssetManager.open("snaps/" + internalname
-                    + ".png"));
+            splash = BitmapFactory.decodeStream(mAssetManager
+                    .open("snaps/" + internalname + ".png"));
             if (header.isVertical) {
                 Matrix rotationmatrix = new Matrix();
                 rotationmatrix.setRotate(270, splash.getWidth() / 2, splash.getHeight() / 2);
                 splash = Bitmap.createBitmap(splash, 0, 0, splash.getWidth(), splash.getHeight(),
                         rotationmatrix, false);
             }
-            mSplashCache.put(internalname, new SoftReference<Bitmap>(splash));
+            splashCache.put(internalname, splash);
             return splash;
         } catch (IOException e) {
             // e.printStackTrace();

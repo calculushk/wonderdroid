@@ -12,6 +12,7 @@
     <string name="selectgame">Select Game</string>
     <string name="exit">Exit</string>
     <string name="preferences">Preferences</string>
+    <string name="importgame">Import Game</string>
     <string name="togglescreencontrols">Toggle Screen Controls</string>
     <string name="pause">Pause</string>
     <string name="reset">Reset</string>

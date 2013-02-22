@@ -1,6 +1,10 @@
 
 package uk.org.cardboardbox.wonderdroid;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.GregorianCalendar;
@@ -14,9 +18,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.ProgressBar;
 
 public class Main extends BaseActivity {
@@ -145,7 +146,7 @@ public class Main extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
         return true;

@@ -12,20 +12,22 @@ import android.widget.TextView;
 
 public class RomGalleryView extends LinearLayout {
 
-	private final LinearLayout mLayout;
+    private final LinearLayout mLayout;
 
-	public RomGalleryView (Context context, AttributeSet attrs) {
-		super(context, attrs);
-		LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		mLayout = (LinearLayout)((LinearLayout)layoutInflater.inflate(R.layout.romgalleyview, this)).getChildAt(0);
-	}
+    public RomGalleryView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        LayoutInflater layoutInflater = (LayoutInflater)context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayout = (LinearLayout)((LinearLayout)layoutInflater.inflate(R.layout.romgalleyview, this))
+                .getChildAt(0);
+    }
 
-	public void setSnap (Bitmap bm) {
-		ImageView iv = (ImageView)mLayout.getChildAt(1);
-		iv.setImageBitmap(bm);
-	}
+    public void setSnap(Bitmap bm) {
+        ImageView iv = (ImageView)mLayout.getChildAt(1);
+        iv.setImageBitmap(bm);
+    }
 
-	public void setTitle (String title) {
-		((TextView)mLayout.getChildAt(0)).setText(title);
-	}
+    public void setTitle(String title) {
+        ((TextView)mLayout.getChildAt(0)).setText(title);
+    }
 }

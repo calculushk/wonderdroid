@@ -2,19 +2,16 @@
 package uk.org.cardboardbox.wonderdroid;
 
 import org.acra.ACRA;
-import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 import uk.org.cardboardbox.wonderdroid.utils.ZipCache;
 
 import android.app.Application;
 import android.os.Environment;
-import android.widget.Toast;
 
 import java.io.File;
 
-@ReportsCrashes(formKey = "", // will not be used
-mailTo = "wonderdroidcrash@0x0f.com", mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_string)
+@ReportsCrashes(formUri = "http://www.bugsense.com/api/acra?api_key=30ee9348", formKey = "")
 public class WonderDroid extends Application {
 
     public static final String DIRECTORY = "/wonderdroid/";
