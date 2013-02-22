@@ -178,7 +178,7 @@ public class Select extends BaseActivity {
 
         File romdirx = getWonderDroidApplication().getRomDir();
         if (romdirx == null) {
-            Toast.makeText(this, R.string.nosdcard, 2000).show();
+            Toast.makeText(this, R.string.nosdcard, Toast.LENGTH_LONG).show();
             return;
         }
 

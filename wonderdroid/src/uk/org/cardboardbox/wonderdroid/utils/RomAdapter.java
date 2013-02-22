@@ -13,6 +13,7 @@ import java.util.zip.ZipFile;
 
 import uk.org.cardboardbox.wonderdroid.WonderSwanHeader;
 import uk.org.cardboardbox.wonderdroid.views.RomGalleryView;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -100,6 +101,7 @@ public class RomAdapter extends BaseAdapter {
 
     private static final String TAG = RomAdapter.class.getSimpleName();
 
+    @SuppressLint("UseSparseArrays")
     private final HashMap<Integer, WonderSwanHeader> mHeaderCache = new HashMap<Integer, WonderSwanHeader>();
 
     private final LruCache<String, Bitmap> splashCache = new LruCache<String, Bitmap>(10);

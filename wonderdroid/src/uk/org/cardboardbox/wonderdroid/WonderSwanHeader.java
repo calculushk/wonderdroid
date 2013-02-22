@@ -19,6 +19,7 @@ public class WonderSwanHeader implements Serializable {
 
     private final int checksum;
 
+    @SuppressWarnings("unused")
     private final int romsize;
 
     public final boolean isColor;
