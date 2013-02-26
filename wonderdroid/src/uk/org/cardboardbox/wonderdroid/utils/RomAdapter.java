@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 
+import android.os.Build;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.View;
@@ -104,7 +105,18 @@ public class RomAdapter extends BaseAdapter {
     @SuppressLint("UseSparseArrays")
     private final HashMap<Integer, WonderSwanHeader> mHeaderCache = new HashMap<Integer, WonderSwanHeader>();
 
-    private final LruCache<String, Bitmap> splashCache = new LruCache<String, Bitmap>(10);
+    private final LruCache<String, Bitmap> splashCache = new LruCache<String, Bitmap>(1024 * 512) {
+
+        @SuppressLint("NewApi")
+        @Override
+        protected int sizeOf(String key, Bitmap value) {
+            if (Build.VERSION.SDK_INT >= 12)
+                return value.getByteCount();
+            else
+                return value.getRowBytes() * value.getHeight();
+        }
+
+    };
 
     private final AssetManager mAssetManager;
 
@@ -172,7 +184,8 @@ public class RomAdapter extends BaseAdapter {
                 splash = Bitmap.createBitmap(splash, 0, 0, splash.getWidth(), splash.getHeight(),
                         rotationmatrix, false);
             }
-            splashCache.put(internalname, splash);
+            if (splash != null)
+                splashCache.put(internalname, splash);
             return splash;
         } catch (IOException e) {
             // e.printStackTrace();
@@ -201,24 +214,21 @@ public class RomAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int index, View oldview, ViewGroup arg2) {
-
+    public View getView(int position, View oldview, ViewGroup parent) {
         RomGalleryView view;
-        if (oldview == null) {
-            view = new RomGalleryView(arg2.getContext(), null);
-        } else {
+        if (oldview == null)
+            view = new RomGalleryView(mContext);
+        else
             view = (RomGalleryView)oldview;
-        }
 
-        view.setTitle(mRoms[index].displayName);
+        view.setTitle(mRoms[position].displayName);
 
-        WonderSwanHeader header = getHeader(index);
+        WonderSwanHeader header = getHeader(position);
         if (header != null) {
-            Bitmap shot = getBitmap(index);
-            if (shot != null) {
+            Bitmap shot = getBitmap(position);
                 view.setSnap(shot);
-            } else {
-                Log.d(TAG, "snap is null for " + mRoms[index].sourcefile);
+            if (shot != null) {
+                Log.d(TAG, "snap is null for " + mRoms[position].sourcefile);
             }
         }
 
@@ -226,16 +236,12 @@ public class RomAdapter extends BaseAdapter {
     }
 
     public synchronized WonderSwanHeader getHeader(int index) {
-
-        if (mHeaderCache.containsKey(index)) {
+        if (mHeaderCache.containsKey(index))
             return mHeaderCache.get(index);
-        }
-
         Rom rom = (Rom)(this.getItem(index));
         WonderSwanHeader header = Rom.getHeader(mContext, rom);
-        if (header != null) {
+        if (header != null)
             mHeaderCache.put(index, header);
-        }
         return header;
     }
 }

@@ -24,15 +24,21 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.Gallery;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+@SuppressWarnings("deprecation")
 public class Select extends BaseActivity {
 
     private static final String TAG = Select.class.getSimpleName();
@@ -102,11 +108,20 @@ public class Select extends BaseActivity {
 
     private TextView mScreenFormat;
 
+    private Gallery gallery;
+
+    private GridView grid;
+
     private boolean adSupported = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.select);
+        gallery = (Gallery)this.findViewById(R.id.select_gallery);
+        if (gallery == null)
+            grid = (GridView)this.findViewById(R.id.select_grid);
 
         handler = new Handler();
         fade = AnimationUtils.loadAnimation(this, R.anim.splashfade);
@@ -184,8 +199,6 @@ public class Select extends BaseActivity {
 
         String sdpath = romdirx.getAbsolutePath();
 
-        setContentView(R.layout.select);
-
         parseSupportOptions();
 
         if (adSupported) {
@@ -213,9 +226,15 @@ public class Select extends BaseActivity {
             ((TextView)this.findViewById(R.id.select_noroms)).setVisibility(View.GONE);
 
             mScreenFormat.setVisibility(View.VISIBLE);
-            Gallery mRomGallery = (Gallery)this.findViewById(R.id.select_gallery);
-            mRomGallery.setAdapter(mRAdapter);
-            mRomGallery.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            setupGalleryOrGrid(mRAdapter, new OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                    startEmu(arg2);
+                }
+
+            }, new OnItemSelectedListener() {
 
                 @Override
                 public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -245,20 +264,26 @@ public class Select extends BaseActivity {
 
             });
 
-            mRomGallery.setOnItemClickListener(new OnItemClickListener() {
-
-                @Override
-                public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                    startEmu(arg2);
-                }
-
-            });
-
             mBG1 = (ImageView)this.findViewById(R.id.select_bg1);
             mBG2 = (ImageView)this.findViewById(R.id.select_bg2);
             bgSwitcher.run();
 
         }
 
+    }
+
+    private final void setupGalleryOrGrid(RomAdapter adapter,
+            OnItemClickListener itemClickListener, OnItemSelectedListener itemSelectedListener) {
+        if (gallery == null) {
+            grid.setAdapter(mRAdapter);
+            grid.setOnItemClickListener(itemClickListener);
+            grid.setOnItemSelectedListener(itemSelectedListener);
+        }
+
+        else {
+            gallery.setAdapter(mRAdapter);
+            gallery.setOnItemClickListener(itemClickListener);
+            gallery.setOnItemSelectedListener(itemSelectedListener);
+        }
     }
 }

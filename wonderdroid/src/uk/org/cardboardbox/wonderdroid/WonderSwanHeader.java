@@ -61,8 +61,8 @@ public class WonderSwanHeader implements Serializable {
         }
         isVertical = ((header[6] & 0x01) == 1);
         checksum = (header[8] & 0xFF) + ((header[9] << 8) & 0xFFFF);
-        internalname = ((Integer)developer).toString() + "-" + ((Integer)cartid).toString() + "-"
-                + ((Integer)checksum).toString();
+        internalname = Integer.toString(developer) + "-" + Integer.toString(cartid) + "-"
+                + Integer.toString(checksum);
 
     }
 
